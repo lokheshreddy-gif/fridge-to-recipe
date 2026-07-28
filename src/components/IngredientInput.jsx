@@ -2,50 +2,111 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight } from 'lucide-react';
 
+const AGE_CATEGORIES = [
+  {
+    id: 'Toddler',
+    label: 'Toddlers & Infants (Ages 1–3)',
+    shortLabel: 'Ages 1–3 (Toddler)',
+    dishes: [
+      { name: '🍲 Moong Dal Khichdi', query: 'Moong Dal Khichdi' },
+      { name: '🍎 Apple Ragi Porridge', query: 'Apple Ragi Porridge' },
+      { name: '🌾 Suji Upma', query: 'Suji Upma' },
+      { name: '🍚 Mashed Curd Rice', query: 'Mashed Curd Rice' },
+      { name: '🥣 Dal Pani', query: 'Dal Pani' }
+    ]
+  },
+  {
+    id: 'Kid',
+    label: 'Young Kids (Ages 4–12)',
+    shortLabel: 'Ages 4–12 (Kids)',
+    dishes: [
+      { name: '⚪ Mini Idlis', query: 'Mini Idlis' },
+      { name: '🧀 Cheese Whole Wheat Dosa', query: 'Cheese Whole Wheat Dosa' },
+      { name: '🍚 Vegetable Pulao', query: 'Vegetable Pulao' },
+      { name: '🧀 Paneer Bhurji', query: 'Paneer Bhurji' },
+      { name: '🍔 Aloo Tikki Burger', query: 'Aloo Tikki Burger' }
+    ]
+  },
+  {
+    id: 'Teen',
+    label: 'Teens & Young Adults (Ages 13–25)',
+    shortLabel: 'Ages 13–25 (Teens)',
+    dishes: [
+      { name: '🥘 Paneer Butter Masala', query: 'Paneer Butter Masala' },
+      { name: '🫓 Aloo Paratha', query: 'Aloo Paratha' },
+      { name: '🍗 Chicken Tikka Masala', query: 'Chicken Tikka Masala' },
+      { name: '🥖 Chole Bhature', query: 'Chole Bhature' },
+      { name: '🧈 Pav Bhaji', query: 'Pav Bhaji' }
+    ]
+  },
+  {
+    id: 'Adult',
+    label: 'Adults (Ages 26–50)',
+    shortLabel: 'Ages 26–50 (Adult)',
+    dishes: [
+      { name: '🥘 Chana Masala', query: 'Chana Masala' },
+      { name: '🥬 Palak Paneer', query: 'Palak Paneer' },
+      { name: '🍚 Vegetable Biryani', query: 'Vegetable Biryani' },
+      { name: '🍆 Baingan Bharta', query: 'Baingan Bharta' },
+      { name: '🐟 Fish Curry', query: 'Fish Curry' }
+    ]
+  },
+  {
+    id: 'Senior',
+    label: 'Seniors & Older Adults (Ages 51+)',
+    shortLabel: 'Ages 51+ (Senior)',
+    dishes: [
+      { name: '🌾 Oats Upma', query: 'Oats Upma' },
+      { name: '🥣 Dalia Khichdi', query: 'Dalia Khichdi' },
+      { name: '🍲 Toor Dal Fry', query: 'Toor Dal Fry' },
+      { name: '🥒 Lauki Sabzi', query: 'Lauki Sabzi' },
+      { name: '🥛 Masala Chaas', query: 'Masala Chaas' }
+    ]
+  }
+];
+
 const HERO_DISH_CARDS = [
   {
     id: 'pulao',
     title: 'Veg Pulao & Basmati Rice',
     desc: 'Basmati rice, green peas, carrots, ghee & spices',
     badge: 'Popular',
-    query: 'Veg pulao, basmati rice, green peas, carrots, ghee, whole spices',
+    query: 'Vegetable Pulao',
     photo: '/ingredient-images/vegetable.png',
     cardBg: 'bg-amber-50/80 dark:bg-amber-950/20 border-amber-200 dark:border-amber-500/40',
     badgeBg: 'bg-amber-600 text-white'
   },
   {
-    id: 'omelette',
-    title: 'Fluffy Herb Omelette',
-    desc: 'Fresh eggs, cheddar cheese, cherry tomatoes & butter',
-    badge: 'Quick 10m',
-    query: 'Eggs, cheddar cheese, cherry tomatoes, butter, salt, chives',
+    id: 'paneer_butter',
+    title: 'Paneer Butter Masala',
+    desc: 'Cottage cheese in silky tomato cream gravy',
+    badge: 'Rich & Spicy',
+    query: 'Paneer Butter Masala',
+    photo: '/ingredient-images/garlic.png',
+    cardBg: 'bg-rose-50/80 dark:bg-rose-950/20 border-rose-200 dark:border-rose-500/40',
+    badgeBg: 'bg-rose-600 text-white'
+  },
+  {
+    id: 'khichdi',
+    title: 'Moong Dal Khichdi',
+    desc: 'Soothing yellow moong dal & basmati in ghee',
+    badge: 'Gut-Friendly',
+    query: 'Moong Dal Khichdi',
     photo: '/ingredient-images/salt.png',
     cardBg: 'bg-yellow-50/80 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-500/40',
     badgeBg: 'bg-yellow-600 text-white'
   },
   {
-    id: 'pasta',
-    title: 'Garlic Olive Oil Pasta',
-    desc: 'Spaghetti, garlic cloves, olive oil & red chili flakes',
-    badge: 'Classic',
-    query: 'Spaghetti, garlic, olive oil, red chili flakes, parmesan cheese',
-    photo: '/ingredient-images/oil.png',
+    id: 'palak_paneer',
+    title: 'Garlic Palak Paneer',
+    desc: 'Spinach puree with garlic & paneer cubes',
+    badge: 'Iron-Rich',
+    query: 'Palak Paneer',
+    photo: '/ingredient-images/spinach.png',
     cardBg: 'bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-500/40',
     badgeBg: 'bg-emerald-600 text-white'
-  },
-  {
-    id: 'tofu',
-    title: 'Tofu & Broccoli Stir-Fry',
-    desc: 'Firm tofu, broccoli, soy sauce & fresh ginger',
-    badge: 'Healthy',
-    query: 'Firm tofu, broccoli, soy sauce, fresh ginger, sesame oil',
-    photo: '/ingredient-images/spinach.png',
-    cardBg: 'bg-indigo-50/80 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/40',
-    badgeBg: 'bg-indigo-600 text-white'
   }
 ];
-
-const AGE_GROUPS = ['Child', 'Teen', 'Adult', 'Senior'];
 
 export default function IngredientInput({
   onSubmit,
@@ -54,11 +115,12 @@ export default function IngredientInput({
   onSelectHistory
 }) {
   const [ingredientsText, setIngredientsText] = useState('');
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState('Adult');
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(3); // Default: Adults (Ages 26-50)
   const [touched, setTouched] = useState(false);
   const [testMode, setTestMode] = useState('normal');
   const [showHistory, setShowHistory] = useState(false);
 
+  const activeCategory = AGE_CATEGORIES[selectedCategoryIndex];
   const isEmpty = !ingredientsText.trim();
   const showError = touched && isEmpty;
 
@@ -66,15 +128,15 @@ export default function IngredientInput({
     e.preventDefault();
     setTouched(true);
     if (isEmpty || isLoading) return;
-    console.log('[Form Submit] Raw Ingredients Input Payload:', ingredientsText);
-    onSubmit(ingredientsText, selectedAgeGroup, testMode === 'normal' ? null : testMode);
+    console.log('[Form Submit] Raw Input Payload:', ingredientsText);
+    onSubmit(ingredientsText, activeCategory.id, testMode === 'normal' ? null : testMode);
   };
 
   const handleSelectPreset = (presetText) => {
     console.log('[Preset Selected] Text:', presetText);
     setIngredientsText(presetText);
     setTouched(false);
-    onSubmit(presetText, selectedAgeGroup, testMode === 'normal' ? null : testMode);
+    onSubmit(presetText, activeCategory.id, testMode === 'normal' ? null : testMode);
   };
 
   return (
@@ -120,11 +182,11 @@ export default function IngredientInput({
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-transparent bg-clip-text dark:bg-gradient-to-r dark:from-white dark:via-slate-100 dark:to-indigo-200 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
           What’s in your fridge?
         </h1>
         <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2 mb-6 leading-relaxed font-semibold">
-          Search any dish name (e.g. <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"omelette"</strong>) or paste fridge ingredients. Our AI Chef will transform them into an interactive cooking sequence!
+          Search any dish name (e.g. <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"chole bhature"</strong>, <strong className="text-slate-900 dark:text-white">"khichdi"</strong>) or paste fridge ingredients!
         </p>
 
         {/* Recent Search History Dropdown Drawer */}
@@ -172,7 +234,7 @@ export default function IngredientInput({
                   setIngredientsText(e.target.value);
                   if (touched) setTouched(false);
                 }}
-                placeholder="e.g. veg pulao, 2 chicken breasts, garlic cloves, fresh spinach, basmati rice, eggs..."
+                placeholder="e.g. veg pulao, paneer butter masala, moong dal khichdi, palak paneer, oats upma..."
                 rows={3}
                 className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-500 text-base p-4 outline-none resize-none font-bold leading-relaxed"
                 autoFocus
@@ -191,27 +253,52 @@ export default function IngredientInput({
             )}
           </div>
 
-          {/* Age Group Selector */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-100 dark:bg-slate-900/90 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
-            <label className="text-xs font-black text-slate-900 dark:text-slate-200 flex items-center gap-1.5">
-              <Users2 className="w-4 h-4 text-indigo-500" />
-              Target Age Group for Nutrition Guidance:
-            </label>
-            <div className="flex gap-1.5">
-              {AGE_GROUPS.map((group) => (
+          {/* Age Group Life Stage Selector */}
+          <div className="space-y-2 bg-slate-100 dark:bg-slate-900/90 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-black text-slate-900 dark:text-slate-200 flex items-center gap-1.5">
+                <Users2 className="w-4 h-4 text-indigo-500" />
+                Select Life Stage for Age-Tailored Nutrition:
+              </label>
+              <span className="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400">
+                {activeCategory.label}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              {AGE_CATEGORIES.map((cat, idx) => (
                 <button
-                  key={group}
+                  key={cat.id}
                   type="button"
-                  onClick={() => setSelectedAgeGroup(group)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                    selectedAgeGroup === group
+                  onClick={() => setSelectedCategoryIndex(idx)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    selectedCategoryIndex === idx
                       ? 'bg-indigo-600 text-white shadow-md'
                       : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 border border-slate-300 dark:border-slate-700'
                   }`}
                 >
-                  {group}
+                  {cat.shortLabel}
                 </button>
               ))}
+            </div>
+
+            {/* Dynamic Preset Chips for Selected Age Category */}
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
+              <span className="text-[11px] font-extrabold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-2">
+                Recommended Dishes for {activeCategory.shortLabel}:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {activeCategory.dishes.map((dish, dIdx) => (
+                  <button
+                    key={dIdx}
+                    type="button"
+                    onClick={() => handleSelectPreset(dish.query)}
+                    className="text-xs bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-slate-900 dark:text-slate-200 border border-slate-300 dark:border-slate-700 px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-xs"
+                  >
+                    {dish.name}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -235,7 +322,7 @@ export default function IngredientInput({
             ) : (
               <>
                 <Utensils className="w-5 h-5" />
-                Generate Recipe ({selectedAgeGroup})
+                Generate Recipe ({activeCategory.shortLabel})
               </>
             )}
           </motion.button>
@@ -246,7 +333,7 @@ export default function IngredientInput({
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-amber-500" />
-              Popular Dish & Ingredient Presets
+              Featured Culinary Classics
             </h3>
             <span className="text-xs text-slate-600 dark:text-slate-400 font-bold">Click card to cook immediately</span>
           </div>
