@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff } from 'lucide-react';
+import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2 } from 'lucide-react';
 
 const AGE_CATEGORIES = [
   {
@@ -121,7 +121,13 @@ export default function IngredientInput({
   const [showHistory, setShowHistory] = useState(false);
   const [isListening, setIsListening] = useState(false);
 
+  // AI Image Scanner state
+  const [isScanningImage, setIsScanningImage] = useState(false);
+  const [scannedImagePreview, setScannedImagePreview] = useState(null);
+  const [scannedResult, setScannedResult] = useState(null);
+
   const recognitionRef = useRef(null);
+  const fileInputRef = useRef(null);
   const activeCategory = AGE_CATEGORIES[selectedCategoryIndex];
   const isEmpty = !ingredientsText.trim();
   const showError = touched && isEmpty;
@@ -175,6 +181,46 @@ export default function IngredientInput({
     }
   };
 
+  // AI Food Image Scanner Handler
+  const handleImageFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64Data = reader.result;
+      setScannedImagePreview(base64Data);
+      setIsScanningImage(true);
+      setScannedResult(null);
+
+      try {
+        const response = await fetch('/api/scan-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: base64Data, filename: file.name })
+        });
+
+        if (!response.ok) throw new Error('Image scan failed');
+
+        const scanData = await response.json();
+        setScannedResult(scanData);
+        setIsScanningImage(false);
+
+        // Auto populate text & predict recipe!
+        const dishToUse = scanData.detectedDish || scanData.detectedIngredients?.join(', ') || 'Vegetable Pulao';
+        setIngredientsText(dishToUse);
+        setTouched(false);
+
+        // Predict and open recipe
+        onSubmit(dishToUse, activeCategory.id, testMode === 'normal' ? null : testMode);
+      } catch (err) {
+        console.error('[Image Scanner Error]', err);
+        setIsScanningImage(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setTouched(true);
@@ -197,6 +243,16 @@ export default function IngredientInput({
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-3xl glass-panel rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl relative z-10 my-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
       >
+        {/* Hidden Camera/File Input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          accept="image/*"
+          capture="environment"
+          onChange={handleImageFileChange}
+          className="hidden"
+        />
+
         {/* Header Badge */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-xs font-bold uppercase">
@@ -233,8 +289,51 @@ export default function IngredientInput({
           What food do you have?
         </h1>
         <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2 mb-6 leading-relaxed font-semibold">
-          Type or speak any dish name (like <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"chole bhature"</strong>, <strong className="text-slate-900 dark:text-white">"khichdi"</strong>) or ingredients in your fridge!
+          Scan a food photo, speak, or type any dish name (like <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"paneer butter masala"</strong>)!
         </p>
+
+        {/* AI Food Image Scanner Card (If image uploaded/scanning) */}
+        {scannedImagePreview && (
+          <div className="mb-6 p-4 rounded-3xl bg-slate-900 text-slate-100 border border-indigo-500/40 shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-center gap-4">
+            {/* Image Thumbnail with Scanning Laser Line */}
+            <div className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-indigo-400 shrink-0 bg-slate-950">
+              <img src={scannedImagePreview} alt="Scanned Food" className="w-full h-full object-cover" />
+              {isScanningImage && (
+                <motion.div
+                  animate={{ y: [0, 110, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                  className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-indigo-400 to-emerald-400 shadow-md shadow-emerald-400"
+                />
+              )}
+            </div>
+
+            <div className="min-w-0 flex-1 text-center sm:text-left space-y-1">
+              <div className="flex items-center justify-center sm:justify-start gap-2">
+                <Camera className="w-4 h-4 text-emerald-400 animate-pulse" />
+                <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">
+                  {isScanningImage ? 'AI Scanning Food Photo...' : 'Food Identified!'}
+                </span>
+              </div>
+
+              {isScanningImage ? (
+                <p className="text-xs text-slate-300 font-bold">
+                  Analyzing food items & ingredients in your image to predict recipe...
+                </p>
+              ) : (
+                scannedResult && (
+                  <div>
+                    <h3 className="text-base font-black text-white">
+                      Detected: {scannedResult.detectedDish}
+                    </h3>
+                    <p className="text-xs text-slate-300 font-semibold mt-0.5">
+                      Ingredients found: {scannedResult.detectedIngredients?.join(', ')}
+                    </p>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Recent Search History */}
         <AnimatePresence>
@@ -271,7 +370,7 @@ export default function IngredientInput({
           )}
         </AnimatePresence>
 
-        {/* Form with Voice Input */}
+        {/* Form with Voice & Image Scanner Controls */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="relative">
             <div className={`glass-input rounded-2xl p-1 transition-all bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 relative ${showError ? 'ring-2 ring-rose-500 border-rose-500' : ''}`}>
@@ -281,25 +380,38 @@ export default function IngredientInput({
                   setIngredientsText(e.target.value);
                   if (touched) setTouched(false);
                 }}
-                placeholder="Type or click microphone to speak dish name e.g. veg pulao, paneer butter masala, eggs..."
+                placeholder="Scan photo, click microphone to speak, or type dish name..."
                 rows={3}
-                className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-500 text-base p-4 pr-16 outline-none resize-none font-bold leading-relaxed"
+                className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-500 text-base p-4 pr-28 outline-none resize-none font-bold leading-relaxed"
                 autoFocus
               />
 
-              {/* Voice Input Microphone Button */}
-              <button
-                type="button"
-                onClick={handleToggleVoiceInput}
-                title={isListening ? "Stop listening" : "Click to speak dish or ingredients"}
-                className={`absolute right-3.5 top-3.5 p-3 rounded-2xl transition-all cursor-pointer flex items-center justify-center ${
-                  isListening
-                    ? 'bg-rose-600 text-white animate-pulse shadow-lg ring-4 ring-rose-500/30'
-                    : 'bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-700'
-                }`}
-              >
-                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-              </button>
+              {/* Toolbar Buttons: Camera Photo Scanner + Voice Microphone */}
+              <div className="absolute right-3 top-3 flex items-center gap-1.5">
+                {/* AI Camera Image Scanner Button */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Scan food photo or take picture"
+                  className="p-2.5 rounded-xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-slate-700 border border-emerald-200 dark:border-slate-700 transition-all cursor-pointer flex items-center justify-center"
+                >
+                  <Camera className="w-5 h-5" />
+                </button>
+
+                {/* Voice Input Microphone Button */}
+                <button
+                  type="button"
+                  onClick={handleToggleVoiceInput}
+                  title={isListening ? "Stop listening" : "Click to speak dish or ingredients"}
+                  className={`p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center ${
+                    isListening
+                      ? 'bg-rose-600 text-white animate-pulse shadow-lg ring-4 ring-rose-500/30'
+                      : 'bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-700'
+                  }`}
+                >
+                  {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
 
             {/* Listening Status Banner */}
@@ -321,7 +433,7 @@ export default function IngredientInput({
                 className="flex items-center gap-1.5 text-rose-600 text-xs mt-2 font-black px-1"
               >
                 <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                Please type or speak a food or ingredient name.
+                Please scan a photo, speak, or type a food name.
               </motion.div>
             )}
           </div>
