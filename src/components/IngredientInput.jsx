@@ -73,7 +73,7 @@ const HERO_DISH_CARDS = [
     badge: 'Popular',
     query: 'Vegetable Pulao',
     photo: '/ingredient-images/vegetable.png',
-    cardBg: 'bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-500/40',
+    cardBg: 'bg-amber-50 dark:bg-slate-900 border-amber-200 dark:border-amber-500/40',
     badgeBg: 'bg-amber-600 text-white'
   },
   {
@@ -83,7 +83,7 @@ const HERO_DISH_CARDS = [
     badge: 'Rich & Spicy',
     query: 'Paneer Butter Masala',
     photo: '/ingredient-images/garlic.png',
-    cardBg: 'bg-rose-50 dark:bg-rose-950 border-rose-200 dark:border-rose-500/40',
+    cardBg: 'bg-rose-50 dark:bg-slate-900 border-rose-200 dark:border-rose-500/40',
     badgeBg: 'bg-rose-600 text-white'
   },
   {
@@ -93,7 +93,7 @@ const HERO_DISH_CARDS = [
     badge: 'Gut-Friendly',
     query: 'Moong Dal Khichdi',
     photo: '/ingredient-images/salt.png',
-    cardBg: 'bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-500/40',
+    cardBg: 'bg-yellow-50 dark:bg-slate-900 border-yellow-200 dark:border-yellow-500/40',
     badgeBg: 'bg-yellow-600 text-white'
   },
   {
@@ -103,7 +103,7 @@ const HERO_DISH_CARDS = [
     badge: 'Iron-Rich',
     query: 'Palak Paneer',
     photo: '/ingredient-images/spinach.png',
-    cardBg: 'bg-emerald-50 dark:bg-emerald-950 border-emerald-200 dark:border-emerald-500/40',
+    cardBg: 'bg-emerald-50 dark:bg-slate-900 border-emerald-200 dark:border-emerald-500/40',
     badgeBg: 'bg-emerald-600 text-white'
   }
 ];

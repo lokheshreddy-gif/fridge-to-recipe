@@ -72,10 +72,15 @@
   color: #0f172a !important;
 }
 
-/* 1. All Slate Background Containers in Light Theme convert to Light Slate */
+/* 1. All Slate & Dark Color Background Containers in Light Theme convert to Light Slate/Soft Tint */
 .light-theme [class*="bg-slate-950"],
 .light-theme [class*="bg-slate-900"],
-.light-theme [class*="bg-slate-800"] {
+.light-theme [class*="bg-slate-800"],
+.light-theme [class*="bg-amber-950"],
+.light-theme [class*="bg-rose-950"],
+.light-theme [class*="bg-yellow-950"],
+.light-theme [class*="bg-emerald-950"],
+.light-theme [class*="bg-indigo-950"] {
   background-color: #f1f5f9 !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
@@ -83,9 +88,19 @@
 
 .light-theme [class*="bg-slate-950"] *,
 .light-theme [class*="bg-slate-900"] *,
-.light-theme [class*="bg-slate-800"] * {
+.light-theme [class*="bg-slate-800"] *,
+.light-theme [class*="bg-amber-950"] *,
+.light-theme [class*="bg-rose-950"] *,
+.light-theme [class*="bg-yellow-950"] *,
+.light-theme [class*="bg-emerald-950"] * {
   color: #0f172a !important;
 }
+
+/* Soft Tint Cards in Light Theme */
+.light-theme .bg-amber-50 { background-color: #fffbeb !important; border-color: #fde68a !important; }
+.light-theme .bg-rose-50 { background-color: #fff1f2 !important; border-color: #fecdd3 !important; }
+.light-theme .bg-yellow-50 { background-color: #fefce8 !important; border-color: #fef08a !important; }
+.light-theme .bg-emerald-50 { background-color: #ecfdf5 !important; border-color: #a7f3d0 !important; }
 
 /* 2. Force ALL Headings & Titles in Light Theme to be Dark Slate / Black */
 .light-theme h1,
@@ -135,7 +150,7 @@
   color: #94a3b8 !important;
 }
 
-/* 5. Primary Active Gradient Buttons & Indigo Buttons in Light Theme */
+/* 5. Primary Active Gradient Buttons & Badges in Light Theme */
 .light-theme .bg-gradient-to-r {
   color: #ffffff !important;
 }
@@ -144,12 +159,19 @@
   color: #ffffff !important;
 }
 
-.light-theme .bg-indigo-600 {
-  background-color: #4f46e5 !important;
+.light-theme .bg-indigo-600,
+.light-theme .bg-amber-600,
+.light-theme .bg-rose-600,
+.light-theme .bg-yellow-600,
+.light-theme .bg-emerald-600 {
   color: #ffffff !important;
 }
 
-.light-theme .bg-indigo-600 * {
+.light-theme .bg-indigo-600 *,
+.light-theme .bg-amber-600 *,
+.light-theme .bg-rose-600 *,
+.light-theme .bg-yellow-600 *,
+.light-theme .bg-emerald-600 * {
   color: #ffffff !important;
 }
 
