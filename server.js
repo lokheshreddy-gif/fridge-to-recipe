@@ -11,11 +11,11 @@ app.use(cors());
 app.use(express.json());
 
 const SYSTEM_PROMPT = `You are a world-class professional executive chef and culinary expert AI.
-The user will provide a list of ingredients they have available in their fridge/pantry, and a target age group.
-Your task is to transform those specific ingredients into a complete, delicious, submission-ready recipe with estimated nutrition data.
+The user will provide a list of ingredients or a dish name (e.g. "veg pulao", "chicken curry", "omelette"), and a target age group.
+Your task is to transform those specific ingredients/dish into a complete, delicious, submission-ready recipe with estimated nutrition data.
 
 CRITICAL INSTRUCTION:
-You MUST create a recipe that uses the SPECIFIC ingredients listed by the user as the primary components.
+You MUST create a recipe that uses the SPECIFIC ingredients or dish listed by the user as the primary components.
 Do NOT default to a generic dish or a chicken recipe unless the user specifically lists chicken.
 The recipe title, ingredients list, and step instructions MUST directly reflect and incorporate the ingredients provided by the user.
 
@@ -67,23 +67,54 @@ RULES:
 
 /**
  * Dynamic fallback recipe generator for offline/testing mode when no live API key is configured.
- * Generates distinct recipes matching the specific ingredients provided in input.
+ * Generates distinct recipes matching the specific ingredients or dish provided in input.
  */
 function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
   const text = ingredientsInput.toLowerCase();
 
-  // Helper location assigner
   const assignLocation = (name = '') => {
     const term = name.toLowerCase();
-    if (term.includes('egg') || term.includes('milk') || term.includes('butter') || term.includes('cheese') || term.includes('cream')) return 'Fridge — dairy shelf';
-    if (term.includes('spinach') || term.includes('broccoli') || term.includes('tomato') || term.includes('lemon') || term.includes('herb') || term.includes('chive')) return 'Produce drawer';
+    if (term.includes('egg') || term.includes('milk') || term.includes('butter') || term.includes('cheese') || term.includes('paneer') || term.includes('cream')) return 'Fridge — dairy shelf';
+    if (term.includes('spinach') || term.includes('broccoli') || term.includes('tomato') || term.includes('lemon') || term.includes('carrot') || term.includes('peas') || term.includes('mint')) return 'Produce drawer';
     if (term.includes('chicken') || term.includes('beef') || term.includes('pork') || term.includes('tofu') || term.includes('meat')) return 'Fridge — meat shelf';
-    if (term.includes('salt') || term.includes('pepper') || term.includes('chili') || term.includes('ginger') || term.includes('spice')) return 'Spice rack';
-    if (term.includes('pasta') || term.includes('spaghetti') || term.includes('oil') || term.includes('sauce') || term.includes('rice')) return 'Pantry';
+    if (term.includes('salt') || term.includes('pepper') || term.includes('chili') || term.includes('ginger') || term.includes('garlic') || term.includes('spice') || term.includes('cardamom') || term.includes('cinnamon')) return 'Spice rack';
+    if (term.includes('pasta') || term.includes('spaghetti') || term.includes('oil') || term.includes('sauce') || term.includes('rice') || term.includes('basmati')) return 'Pantry';
     return 'Pantry';
   };
 
-  // 1. Morning Omelette / Eggs pattern
+  // 1. Veg Pulao / Biryani / Rice pattern
+  if (text.includes('pulao') || text.includes('biryani') || text.includes('veg pulao') || text.includes('rice') || text.includes('fried rice')) {
+    return {
+      title: 'Fragrant Royal Vegetable Pulao',
+      description: 'A rich, aromatic 20-minute basmati rice dish infused with whole spices, tender green peas, carrots, and golden ghee.',
+      baseServings: 2,
+      prepTimeMinutes: 10,
+      cookTimeMinutes: 15,
+      ingredients: [
+        { id: 'ing-1', name: 'Aged Basmati Rice', amount: 1.5, unit: 'cups', icon: 'pasta', commonlyAvailable: 'Pantry' },
+        { id: 'ing-2', name: 'Green Peas', amount: 0.75, unit: 'cup', icon: 'vegetable', commonlyAvailable: 'Produce drawer' },
+        { id: 'ing-3', name: 'Diced Carrots', amount: 0.75, unit: 'cup', icon: 'vegetable', commonlyAvailable: 'Produce drawer' },
+        { id: 'ing-4', name: 'Pure Ghee or Butter', amount: 2, unit: 'tbsp', icon: 'oil', commonlyAvailable: 'Fridge door' },
+        { id: 'ing-5', name: 'Whole Spices (Cardamom, Clove, Cinnamon)', amount: 1, unit: 'tbsp', icon: 'salt', commonlyAvailable: 'Spice rack' },
+        { id: 'ing-6', name: 'Fresh Mint & Sea Salt', amount: 1, unit: 'tsp', icon: 'salt', commonlyAvailable: 'Spice rack' }
+      ],
+      steps: [
+        { id: 'step-1', instruction: 'Rinse basmati rice thoroughly under cold water until clear, then soak in water for 10 minutes.', durationMinutes: 5 },
+        { id: 'step-2', instruction: 'Melt ghee in a deep pot over medium heat. Add whole cardamom, cloves, and cinnamon stick, sautéing for 1 minute until fragrant.', durationMinutes: 2 },
+        { id: 'step-3', instruction: 'Add diced carrots, green peas, and soaked basmati rice. Gently stir for 2 minutes to toast rice grains in spices.', durationMinutes: 3 },
+        { id: 'step-4', instruction: 'Pour 3 cups of water, add sea salt, bring to a boil, then cover and simmer on low heat for 12 minutes until fluffily cooked. Garnish with fresh mint.', durationMinutes: 12 }
+      ],
+      swaps: [
+        { ingredient: 'Aged Basmati Rice', alternatives: ['Jasmine Rice', 'Brown Rice', 'Quinoa'] },
+        { ingredient: 'Green Peas', alternatives: ['Edamame', 'Sweet Corn', 'Green Beans'] },
+        { ingredient: 'Pure Ghee', alternatives: ['Coconut Oil', 'Unsalted Butter'] }
+      ],
+      nutrition: { caloriesPerServing: 390, proteinGrams: 9, carbsGrams: 64, fatGrams: 11 },
+      ageNote: `Tailored for ${ageGroup}s: Easy-to-digest aromatic complex carbs providing clean, lasting energy.`
+    };
+  }
+
+  // 2. Morning Omelette / Eggs pattern
   if (text.includes('egg') || text.includes('omelette') || text.includes('cheddar') || text.includes('chive')) {
     return {
       title: 'Fluffy Cheddar & Herb Omelette',
@@ -113,7 +144,7 @@ function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
     };
   }
 
-  // 2. Pasta / Aglio e Olio pattern
+  // 3. Pasta / Aglio e Olio pattern
   if (text.includes('pasta') || text.includes('spaghetti') || text.includes('chili') || text.includes('parmesan')) {
     return {
       title: 'Garlic Olive Oil & Chili Pasta (Aglio e Olio)',
@@ -143,7 +174,7 @@ function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
     };
   }
 
-  // 3. Tofu / Broccoli Stir-fry pattern
+  // 4. Tofu / Broccoli Stir-fry pattern
   if (text.includes('tofu') || text.includes('broccoli') || text.includes('soy') || text.includes('ginger')) {
     return {
       title: 'Ginger Soy Crispy Tofu & Broccoli Stir-Fry',
@@ -173,7 +204,7 @@ function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
     };
   }
 
-  // 4. Default Dynamic Fallback matching parsed items
+  // 5. Default Dynamic Fallback matching parsed items
   const items = ingredientsInput.split(/,|\n/).map((s) => s.trim()).filter(Boolean);
   const primaryItem = items[0] || 'Seasonal Veggies';
   const secondaryItem = items[1] || 'Aromatic Herbs';
@@ -184,7 +215,7 @@ function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
     baseServings: 2,
     prepTimeMinutes: 10,
     cookTimeMinutes: 12,
-    ingredients: items.slice(0, 5).map((item, idx) => ({
+    ingredients: (items.length > 0 ? items : [primaryItem, secondaryItem]).slice(0, 6).map((item, idx) => ({
       id: `ing-${idx + 1}`,
       name: item,
       amount: idx === 0 ? 2 : 1,
