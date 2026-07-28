@@ -557,7 +557,7 @@ export default function IngredientInput({
                   onClick={() => setSelectedCategoryIndex(idx)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
                     selectedCategoryIndex === idx
-                      ? 'bg-indigo-600 text-white shadow-md'
+                      ? 'age-tab-active bg-indigo-600 text-white shadow-md'
                       : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 hover:text-indigo-600 border border-slate-300 dark:border-slate-700'
                   }`}
                 >

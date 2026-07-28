@@ -127,7 +127,7 @@
 }
 
 .light-theme p,
-.light-theme span:not(.orbit-ingredient-title),
+.light-theme span:not(.orbit-ingredient-title):not(.age-tab-active *),
 .light-theme label,
 .light-theme div:not([class*="text-"]):not(.pointer-events-none *):not(.orbit-ingredient-card *) {
   color: #0f172a !important;
@@ -136,10 +136,28 @@
 .light-theme .text-slate-100,
 .light-theme .text-slate-200,
 .light-theme .text-slate-300,
-.light-theme .text-slate-400,
-.light-theme .text-white {
+.light-theme .text-slate-400 {
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
+}
+
+.light-theme .text-white:not(.age-tab-active):not(.age-tab-active *):not(button[type="submit"]):not(button[type="submit"] *):not([class*="bg-indigo-600"]):not([class*="bg-indigo-600"] *):not([class*="bg-rose-600"]):not([class*="bg-rose-600"] *):not([class*="bg-emerald-600"]):not([class*="bg-emerald-600"] *) {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* Explicit PURE WHITE text for active age tabs, submit buttons, and primary solid action buttons in Light Mode */
+.light-theme .age-tab-active,
+.light-theme .age-tab-active *,
+.light-theme button[type="submit"],
+.light-theme button[type="submit"] *,
+.light-theme .bg-indigo-600,
+.light-theme .bg-indigo-600 *,
+.light-theme [class*="bg-gradient-to-r"],
+.light-theme [class*="bg-gradient-to-r"] * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 900 !important;
 }
 
 .light-theme .text-indigo-400,
