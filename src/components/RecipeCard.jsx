@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Utensils, ChefHat, Sparkles } from 'lucide-react';
+import { ArrowLeft, Clock, Utensils, ChefHat, Sparkles, Film } from 'lucide-react';
 import ServingsControl from './ServingsControl.jsx';
 import IngredientList from './IngredientList.jsx';
 import StepList from './StepList.jsx';
+import AnimatedDishVideo from './AnimatedDishVideo.jsx';
 
 export default function RecipeCard({ recipe, onReset }) {
   const [servings, setServings] = useState(recipe.baseServings || 2);
@@ -36,9 +37,9 @@ export default function RecipeCard({ recipe, onReset }) {
   };
 
   return (
-    <div className="min-h-dvh w-full flex flex-col bg-slate-950 text-slate-100 overflow-y-auto">
+    <div className="min-h-dvh w-full flex flex-col bg-slate-950 text-slate-100 pb-16">
       {/* Top Header Bar */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md">
         <button
           type="button"
           onClick={onReset}
@@ -121,7 +122,12 @@ export default function RecipeCard({ recipe, onReset }) {
             />
           </motion.div>
 
-          {/* Section 3 & 4: Two-column Desktop Layout (Ingredients Left, Steps Right) */}
+          {/* Section 3: Animated Reference Cooking Video Component */}
+          <motion.div variants={itemVariants}>
+            <AnimatedDishVideo recipe={recipe} />
+          </motion.div>
+
+          {/* Section 4 & 5: Two-column Desktop Layout (Ingredients Left, Steps Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
             {/* Left Column: Scalable Ingredients & Swaps */}
             <motion.div variants={itemVariants} className="lg:col-span-5 space-y-6">

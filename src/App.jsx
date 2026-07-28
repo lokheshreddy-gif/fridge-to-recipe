@@ -114,7 +114,7 @@ export default function App() {
   };
 
   return (
-    <div className="h-full w-full bg-slate-950 text-slate-100 overflow-hidden relative font-sans">
+    <div className="min-h-dvh w-full bg-slate-950 text-slate-100 relative font-sans overflow-y-auto">
       <AnimatePresence mode="wait">
         {appState === 'INPUT' && (
           <motion.div
@@ -123,7 +123,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="h-full w-full"
+            className="min-h-dvh w-full"
           >
             <IngredientInput onSubmit={handleGenerateRecipe} isLoading={false} />
           </motion.div>
@@ -136,7 +136,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="h-full w-full"
+            className="min-h-dvh w-full"
           >
             <LoadingState onCancel={handleCancelRequest} />
           </motion.div>
@@ -149,7 +149,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="h-full w-full"
+            className="min-h-dvh w-full"
           >
             <ErrorState error={errorMessage} onRetry={handleReset} />
           </motion.div>
@@ -162,7 +162,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="h-full w-full overflow-hidden"
+            className="min-h-dvh w-full"
           >
             <RecipeCard recipe={recipeData} onReset={handleReset} />
           </motion.div>
