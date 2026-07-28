@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ChefHat, Sparkles, Utensils, Clock, Layers, Flame } from 'lucide-react';
 import ServingsControl from './ServingsControl.jsx';
-import { getIngredientIcon } from './icons/AnimatedIcons.jsx';
+import IngredientImage from './IngredientImage.jsx';
 
 export default function IngredientsFirstView({ recipe, onStartCooking, onReset }) {
   const [servings, setServings] = useState(recipe.baseServings || 2);
@@ -121,21 +121,22 @@ export default function IngredientsFirstView({ recipe, onStartCooking, onReset }
                 variants={cardVariants}
                 className="glass-card rounded-2xl p-4 border border-slate-700/60 flex items-center justify-between gap-3 shadow-lg hover:border-slate-500 transition-all duration-200"
               >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-900/90 border border-slate-700/80 flex items-center justify-center shrink-0 shadow-inner">
-                    {getIngredientIcon(ing.icon, ing.name)}
-                  </div>
-                  <div className="truncate">
-                    <span className="text-sm font-bold text-slate-100 block truncate">
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  {/* Real Photographic Ingredient Thumbnail with Animated SVG Fallback */}
+                  <IngredientImage iconKeyword={ing.icon} name={ing.name} className="w-12 h-12" />
+
+                  {/* Wrapped, un-truncated full ingredient name */}
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs sm:text-sm font-bold text-slate-100 leading-snug break-words block">
                       {ing.name}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">
+                    <span className="text-[11px] text-slate-400 font-medium mt-0.5 block">
                       Item #{idx + 1}
                     </span>
                   </div>
                 </div>
 
-                <div className="px-3 py-1.5 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-extrabold text-sm shrink-0">
+                <div className="px-3 py-1.5 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-extrabold text-xs sm:text-sm shrink-0">
                   {formatAmount(ing.amount)} {ing.unit}
                 </div>
               </motion.div>

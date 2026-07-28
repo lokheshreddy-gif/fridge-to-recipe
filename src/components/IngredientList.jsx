@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, RefreshCw, Layers } from 'lucide-react';
-import { getIngredientIcon } from './icons/AnimatedIcons.jsx';
+import IngredientImage from './IngredientImage.jsx';
 
 export default function IngredientList({ ingredients, baseServings, currentServings, swaps = [] }) {
   const [expandedSwaps, setExpandedSwaps] = useState({});
@@ -23,7 +23,6 @@ export default function IngredientList({ ingredients, baseServings, currentServi
     if (!baseAmount || isNaN(baseAmount)) return '';
     const scaled = (baseAmount * currentServings) / baseServings;
     
-    // Format fractions nicely (e.g. 0.5 -> 1/2, 0.25 -> 1/4, 0.33 -> 1/3, 0.75 -> 3/4)
     const whole = Math.floor(scaled);
     const remainder = scaled - whole;
     
@@ -32,7 +31,6 @@ export default function IngredientList({ ingredients, baseServings, currentServi
     if (Math.abs(remainder - 0.75) < 0.05) return whole > 0 ? `${whole} ¾` : '¾';
     if (Math.abs(remainder - 0.33) < 0.05) return whole > 0 ? `${whole} ⅓` : '⅓';
     
-    // Default to clean decimal rounded to 2 places if necessary
     return Number(scaled.toFixed(scaled % 1 === 0 ? 0 : 2));
   };
 
@@ -68,28 +66,26 @@ export default function IngredientList({ ingredients, baseServings, currentServi
                   alternatives ? 'cursor-pointer hover:bg-slate-800/80' : ''
                 }`}
               >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  {/* Animated SVG Icon Container */}
-                  <div className="w-10 h-10 rounded-xl bg-slate-900/90 border border-slate-700/80 flex items-center justify-center shrink-0 shadow-inner">
-                    {getIngredientIcon(ing.icon, ing.name)}
-                  </div>
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  {/* Real Photographic Ingredient Thumbnail */}
+                  <IngredientImage iconKeyword={ing.icon} name={ing.name} className="w-10 h-10" />
 
-                  <div className="truncate">
-                    <span className="text-sm font-semibold text-slate-100 block truncate">
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs sm:text-sm font-semibold text-slate-100 block break-words leading-snug">
                       {ing.name}
                     </span>
                     {alternatives && (
                       <span className="text-[11px] text-indigo-400 font-medium flex items-center gap-1 mt-0.5">
                         <RefreshCw className="w-3 h-3" />
-                        {alternatives.length} swap suggestions available
+                        {alternatives.length} swap suggestions
                       </span>
                     )}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
-                  {/* Amount Badge with live calculation */}
-                  <div className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-bold text-sm">
+                  {/* Amount Badge */}
+                  <div className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-bold text-xs sm:text-sm">
                     {formatAmount(ing.amount)} {ing.unit}
                   </div>
 
@@ -105,7 +101,7 @@ export default function IngredientList({ ingredients, baseServings, currentServi
                 </div>
               </div>
 
-              {/* Collapsible Swap Suggestions Accordion */}
+              {/* Collapsible Swap Accordion */}
               <AnimatePresence>
                 {isExpanded && alternatives && (
                   <motion.div
