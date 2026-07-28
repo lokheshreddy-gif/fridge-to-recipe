@@ -3,12 +3,12 @@ import { motion } from 'framer-motion';
 import IngredientImage from './IngredientImage.jsx';
 
 /**
- * Parses instruction text to identify mentioned recipe ingredients and the primary culinary action
+ * Parses instruction text to identify mentioned recipe ingredients and the primary cooking action
  */
 function parseStepContext(instruction = '', ingredientsList = []) {
   const text = instruction.toLowerCase();
 
-  // 1. Detect matching ingredients from recipe ingredients list (case-insensitive, length >= 2)
+  // 1. Detect matching ingredients from recipe ingredients list
   const matchedIngredients = ingredientsList.filter((ing) => {
     if (!ing || !ing.name) return false;
     const name = ing.name.toLowerCase();
@@ -39,7 +39,7 @@ function parseStepContext(instruction = '', ingredientsList = []) {
 export default function CookingScene({ step, allIngredients = [] }) {
   const { matchedIngredients, actionType } = parseStepContext(step?.instruction || '', allIngredients);
 
-  // Robust display ingredients selection — ALWAYS guaranteed non-empty!
+  // Robust display ingredients selection
   let displayIngredients = matchedIngredients.length > 0 
     ? matchedIngredients.slice(0, 3) 
     : (allIngredients.length > 0 ? allIngredients.slice(0, 3) : []);
@@ -72,7 +72,7 @@ export default function CookingScene({ step, allIngredients = [] }) {
 
       {/* BACKGROUND PARTICLES & EFFECT LAYER */}
       
-      {/* Sizzling Sparks & Pop Droplets for Searing / Sauteing */}
+      {/* Sizzling Sparks for Frying */}
       {(actionType === 'sear' || actionType === 'default') && (
         <div className="absolute inset-0 pointer-events-none">
           {[...Array(8)].map((_, i) => (
@@ -97,7 +97,7 @@ export default function CookingScene({ step, allIngredients = [] }) {
         </div>
       )}
 
-      {/* Steam Clouds & Boiling Bubbles for Boiling */}
+      {/* Steam & Bubbles for Boiling */}
       {actionType === 'boil' && (
         <div className="absolute inset-0 pointer-events-none">
           {[...Array(8)].map((_, i) => (
@@ -138,7 +138,7 @@ export default function CookingScene({ step, allIngredients = [] }) {
         </div>
       )}
 
-      {/* Oven Heating Elements for Baking */}
+      {/* Oven Heating for Baking */}
       {actionType === 'bake' && (
         <motion.div
           animate={{ opacity: [0.4, 0.9, 0.4] }}
@@ -147,7 +147,7 @@ export default function CookingScene({ step, allIngredients = [] }) {
         />
       )}
 
-      {/* Animated Chef Knife Slicing for Chopping */}
+      {/* Knife Slicing for Chopping */}
       {actionType === 'chop' && (
         <motion.div
           animate={{
@@ -166,7 +166,7 @@ export default function CookingScene({ step, allIngredients = [] }) {
       {/* COOKING VESSEL CONTAINER */}
       <div className="relative z-10 flex flex-col items-center justify-center mt-6">
         
-        {/* Vessel Graphic (Pan, Pot, Bowl, Board) */}
+        {/* Vessel Graphic */}
         {actionType === 'sear' && (
           <div className="relative w-72 h-28 bg-slate-900 border-4 border-slate-700 rounded-b-3xl shadow-2xl flex items-center justify-center">
             <div className="absolute -left-14 top-3 w-14 h-5 bg-slate-800 border-2 border-slate-700 rounded-l-md" />
@@ -212,10 +212,9 @@ export default function CookingScene({ step, allIngredients = [] }) {
           </div>
         )}
 
-        {/* CONTINUOUS ORBITAL MIXING / STIRRING INGREDIENTS LAYER */}
+        {/* CONTINUOUS ORBITAL MIXING INGREDIENTS LAYER */}
         <div className="absolute inset-0 flex items-center justify-center gap-2 z-20 pointer-events-none">
           {displayIngredients.map((ing, idx) => {
-            // Calculate orbital mixing paths based on ingredient index
             const isFirst = idx === 0;
             const isSecond = idx === 1;
 
@@ -235,7 +234,6 @@ export default function CookingScene({ step, allIngredients = [] }) {
                   opacity: 1
                 }}
                 transition={{
-                  // Drop-in entry phase
                   y: { duration: 2.2, repeat: Infinity, ease: 'easeInOut', delay: idx * 0.1 },
                   x: { duration: 2.2, repeat: Infinity, ease: 'easeInOut', delay: idx * 0.1 },
                   rotate: { duration: 2.5, repeat: Infinity, ease: 'easeInOut' },
@@ -256,7 +254,7 @@ export default function CookingScene({ step, allIngredients = [] }) {
           })}
         </div>
 
-        {/* ANIMATED STIRRING WOODEN SPOON / SPATULA OVERLAY */}
+        {/* ANIMATED STIRRING SPOON OVERLAY */}
         <motion.div
           animate={{
             x: [-35, 35, -35],
@@ -270,34 +268,31 @@ export default function CookingScene({ step, allIngredients = [] }) {
           }}
           className="absolute z-30 pointer-events-none -top-6"
         >
-          {/* Stirring Wooden Spoon Graphic */}
           <div className="relative w-8 h-36 flex flex-col items-center opacity-90 drop-shadow-2xl">
-            {/* Spoon Head */}
             <div className="w-9 h-12 bg-amber-800 border-2 border-amber-600 rounded-full shadow-md" />
-            {/* Spoon Handle */}
             <div className="w-3 h-24 bg-amber-900 border border-amber-700 rounded-b-md -mt-2" />
           </div>
         </motion.div>
 
       </div>
 
-      {/* TOP SCENE TYPE BADGE */}
+      {/* SIMPLE ENGLISH TOP SCENE BADGE */}
       <div className="absolute top-3 left-3 z-30 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-slate-900/90 border border-slate-700/80 text-[11px] font-black text-slate-100 shadow-md">
         <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
         <span className="uppercase tracking-wider">
           {actionType === 'sear'
-            ? '🔥 Searing & Frying Pan'
+            ? '🔥 Cooking in Pan'
             : actionType === 'boil'
-            ? '🍲 Simmering Stockpot'
+            ? '🍲 Boiling in Pot'
             : actionType === 'mix'
-            ? '🥣 Active Mixing & Whisking Bowl'
+            ? '🥣 Mixing in Bowl'
             : actionType === 'bake'
-            ? '🔥 Oven Roasting'
+            ? '🔥 Oven Cooking'
             : actionType === 'chop'
-            ? '🔪 Knife Chopping Board'
+            ? '🔪 Cutting Board'
             : actionType === 'plate'
-            ? '🍽️ Gourmet Plating'
-            : '🍳 Culinary Cooking Scene'}
+            ? '🍽️ Ready to Eat'
+            : '🍳 Cooking Scene'}
         </span>
       </div>
 

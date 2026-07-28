@@ -5,8 +5,8 @@ import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Fla
 const AGE_CATEGORIES = [
   {
     id: 'Toddler',
-    label: 'Toddlers & Infants (Ages 1–3)',
-    shortLabel: 'Ages 1–3 (Toddler)',
+    label: 'Babies & Toddlers (Ages 1–3)',
+    shortLabel: 'Ages 1–3 (Baby)',
     dishes: [
       { name: '🍲 Moong Dal Khichdi', query: 'Moong Dal Khichdi' },
       { name: '🍎 Apple Ragi Porridge', query: 'Apple Ragi Porridge' },
@@ -17,7 +17,7 @@ const AGE_CATEGORIES = [
   },
   {
     id: 'Kid',
-    label: 'Young Kids (Ages 4–12)',
+    label: 'Kids (Ages 4–12)',
     shortLabel: 'Ages 4–12 (Kids)',
     dishes: [
       { name: '⚪ Mini Idlis', query: 'Mini Idlis' },
@@ -29,7 +29,7 @@ const AGE_CATEGORIES = [
   },
   {
     id: 'Teen',
-    label: 'Teens & Young Adults (Ages 13–25)',
+    label: 'Teens & Students (Ages 13–25)',
     shortLabel: 'Ages 13–25 (Teens)',
     dishes: [
       { name: '🥘 Paneer Butter Masala', query: 'Paneer Butter Masala' },
@@ -53,7 +53,7 @@ const AGE_CATEGORIES = [
   },
   {
     id: 'Senior',
-    label: 'Seniors & Older Adults (Ages 51+)',
+    label: 'Seniors (Ages 51+)',
     shortLabel: 'Ages 51+ (Senior)',
     dishes: [
       { name: '🌾 Oats Upma', query: 'Oats Upma' },
@@ -68,8 +68,8 @@ const AGE_CATEGORIES = [
 const HERO_DISH_CARDS = [
   {
     id: 'pulao',
-    title: 'Veg Pulao & Basmati Rice',
-    desc: 'Basmati rice, green peas, carrots, ghee & spices',
+    title: 'Veg Pulao & Rice',
+    desc: 'Rice, green peas, carrots, ghee and simple spices',
     badge: 'Popular',
     query: 'Vegetable Pulao',
     photo: '/ingredient-images/vegetable.png',
@@ -79,8 +79,8 @@ const HERO_DISH_CARDS = [
   {
     id: 'paneer_butter',
     title: 'Paneer Butter Masala',
-    desc: 'Cottage cheese in silky tomato cream gravy',
-    badge: 'Rich & Spicy',
+    desc: 'Soft paneer in smooth tomato sauce',
+    badge: 'Tasty',
     query: 'Paneer Butter Masala',
     photo: '/ingredient-images/garlic.png',
     cardBg: 'bg-rose-50 dark:bg-slate-900 border-rose-200 dark:border-rose-500/40',
@@ -89,8 +89,8 @@ const HERO_DISH_CARDS = [
   {
     id: 'khichdi',
     title: 'Moong Dal Khichdi',
-    desc: 'Soothing yellow moong dal & basmati in ghee',
-    badge: 'Gut-Friendly',
+    desc: 'Soft yellow dal and rice with ghee',
+    badge: 'Light Food',
     query: 'Moong Dal Khichdi',
     photo: '/ingredient-images/salt.png',
     cardBg: 'bg-yellow-50 dark:bg-slate-900 border-yellow-200 dark:border-yellow-500/40',
@@ -98,9 +98,9 @@ const HERO_DISH_CARDS = [
   },
   {
     id: 'palak_paneer',
-    title: 'Garlic Palak Paneer',
-    desc: 'Spinach puree with garlic & paneer cubes',
-    badge: 'Iron-Rich',
+    title: 'Palak Paneer',
+    desc: 'Green spinach sauce with soft paneer cubes',
+    badge: 'Healthy',
     query: 'Palak Paneer',
     photo: '/ingredient-images/spinach.png',
     cardBg: 'bg-emerald-50 dark:bg-slate-900 border-emerald-200 dark:border-emerald-500/40',
@@ -128,12 +128,10 @@ export default function IngredientInput({
     e.preventDefault();
     setTouched(true);
     if (isEmpty || isLoading) return;
-    console.log('[Form Submit] Raw Input Payload:', ingredientsText);
     onSubmit(ingredientsText, activeCategory.id, testMode === 'normal' ? null : testMode);
   };
 
   const handleSelectPreset = (presetText) => {
-    console.log('[Preset Selected] Text:', presetText);
     setIngredientsText(presetText);
     setTouched(false);
     onSubmit(presetText, activeCategory.id, testMode === 'normal' ? null : testMode);
@@ -152,11 +150,10 @@ export default function IngredientInput({
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-xs font-bold uppercase">
             <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
-            AI Culinary Studio
+            Easy Recipe Generator
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Recent History Toggle */}
             {recentHistory.length > 0 && (
               <button
                 type="button"
@@ -168,7 +165,6 @@ export default function IngredientInput({
               </button>
             )}
 
-            {/* Test mode selector */}
             <select
               value={testMode}
               onChange={(e) => setTestMode(e.target.value)}
@@ -183,13 +179,13 @@ export default function IngredientInput({
 
         {/* Title */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          What’s in your fridge?
+          What food do you have?
         </h1>
         <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2 mb-6 leading-relaxed font-semibold">
-          Search any dish name (e.g. <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"chole bhature"</strong>, <strong className="text-slate-900 dark:text-white">"khichdi"</strong>) or paste fridge ingredients!
+          Type any dish name (like <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"chole bhature"</strong>, <strong className="text-slate-900 dark:text-white">"khichdi"</strong>) or type ingredients in your fridge!
         </p>
 
-        {/* Recent Search History Dropdown Drawer */}
+        {/* Recent Search History */}
         <AnimatePresence>
           {showHistory && recentHistory.length > 0 && (
             <motion.div
@@ -201,9 +197,9 @@ export default function IngredientInput({
               <div className="flex items-center justify-between font-extrabold text-slate-900 dark:text-slate-200 mb-2">
                 <span className="flex items-center gap-1.5">
                   <History className="w-3.5 h-3.5 text-indigo-500" />
-                  Recent Search History
+                  Recent Searches
                 </span>
-                <span className="text-[10px] text-slate-500 font-semibold">Click to re-populate</span>
+                <span className="text-[10px] text-slate-500 font-semibold">Click to select</span>
               </div>
               <div className="space-y-1.5 max-h-36 overflow-y-auto">
                 {recentHistory.map((item, idx) => (
@@ -234,7 +230,7 @@ export default function IngredientInput({
                   setIngredientsText(e.target.value);
                   if (touched) setTouched(false);
                 }}
-                placeholder="e.g. veg pulao, paneer butter masala, moong dal khichdi, palak paneer, oats upma..."
+                placeholder="Type here e.g. veg pulao, paneer butter masala, rice, eggs, tomato..."
                 rows={3}
                 className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-500 text-base p-4 outline-none resize-none font-bold leading-relaxed"
                 autoFocus
@@ -248,17 +244,17 @@ export default function IngredientInput({
                 className="flex items-center gap-1.5 text-rose-600 text-xs mt-2 font-black px-1"
               >
                 <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                Please enter a dish name or ingredient before cooking.
+                Please type a food or ingredient name.
               </motion.div>
             )}
           </div>
 
-          {/* Age Group Life Stage Selector Container */}
+          {/* Age Group Selector */}
           <div className="space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
             <div className="flex items-center justify-between mb-1">
               <label className="text-xs font-black text-slate-900 dark:text-slate-200 flex items-center gap-1.5">
                 <Users2 className="w-4 h-4 text-indigo-500" />
-                Select Life Stage for Age-Tailored Nutrition:
+                Select Age Group:
               </label>
               <span className="text-[11px] font-black text-indigo-600 dark:text-indigo-400">
                 {activeCategory.label}
@@ -282,10 +278,10 @@ export default function IngredientInput({
               ))}
             </div>
 
-            {/* Dynamic Preset Chips for Selected Age Category */}
+            {/* Suggested Dishes */}
             <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
               <span className="text-[11px] font-black text-slate-700 dark:text-slate-400 uppercase tracking-wider block mb-2">
-                Recommended Dishes for {activeCategory.shortLabel}:
+                Suggested Dishes for {activeCategory.shortLabel}:
               </span>
               <div className="flex flex-wrap gap-2">
                 {activeCategory.dishes.map((dish, dIdx) => (
@@ -317,25 +313,25 @@ export default function IngredientInput({
             {isLoading ? (
               <>
                 <RefreshCw className="w-5 h-5 animate-spin" />
-                Crafting Recipe...
+                Making Recipe...
               </>
             ) : (
               <>
                 <Utensils className="w-5 h-5" />
-                Generate Recipe ({activeCategory.shortLabel})
+                Make Recipe ({activeCategory.shortLabel})
               </>
             )}
           </motion.button>
         </form>
 
-        {/* SWIGGY-INSPIRED HERO INSPIRATION CARDS UNDER SEARCH BAR */}
+        {/* HERO DISH CARDS */}
         <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-amber-500" />
-              Featured Culinary Classics
+              Popular Meals
             </h3>
-            <span className="text-xs text-slate-600 dark:text-slate-400 font-bold">Click card to cook immediately</span>
+            <span className="text-xs text-slate-600 dark:text-slate-400 font-bold">Click any dish to start cooking</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">

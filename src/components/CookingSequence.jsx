@@ -69,12 +69,12 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 px-3.5 py-2 rounded-xl transition-all cursor-pointer active:scale-95 shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          Review Ingredients
+          Back to Ingredients
         </button>
 
         <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 px-3 py-1.5 rounded-full">
           <Flame className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
-          Phase 2: Animated "Making Of" Sequence
+          Step-by-Step Cooking
         </div>
       </header>
 
@@ -85,7 +85,7 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
         <div className="space-y-2 mb-6">
           <div className="flex items-center justify-between text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
             <span>
-              {isFinished ? 'Recipe Complete!' : `Step ${currentStepIndex + 1} of ${totalSteps}`}
+              {isFinished ? 'Cooking Finished!' : `Step ${currentStepIndex + 1} of ${totalSteps}`}
             </span>
             <span>
               {isFinished ? '100%' : `${Math.round(((currentStepIndex + 1) / totalSteps) * 100)}%`}
@@ -115,9 +115,9 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700/60 shadow-2xl space-y-6 my-auto text-center flex flex-col items-center"
+              className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700/60 shadow-2xl space-y-6 my-auto text-center flex flex-col items-center bg-white dark:bg-slate-900"
             >
-              {/* Rich Data-Driven Animated Cooking Scene */}
+              {/* Animated Cooking Scene */}
               <CookingScene
                 step={currentStep}
                 allIngredients={recipe.ingredients || []}
@@ -127,7 +127,7 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
               <div className="max-w-2xl space-y-2">
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
                   <Sparkles className="w-3.5 h-3.5" />
-                  Step Instruction {currentStepIndex + 1}
+                  Step {currentStepIndex + 1}
                 </span>
 
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white leading-relaxed">
@@ -135,7 +135,7 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
                 </h2>
               </div>
 
-              {/* Step Timer Ring (If durationMinutes present) */}
+              {/* Step Timer */}
               {currentStep.durationMinutes && (
                 <div className="bg-slate-900 text-slate-100 p-4 rounded-2xl border border-slate-800 flex items-center justify-between gap-4 w-full max-w-sm shadow-md">
                   <div className="flex items-center gap-3">
@@ -179,77 +179,73 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
               )}
             </motion.div>
           ) : (
-            /* Recipe Finished Celebration Card */
+            /* Finished Card */
             <motion.div
               key="finished"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
-              className="glass-panel rounded-3xl p-8 border border-emerald-500/40 shadow-2xl space-y-6 my-auto text-center flex flex-col items-center max-w-lg mx-auto"
+              className="glass-panel rounded-3xl p-8 sm:p-12 border border-slate-200 dark:border-slate-700/60 shadow-2xl text-center space-y-6 my-auto max-w-xl mx-auto bg-white dark:bg-slate-900"
             >
-              <div className="w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-xl">
+              <div className="w-20 h-20 rounded-3xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-xl">
                 <Award className="w-10 h-10 animate-bounce" />
               </div>
 
-              <div className="space-y-2">
+              <div>
                 <h2 className="text-3xl font-black text-slate-900 dark:text-white">
-                  Bon Appétit! 🍽️
+                  Cooking Done! Enjoy your food! 🍽️
                 </h2>
-                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-medium">
-                  You’ve successfully completed all steps for <strong>{recipe.title}</strong>. Your dish is plated and ready to serve!
+                <p className="text-slate-700 dark:text-slate-300 text-sm mt-2 font-bold">
+                  You finished making {recipe.title} for {servings} serving{servings > 1 ? 's' : ''}.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 w-full pt-2">
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   type="button"
                   onClick={() => setCurrentStepIndex(0)}
-                  className="flex-1 py-3 px-4 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-bold text-sm hover:text-indigo-600 transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Cook Again
                 </button>
-
                 <button
                   type="button"
                   onClick={onBackToIngredients}
-                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs shadow-lg hover:shadow-indigo-500/25 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-indigo-600 text-white font-bold text-sm shadow-lg hover:shadow-indigo-500/25 transition-all cursor-pointer"
                 >
-                  <CheckCircle2 className="w-4 h-4" />
-                  Back to Recipe
+                  Back to Ingredients
                 </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Step Navigation Footer Controls */}
+        {/* Footer Navigation Buttons */}
         {!isFinished && (
           <div className="flex items-center justify-between gap-4 pt-6">
             <button
               type="button"
               onClick={handlePrevStep}
               disabled={currentStepIndex === 0}
-              className={`py-3 px-5 rounded-2xl border font-extrabold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold flex items-center gap-2 transition-all ${
                 currentStepIndex === 0
-                  ? 'border-slate-300 dark:border-slate-800 text-slate-400 bg-slate-100 dark:bg-slate-900/40 cursor-not-allowed'
-                  : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm'
+                  ? 'bg-slate-200 dark:bg-slate-900 text-slate-400 dark:text-slate-600 border border-slate-300 dark:border-slate-800/80 cursor-not-allowed'
+                  : 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:text-indigo-600 cursor-pointer shadow-sm'
               }`}
             >
               <ChevronLeft className="w-4 h-4" />
               Previous Step
             </button>
 
-            <motion.button
+            <button
               type="button"
               onClick={handleNextStep}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="py-3.5 px-7 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-black text-xs sm:text-sm shadow-xl shadow-indigo-500/25 cursor-pointer flex items-center gap-2"
+              className="px-6 py-3 rounded-2xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xl flex items-center gap-2 cursor-pointer hover:scale-102 active:scale-98 transition-all"
             >
-              {isLastStep ? 'Finish Dish 🎉' : 'Next Step'}
+              {isLastStep ? 'Finish Cooking' : 'Next Step'}
               <ChevronRight className="w-4 h-4" />
-            </motion.button>
+            </button>
           </div>
         )}
       </main>

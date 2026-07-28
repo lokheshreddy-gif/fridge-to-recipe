@@ -67,7 +67,7 @@ export default function IngredientsFirstView({
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 px-3.5 py-2 rounded-xl transition-all cursor-pointer active:scale-95 shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          Cook Something Else
+          Choose Another Recipe
         </button>
 
         <div className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export default function IngredientsFirstView({
 
           <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 px-3 py-1.5 rounded-full">
             <ChefHat className="w-4 h-4" />
-            Phase 1: Ingredient Prep
+            Step 1: Get Ingredients Ready
           </div>
         </div>
       </header>
@@ -100,11 +100,11 @@ export default function IngredientsFirstView({
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
-              Step 1 of 2: Required Products
+              Step 1: Ingredients Needed
             </span>
             <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1 bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 px-3 py-1 rounded-full">
               <Clock className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
-              Total Time: {totalTime} mins
+              Time Needed: {totalTime} mins
             </span>
           </div>
 
@@ -119,20 +119,20 @@ export default function IngredientsFirstView({
           )}
         </div>
 
-        {/* Nutrition & Age-Appropriate Guidance Card */}
+        {/* Nutrition Card */}
         {recipe.nutrition && (
           <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700/60 shadow-xl space-y-4 bg-white dark:bg-slate-900">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <Activity className="w-4 h-4 text-emerald-500" />
-                Nutrition (per serving)
+                Nutrition Info (per plate)
               </h3>
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">Estimated Macros</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">Estimated</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="bg-slate-900 text-slate-100 p-3.5 rounded-2xl border border-slate-800 text-center shadow-md">
-                <span className="text-[11px] text-slate-300 font-bold uppercase tracking-wider block">Calories</span>
+                <span className="text-[11px] text-slate-300 font-bold uppercase tracking-wider block">Energy</span>
                 <span className="text-xl font-black text-emerald-400 mt-0.5 block">
                   {recipe.nutrition.caloriesPerServing} kcal
                 </span>
@@ -159,15 +159,15 @@ export default function IngredientsFirstView({
 
             {recipe.ageNote && (
               <div className="p-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-xs text-indigo-900 dark:text-indigo-200 leading-relaxed font-bold">
-                💡 <strong>Age Guidance Note:</strong> {recipe.ageNote}
+                💡 <strong>Age Note:</strong> {recipe.ageNote}
               </div>
             )}
 
-            {/* Mandatory Nutrition Disclaimer */}
+            {/* Nutrition Disclaimer */}
             <div className="flex items-start gap-2 pt-1 text-[11px] text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
               <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
               <span>
-                Nutrition values are AI-generated estimates, not verified lab data — consult a professional for dietary or medical guidance.
+                Nutrition values are simple estimates. Consult a doctor for special medical diets.
               </span>
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function IngredientsFirstView({
           <div className="flex items-center justify-between gap-2 mb-4">
             <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
               <Layers className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
-              Kitchen Counter ({recipe.ingredients.length} Items Laid Out)
+              Your Ingredients ({recipe.ingredients.length} items)
             </h2>
           </div>
 
@@ -242,7 +242,7 @@ export default function IngredientsFirstView({
             className="w-full py-4 px-8 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-black text-base sm:text-lg shadow-2xl shadow-indigo-500/30 cursor-pointer flex items-center justify-center gap-3"
           >
             <Flame className="w-6 h-6 animate-pulse" />
-            Start Cooking ({recipe.steps.length} Steps)
+            Start Cooking ({recipe.steps.length} Easy Steps)
             <Utensils className="w-5 h-5 ml-1" />
           </motion.button>
         </motion.div>
