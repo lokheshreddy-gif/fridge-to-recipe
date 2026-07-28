@@ -72,7 +72,26 @@
   color: #0f172a !important;
 }
 
-/* 1. Force ALL Headings & Titles in Light Theme to be Dark Slate / Black */
+/* 1. All Slate Background Containers in Light Theme convert to Light Slate */
+.light-theme .bg-slate-950,
+.light-theme .bg-slate-900,
+.light-theme .bg-slate-900\/90,
+.light-theme .bg-slate-900\/80,
+.light-theme .bg-slate-900\/60,
+.light-theme .bg-slate-800,
+.light-theme .bg-slate-800\/80 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-theme .bg-slate-950 *,
+.light-theme .bg-slate-900 *,
+.light-theme .bg-slate-800 * {
+  color: #0f172a !important;
+}
+
+/* 2. Force ALL Headings & Titles in Light Theme to be Dark Slate / Black */
 .light-theme h1,
 .light-theme h2,
 .light-theme h3,
@@ -86,11 +105,13 @@
   -webkit-text-fill-color: #0f172a !important;
 }
 
-/* 2. Force ALL Text, Descriptions & Subtitles in Light Theme to be Dark Slate */
+/* 3. Force ALL Text, Descriptions & Subtitles in Light Theme to be Dark Slate */
 .light-theme p,
 .light-theme label,
-.light-theme textarea {
-  color: #1e293b !important;
+.light-theme textarea,
+.light-theme span,
+.light-theme strong {
+  color: #0f172a !important;
 }
 
 .light-theme .text-slate-100,
@@ -106,33 +127,37 @@
   color: #475569 !important;
 }
 
-/* 3. Exceptions: Dark containers inside Light Theme (Macro boxes & Dark Buttons) */
-.light-theme .bg-slate-900,
-.light-theme .bg-slate-950 {
-  background-color: #0f172a !important;
+/* 4. Disabled Button State in Light Theme */
+.light-theme button:disabled {
+  background-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.light-theme button:disabled * {
+  color: #94a3b8 !important;
+}
+
+/* 5. Primary Active Gradient Buttons & Indigo Buttons in Light Theme */
+.light-theme .bg-gradient-to-r {
   color: #ffffff !important;
 }
 
-.light-theme .bg-slate-900 *,
-.light-theme .bg-slate-950 * {
+.light-theme .bg-gradient-to-r * {
   color: #ffffff !important;
 }
 
-.light-theme .bg-slate-900 .text-emerald-400 { color: #34d399 !important; }
-.light-theme .bg-slate-900 .text-indigo-400 { color: #818cf8 !important; }
-.light-theme .bg-slate-900 .text-amber-400 { color: #fbbf24 !important; }
-.light-theme .bg-slate-900 .text-rose-400 { color: #fb7185 !important; }
-.light-theme .bg-slate-900 .text-slate-300 { color: #cbd5e1 !important; }
-.light-theme .bg-slate-900 .text-slate-400 { color: #94a3b8 !important; }
-
-/* 4. Action Buttons in Light Theme */
-.light-theme .bg-indigo-600,
-.light-theme .bg-indigo-600 * {
+.light-theme .bg-indigo-600 {
   background-color: #4f46e5 !important;
   color: #ffffff !important;
 }
 
-/* 5. Age Guidance Banner in Light Theme */
+.light-theme .bg-indigo-600 * {
+  color: #ffffff !important;
+}
+
+/* 6. Age Guidance Banner in Light Theme */
 .light-theme .bg-indigo-50,
 .light-theme .bg-indigo-500\/10 {
   background-color: #eef2ff !important;
@@ -145,7 +170,7 @@
   color: #1e1b4b !important;
 }
 
-/* 6. Form Controls in Light Theme */
+/* 7. Form Controls in Light Theme */
 .light-theme select,
 .light-theme option {
   background-color: #ffffff !important;
