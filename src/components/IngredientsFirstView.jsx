@@ -98,7 +98,7 @@ export default function IngredientsFirstView({
       <main className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 relative z-10">
         
         {/* Title Header */}
-        <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden text-center sm:text-left">
+        <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden text-center sm:text-left bg-white dark:bg-slate-900">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
@@ -110,12 +110,12 @@ export default function IngredientsFirstView({
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-transparent bg-clip-text dark:bg-gradient-to-r dark:from-white dark:via-slate-100 dark:to-indigo-200 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
             {recipe.title}
           </h1>
 
           {recipe.description && (
-            <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2.5 max-w-2xl leading-relaxed font-medium">
+            <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2.5 max-w-2xl leading-relaxed font-semibold">
               {recipe.description}
             </p>
           )}
@@ -123,7 +123,7 @@ export default function IngredientsFirstView({
 
         {/* Nutrition & Age-Appropriate Guidance Card */}
         {recipe.nutrition && (
-          <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700/60 shadow-xl space-y-4">
+          <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700/60 shadow-xl space-y-4 bg-white dark:bg-slate-900">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <Activity className="w-4 h-4 text-emerald-500" />
@@ -211,7 +211,7 @@ export default function IngredientsFirstView({
               <motion.div
                 key={ing.id || idx}
                 variants={cardVariants}
-                className="glass-card rounded-2xl p-4 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between gap-3 shadow-md hover:border-indigo-400 transition-all duration-200 group"
+                className="glass-card rounded-2xl p-4 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between gap-3 shadow-md hover:border-indigo-400 transition-all duration-200 group bg-white dark:bg-slate-900"
               >
                 <div className="flex items-center gap-3.5 min-w-0 flex-1">
                   <IngredientImage iconKeyword={ing.icon} name={ing.name} className="w-12 h-12" />

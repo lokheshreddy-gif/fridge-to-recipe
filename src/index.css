@@ -18,10 +18,12 @@
   }
 }
 
-/* Dark Theme (Default) */
+/* ==========================================================================
+   DARK THEME (Default)
+   ========================================================================== */
 .dark-theme {
-  background-color: #020617;
-  color: #f8fafc;
+  background-color: #020617 !important;
+  color: #f8fafc !important;
 }
 
 .dark-theme .glass-panel {
@@ -45,85 +47,110 @@
   color: #f8fafc;
 }
 
-/* Light Theme (Swiggy-inspired High Contrast Redesign) */
-.light-theme {
-  background-color: #f8fafc;
-  color: #0f172a;
+/* ==========================================================================
+   LIGHT THEME (Comprehensive High-Contrast Light Mode Fix)
+   ========================================================================== */
+.light-theme,
+.light-theme main,
+.light-theme header,
+.light-theme section {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
 }
 
-.light-theme .glass-panel {
-  background: #ffffff;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #cbd5e1;
-  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.06);
-  color: #0f172a;
+.light-theme .glass-panel,
+.light-theme .glass-card {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06) !important;
 }
 
 .light-theme .glass-input {
-  background: #ffffff;
-  border: 2px solid #e2e8f0;
-  color: #0f172a;
+  background-color: #ffffff !important;
+  border: 2px solid #cbd5e1 !important;
+  color: #0f172a !important;
 }
 
-.light-theme .glass-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: #0f172a;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+/* 1. Force ALL Headings & Titles in Light Theme to be Dark Slate / Black */
+.light-theme h1,
+.light-theme h2,
+.light-theme h3,
+.light-theme h4,
+.light-theme h5,
+.light-theme h6 {
+  color: #0f172a !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #0f172a !important;
 }
 
-/* Specific Light Theme Typography & Component Rules */
-.light-theme h1.text-transparent {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #4338ca 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent !important;
+/* 2. Force ALL Text, Descriptions & Subtitles in Light Theme to be Dark Slate */
+.light-theme p,
+.light-theme label,
+.light-theme textarea {
+  color: #1e293b !important;
 }
 
-/* Light theme card overrides so text inside dark/colored cards is ALWAYS crisp */
-.light-theme .bg-slate-900\/80,
+.light-theme .text-slate-100,
+.light-theme .text-slate-200,
+.light-theme .text-slate-300,
+.light-theme .text-white {
+  color: #0f172a !important;
+}
+
+.light-theme .text-slate-400,
+.light-theme .text-slate-500,
+.light-theme .text-slate-600 {
+  color: #475569 !important;
+}
+
+/* 3. Exceptions: Dark containers inside Light Theme (Macro boxes & Dark Buttons) */
 .light-theme .bg-slate-900,
 .light-theme .bg-slate-950 {
   background-color: #0f172a !important;
-  color: #f8fafc !important;
+  color: #ffffff !important;
 }
 
-.light-theme .bg-slate-900\/80 *,
 .light-theme .bg-slate-900 *,
 .light-theme .bg-slate-950 * {
-  color: inherit;
+  color: #ffffff !important;
 }
 
-.light-theme .bg-slate-900\/80 .text-slate-400,
-.light-theme .bg-slate-900 .text-slate-400 {
-  color: #94a3b8 !important;
+.light-theme .bg-slate-900 .text-emerald-400 { color: #34d399 !important; }
+.light-theme .bg-slate-900 .text-indigo-400 { color: #818cf8 !important; }
+.light-theme .bg-slate-900 .text-amber-400 { color: #fbbf24 !important; }
+.light-theme .bg-slate-900 .text-rose-400 { color: #fb7185 !important; }
+.light-theme .bg-slate-900 .text-slate-300 { color: #cbd5e1 !important; }
+.light-theme .bg-slate-900 .text-slate-400 { color: #94a3b8 !important; }
+
+/* 4. Action Buttons in Light Theme */
+.light-theme .bg-indigo-600,
+.light-theme .bg-indigo-600 * {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
 }
 
-.light-theme .bg-slate-900\/80 .text-slate-500,
-.light-theme .bg-slate-900 .text-slate-500 {
-  color: #cbd5e1 !important;
-}
-
+/* 5. Age Guidance Banner in Light Theme */
+.light-theme .bg-indigo-50,
 .light-theme .bg-indigo-500\/10 {
   background-color: #eef2ff !important;
   border-color: #c7d2fe !important;
-  color: #3730a3 !important;
+  color: #1e1b4b !important;
 }
 
+.light-theme .bg-indigo-50 *,
 .light-theme .bg-indigo-500\/10 * {
-  color: #3730a3 !important;
+  color: #1e1b4b !important;
 }
 
+/* 6. Form Controls in Light Theme */
 .light-theme select,
 .light-theme option {
   background-color: #ffffff !important;
   color: #0f172a !important;
   border-color: #cbd5e1 !important;
-}
-
-.light-theme textarea {
-  color: #0f172a !important;
 }
 
 .light-theme textarea::placeholder {
