@@ -1,6 +1,7 @@
 /**
  * Validates the structured JSON recipe object returned by the LLM.
  * Throws descriptive errors if any required field is missing or invalid.
+ * Safely sanitizes optional nutrition and ageNote metadata.
  */
 export function validateRecipe(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
@@ -73,6 +74,22 @@ export function validateRecipe(data) {
 
   if (!Array.isArray(data.swaps)) {
     data.swaps = [];
+  }
+
+  // Optional Nutrition Metadata Sanitization (Graceful handling)
+  if (data.nutrition && typeof data.nutrition === 'object') {
+    data.nutrition = {
+      caloriesPerServing: typeof data.nutrition.caloriesPerServing === 'number' ? data.nutrition.caloriesPerServing : 400,
+      proteinGrams: typeof data.nutrition.proteinGrams === 'number' ? data.nutrition.proteinGrams : 25,
+      carbsGrams: typeof data.nutrition.carbsGrams === 'number' ? data.nutrition.carbsGrams : 30,
+      fatGrams: typeof data.nutrition.fatGrams === 'number' ? data.nutrition.fatGrams : 15
+    };
+  } else {
+    data.nutrition = null;
+  }
+
+  if (typeof data.ageNote !== 'string') {
+    data.ageNote = '';
   }
 
   return true;

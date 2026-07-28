@@ -3,7 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import IngredientsFirstView from './IngredientsFirstView.jsx';
 import CookingSequence from './CookingSequence.jsx';
 
-export default function RecipeCard({ recipe, onReset }) {
+export default function RecipeCard({
+  recipe,
+  onReset,
+  isFavorite,
+  onToggleFavorite,
+  onAddIngredientToShoppingList,
+  onAddAllToShoppingList
+}) {
   const [phase, setPhase] = useState('INGREDIENTS'); // 'INGREDIENTS' (Phase 1) | 'COOKING_SEQUENCE' (Phase 2)
   const [selectedServings, setSelectedServings] = useState(recipe.baseServings || 2);
 
@@ -17,7 +24,7 @@ export default function RecipeCard({ recipe, onReset }) {
   };
 
   return (
-    <div className="min-h-dvh w-full bg-slate-950 text-slate-100 overflow-y-auto">
+    <div className="min-h-dvh w-full overflow-y-auto">
       <AnimatePresence mode="wait">
         {phase === 'INGREDIENTS' ? (
           <motion.div
@@ -32,6 +39,10 @@ export default function RecipeCard({ recipe, onReset }) {
               recipe={recipe}
               onStartCooking={handleStartCooking}
               onReset={onReset}
+              isFavorite={isFavorite}
+              onToggleFavorite={onToggleFavorite}
+              onAddIngredientToShoppingList={onAddIngredientToShoppingList}
+              onAddAllToShoppingList={onAddAllToShoppingList}
             />
           </motion.div>
         ) : (

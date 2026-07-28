@@ -11,8 +11,8 @@ app.use(cors());
 app.use(express.json());
 
 const SYSTEM_PROMPT = `You are a world-class professional executive chef and culinary expert AI.
-The user will provide a list of ingredients they have available in their fridge/pantry.
-Your task is to transform those ingredients into a complete, delicious, submission-ready recipe.
+The user will provide a list of ingredients they have available in their fridge/pantry, and an optional target age group.
+Your task is to transform those ingredients into a complete, delicious, submission-ready recipe with estimated nutrition data.
 
 You MUST respond ONLY with a raw, valid JSON object matching this EXACT schema:
 {
@@ -42,17 +42,24 @@ You MUST respond ONLY with a raw, valid JSON object matching this EXACT schema:
       "ingredient": "string (Ingredient name from list above)",
       "alternatives": ["string", "string"]
     }
-  ]
+  ],
+  "nutrition": {
+    "caloriesPerServing": 420,
+    "proteinGrams": 35,
+    "carbsGrams": 14,
+    "fatGrams": 18
+  },
+  "ageNote": "string (Short portion or nutritional guidance note tailored for the specified age group)"
 }
 
 RULES:
 1. Return ONLY valid JSON matching this exact schema. No markdown fences (do NOT use \`\`\`json), no prose before or after, no commentary.
-2. Icon keywords must be simple lowercase terms from: "salt", "garlic", "lemon", "chicken", "beef", "meat", "oil", "vegetable", "spinach", "herb", "cheese", "pasta", "butter", "pepper". If no specific match, use "vegetable" or "meat".
+2. Icon keywords must be simple lowercase terms from: "salt", "garlic", "lemon", "chicken", "beef", "meat", "oil", "vegetable", "spinach", "herb", "cheese", "pasta", "butter", "pepper".
 3. Ensure baseServings is a positive integer (e.g., 2 or 4).
-4. Provide realistic prepTimeMinutes, cookTimeMinutes, step durationMinutes, and smart ingredient substitution swaps.`;
+4. Provide realistic prepTimeMinutes, cookTimeMinutes, step durationMinutes, nutrition estimates per serving, and age-appropriate guidance.`;
 
 app.post('/api/generate', async (req, res) => {
-  const { ingredients, testMode } = req.body;
+  const { ingredients, ageGroup = 'Adult', testMode } = req.body;
 
   if (!ingredients || typeof ingredients !== 'string' || !ingredients.trim()) {
     return res.status(400).json({ error: 'Ingredients input cannot be empty.' });
@@ -69,8 +76,6 @@ app.post('/api/generate', async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY || process.env.OPENROUTER_API_KEY;
 
   if (!apiKey || apiKey === 'your_gemini_api_key_here') {
-    // If no real API key is configured yet, provide a high-quality fallback structured recipe response
-    // so the app works seamlessly out of the box for testing before adding an API key.
     console.log('[API Proxy] No custom LLM API key configured in .env. Serving sample structured recipe response.');
     return res.json({
       title: 'Garlic Butter Herb Chicken & Spinach',
@@ -96,7 +101,14 @@ app.post('/api/generate', async (req, res) => {
         { ingredient: 'Chicken Breast', alternatives: ['Turkey Breast', 'Firm Tofu', 'Pork Tenderloin'] },
         { ingredient: 'Fresh Spinach', alternatives: ['Baby Kale', 'Swiss Chard', 'Arugula'] },
         { ingredient: 'Olive Oil', alternatives: ['Butter', 'Avocado Oil'] }
-      ]
+      ],
+      nutrition: {
+        caloriesPerServing: 410,
+        proteinGrams: 42,
+        carbsGrams: 8,
+        fatGrams: 16
+      },
+      ageNote: `Tailored for ${ageGroup}s: High lean protein content supporting tissue recovery, rich in folate and iron from fresh spinach.`
     });
   }
 
@@ -104,7 +116,6 @@ app.post('/api/generate', async (req, res) => {
     let rawResultText = '';
 
     if (process.env.GEMINI_API_KEY) {
-      // Call Google Gemini REST API using plain fetch
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
       const response = await fetch(geminiUrl, {
         method: 'POST',
@@ -114,7 +125,7 @@ app.post('/api/generate', async (req, res) => {
             {
               role: 'user',
               parts: [
-                { text: `${SYSTEM_PROMPT}\n\nAvailable Ingredients:\n${ingredients}` }
+                { text: `${SYSTEM_PROMPT}\n\nTarget Age Group: ${ageGroup}\nAvailable Ingredients:\n${ingredients}` }
               ]
             }
           ],
@@ -134,7 +145,6 @@ app.post('/api/generate', async (req, res) => {
       const data = await response.json();
       rawResultText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     } else if (process.env.GROQ_API_KEY || process.env.OPENROUTER_API_KEY) {
-      // Call Groq or OpenRouter API using plain fetch
       const endpoint = process.env.GROQ_API_KEY
         ? 'https://api.groq.com/openai/v1/chat/completions'
         : 'https://openrouter.ai/api/v1/chat/completions';
@@ -151,7 +161,7 @@ app.post('/api/generate', async (req, res) => {
           model,
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user', content: `Ingredients available: ${ingredients}` }
+            { role: 'user', content: `Target Age Group: ${ageGroup}\nIngredients available: ${ingredients}` }
           ],
           response_format: { type: 'json_object' }
         })
@@ -166,7 +176,6 @@ app.post('/api/generate', async (req, res) => {
       rawResultText = data?.choices?.[0]?.message?.content || '';
     }
 
-    // Clean potential markdown wrap if the model produced any despite prompt instructions
     let cleanedText = rawResultText.trim();
     if (cleanedText.startsWith('```')) {
       cleanedText = cleanedText.replace(/^```(json)?\n?/, '').replace(/\n?```$/, '').trim();

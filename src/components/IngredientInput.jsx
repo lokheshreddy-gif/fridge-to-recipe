@@ -1,18 +1,27 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2 } from 'lucide-react';
 
-const SAMPLE_PRESETS = [
-  { name: '🍗 Chicken & Garlic', text: 'Chicken breast, garlic cloves, fresh spinach, lemon, olive oil, salt, black pepper' },
-  { name: '🍳 Morning Omelette', text: 'Eggs, cheddar cheese, cherry tomatoes, bell pepper, butter, salt, chives' },
-  { name: '🍝 Garlic Olive Oil Pasta', text: 'Spaghetti, garlic, olive oil, chili flakes, parsley, parmesan cheese, salt' },
-  { name: '🥗 Mediterranean Bowl', text: 'Chickpeas, cucumber, cherry tomatoes, feta cheese, olive oil, lemon juice, garlic' }
+const TRENDING_COMBOS = [
+  { name: '🔥 Chicken, Garlic, Spinach & Lemon', text: 'Chicken breast, garlic, spinach, lemon, olive oil, salt' },
+  { name: '🥦 Tofu, Broccoli, Soy Sauce & Ginger', text: 'Firm tofu, broccoli florets, soy sauce, fresh ginger, sesame oil, garlic' },
+  { name: '🍝 Pasta, Olive Oil & Chili Flakes', text: 'Spaghetti, garlic cloves, olive oil, red chili flakes, parsley, parmesan cheese' },
+  { name: '🥑 Avocado, Eggs, Tomatoes & Toast', text: 'Avocado, eggs, cherry tomatoes, sourdough bread, butter, black pepper' }
 ];
 
-export default function IngredientInput({ onSubmit, isLoading }) {
+const AGE_GROUPS = ['Child', 'Teen', 'Adult', 'Senior'];
+
+export default function IngredientInput({
+  onSubmit,
+  isLoading,
+  recentHistory = [],
+  onSelectHistory
+}) {
   const [ingredientsText, setIngredientsText] = useState('');
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState('Adult');
   const [touched, setTouched] = useState(false);
   const [testMode, setTestMode] = useState('normal');
+  const [showHistory, setShowHistory] = useState(false);
 
   const isEmpty = !ingredientsText.trim();
   const showError = touched && isEmpty;
@@ -21,7 +30,7 @@ export default function IngredientInput({ onSubmit, isLoading }) {
     e.preventDefault();
     setTouched(true);
     if (isEmpty || isLoading) return;
-    onSubmit(ingredientsText, testMode === 'normal' ? null : testMode);
+    onSubmit(ingredientsText, selectedAgeGroup, testMode === 'normal' ? null : testMode);
   };
 
   const handleSelectPreset = (presetText) => {
@@ -39,22 +48,33 @@ export default function IngredientInput({ onSubmit, isLoading }) {
         className="w-full max-w-2xl glass-panel rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl relative z-10 my-auto"
       >
         {/* Header Badge */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold tracking-wide uppercase">
             <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
             AI Culinary Assistant
           </div>
-          
-          {/* Test mode selector for failure testing */}
+
           <div className="flex items-center gap-2">
-            <label className="text-[11px] text-slate-400 font-medium hidden sm:inline">Test Failures:</label>
+            {/* Recent History Toggle */}
+            {recentHistory.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowHistory(!showHistory)}
+                className="inline-flex items-center gap-1 text-xs text-slate-300 bg-slate-900/80 border border-slate-700/60 rounded-lg px-2.5 py-1 hover:text-white transition-all cursor-pointer"
+              >
+                <History className="w-3.5 h-3.5 text-indigo-400" />
+                History ({recentHistory.length})
+              </button>
+            )}
+
+            {/* Test mode selector */}
             <select
               value={testMode}
               onChange={(e) => setTestMode(e.target.value)}
               className="bg-slate-900/80 text-xs text-slate-300 border border-slate-700/60 rounded-lg px-2 py-1 outline-none focus:border-indigo-500"
             >
               <option value="normal">Normal Mode</option>
-              <option value="broken_json">Test: Broken JSON output</option>
+              <option value="broken_json">Test: Broken JSON</option>
               <option value="invalid_schema">Test: Invalid Schema</option>
             </select>
           </div>
@@ -65,8 +85,43 @@ export default function IngredientInput({ onSubmit, isLoading }) {
           What’s in your fridge?
         </h1>
         <p className="text-slate-400 text-sm sm:text-base mt-2 mb-6 leading-relaxed">
-          Type or paste any ingredients you have on hand. Our AI Chef will transform them into an interactive, step-by-step recipe with scaling and ingredient swap ideas.
+          Type or paste any ingredients you have on hand. Our AI Chef will transform them into an interactive, step-by-step recipe with scaling and nutrition guidance.
         </p>
+
+        {/* Recent Search History Dropdown Drawer */}
+        <AnimatePresence>
+          {showHistory && recentHistory.length > 0 && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="mb-5 bg-slate-900/90 border border-slate-700/80 p-4 rounded-2xl space-y-2 text-xs"
+            >
+              <div className="flex items-center justify-between font-bold text-slate-300 mb-2">
+                <span className="flex items-center gap-1.5">
+                  <History className="w-3.5 h-3.5 text-indigo-400" />
+                  Recent Search History
+                </span>
+                <span className="text-[10px] text-slate-500">Click to re-populate</span>
+              </div>
+              <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                {recentHistory.map((item, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setIngredientsText(item.text);
+                      setShowHistory(false);
+                    }}
+                    className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-indigo-900/40 border border-slate-700/50 cursor-pointer flex items-center justify-between gap-2 text-slate-200 hover:text-white transition-all"
+                  >
+                    <span className="truncate max-w-md font-medium">{item.text}</span>
+                    <span className="text-[10px] text-slate-500 shrink-0">{item.time}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -79,12 +134,12 @@ export default function IngredientInput({ onSubmit, isLoading }) {
                   if (touched) setTouched(false);
                 }}
                 placeholder="e.g. 2 chicken breasts, garlic cloves, fresh spinach, half a lemon, olive oil, salt, black pepper..."
-                rows={5}
+                rows={4}
                 className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-base p-4 outline-none resize-none font-medium leading-relaxed"
                 autoFocus
               />
             </div>
-            
+
             {showError && (
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
@@ -95,27 +150,47 @@ export default function IngredientInput({ onSubmit, isLoading }) {
                 Please enter at least one ingredient before cooking.
               </motion.div>
             )}
+          </div>
 
-            <div className="flex justify-between items-center px-2 mt-2 text-xs text-slate-500 font-medium">
-              <span>Separating with commas or lines works best</span>
-              <span>{ingredientsText.length} characters</span>
+          {/* Feature 6: Age Group Selector */}
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+            <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+              <Users2 className="w-4 h-4 text-indigo-400" />
+              Target Age Group for Nutrition Guidance:
+            </label>
+            <div className="flex gap-1.5">
+              {AGE_GROUPS.map((group) => (
+                <button
+                  key={group}
+                  type="button"
+                  onClick={() => setSelectedAgeGroup(group)}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    selectedAgeGroup === group
+                      ? 'bg-indigo-600 text-white shadow-md'
+                      : 'bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700'
+                  }`}
+                >
+                  {group}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Quick Presets */}
+          {/* Feature 5: Trending Combinations */}
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2.5">
-              Quick Inspiration Presets:
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2 flex items-center gap-1.5">
+              <Flame className="w-3.5 h-3.5 text-amber-400" />
+              Trending Ingredient Combinations:
             </span>
             <div className="flex flex-wrap gap-2">
-              {SAMPLE_PRESETS.map((preset, idx) => (
+              {TRENDING_COMBOS.map((combo, idx) => (
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => handleSelectPreset(preset.text)}
+                  onClick={() => handleSelectPreset(combo.text)}
                   className="text-xs bg-slate-800/80 hover:bg-indigo-600/20 hover:text-indigo-200 border border-slate-700/60 hover:border-indigo-500/40 text-slate-300 px-3 py-2 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 active:scale-95"
                 >
-                  {preset.name}
+                  {combo.name}
                 </button>
               ))}
             </div>
@@ -141,7 +216,7 @@ export default function IngredientInput({ onSubmit, isLoading }) {
             ) : (
               <>
                 <Utensils className="w-5 h-5" />
-                Generate Recipe
+                Generate Recipe ({selectedAgeGroup})
               </>
             )}
           </motion.button>

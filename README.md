@@ -41,6 +41,38 @@ The application uses an Express proxy backend at `/api/generate` to hold API key
 
 ---
 
+## ✨ Additive Feature Suite
+
+1. **Light/Dark Theme Toggle**:
+   - Universal Sun/Moon toggle button in the top navigation bar.
+   - Built with React Context & state (`dark` / `light`), applying styled CSS tokens. High contrast light palette redesign (`#F8FAFC` background, slate text, light glass panels).
+   - Session-persistent in memory.
+
+2. **Favorites List**:
+   - Save/bookmark recipes with a heart icon.
+   - Dedicated "Favorites" modal listing all saved recipes. Clicking any favorited recipe immediately opens it in the normal flow (`IngredientsFirstView` -> `CookingSequence`).
+
+3. **To-Do / Shopping List**:
+   - Dedicated "My List" drawer accessible from the top navbar.
+   - "Add missing items to list" action on ingredient cards and "Add All to List" header button.
+   - Live badge counter showing unchecked items.
+
+4. **Recent Search History**:
+   - Automatically records the raw ingredient input and timestamp of every submission (stored in session state).
+   - "History" dropdown drawer on the input card listing the last 10 searches; clicking any entry re-populates the input field.
+
+5. **"Trending Now" Suggestions**:
+   - Curated list of popular ingredient combinations (e.g. *Chicken, Garlic, Spinach & Lemon*, *Tofu, Broccoli, Soy Sauce & Ginger*, *Pasta, Olive Oil & Chili Flakes*).
+   - *Honesty Note*: Represented as a curated inspiration list rather than live analytics data.
+
+6. **Age-Appropriate Nutrition & Macros**:
+   - Age group selector on the input card (**Child**, **Teen**, **Adult**, **Senior**) sent in prompt payload to the LLM.
+   - Nutrition Card displaying estimated Calories, Protein (g), Carbs (g), Fat (g), and age-specific portion guidance (`ageNote`).
+   - Mandatory AI Disclaimer: *"Nutrition values are AI-generated estimates, not verified lab data — consult a professional for dietary or medical guidance."*
+   - Safe schema validation: If nutrition metadata is missing or malformed, the card degrades gracefully without breaking the layout.
+
+---
+
 ## 🛡️ Failure Handling & Robustness
 
 Robustness accounts for 20% of the project grade. The app includes:
@@ -58,25 +90,25 @@ Robustness accounts for 20% of the project grade. The app includes:
 ## 🎨 Key Features & Technical Polish
 
 - **Full-Screen Single Page Shell**: `100vw` / `100dvh` container with zero outer scrollbar clutter.
-- **Dynamic Servings Stepper & Live Scaling**: Scalable ratio (`ing.amount * currentServings / baseServings`) recalculates every ingredient amount live with smooth Framer Motion animated number counters.
-- **Interactive Checkable Step Cards**: Step checkboxes animate checkmarks, strike through text, and dynamically fill a top progress bar.
-- **Custom Animated SVG Icon Set**: Hand-crafted SVG micro-animations (`SaltIcon`, `GarlicIcon`, `LemonIcon`, `OilIcon`, `MeatIcon`, `VegetableIcon`, `DefaultIcon`) with Framer Motion wiggles, bounces, droplet drops, and rotation wobbles.
-- **Collapsible Ingredient Swaps**: Click any ingredient to expand substitution alternatives with height transitions (`AnimatePresence`).
-- **Responsive Layout**: Desktop 2-column view (Ingredients left, Steps right) collapsing gracefully to a single scrollable mobile column.
+- **Two-Phase Reveal**:
+  - **Phase 1**: Ingredients displayed first on a virtual kitchen counter with staggered Framer Motion card entrances.
+  - **Phase 2**: Interactive user-controlled `CookingSequence` featuring data-driven vector vessel scenes (`CookingScene.jsx`), ingredient drop-ins, sizzle loops, and timers.
+- **Photographic Ingredient Thumbnails & SVG Fallback**: High quality local ingredient photos (`/public/ingredient-images/`) with graceful animated SVG icon fallback.
+- **Dynamic Servings Stepper & Live Scaling**: Scalable ratio (`ing.amount * currentServings / baseServings`) recalculates every ingredient amount live.
+- **Responsive Layout**: Desktop view collapsing gracefully to a single scrollable mobile column with un-truncated full ingredient text wrapping.
 
 ---
 
 ## 🤖 Honest AI Usage Note
 
 - **AI Tools Used**: Developed with assistance from Google DeepMind Agentic AI Coding Assistant (Antigravity).
-- **AI Contributions**: AI assisted in scaffolding the Express proxy route, generating initial Framer Motion variant structures, writing SVG path geometries for custom icons, crafting the strict system prompt, and generating representative culinary sample presets.
+- **AI Contributions**: AI assisted in scaffolding the Express proxy route, generating initial Framer Motion variant structures, generating photorealistic food asset thumbnails, crafting the strict system prompt, and generating representative culinary sample presets.
 - **Human Guidance & Review**: All schema validation logic, `AbortController` stale response logic, timeout handlers, state machine flows, responsive Tailwind layouts, and component architectures were reviewed, refined, and verified.
 
 ---
 
 ## ⏳ Time Spent & Known Limitations
 
-- **Time Spent**: ~3.5 hours total (scaffolding, backend integration, failure handling design, interactive UI, custom animated icons, and verification).
+- **Time Spent**: ~4.5 hours total (scaffolding, backend integration, failure handling design, interactive UI, custom animated icons, two-phase reveal, photographic thumbnails, nutrition macros, theme toggle, and verification).
 - **Known Limitations**:
-  - Extremely large ingredient lists (e.g. 50+ items) might exceed typical standard recipe presentation card sizes; the scrollable container handles this visually.
-  - LLM response latency depends on the external provider (Gemini / Groq); the 20-second timeout ensures the app never hangs indefinitely.
+  - Session state (favorites, shopping list, history, theme) is stored in React memory and resets on hard browser page reloads.
