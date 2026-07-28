@@ -127,7 +127,7 @@
 }
 
 .light-theme p,
-.light-theme span:not(.orbit-ingredient-title):not(.age-tab-active *),
+.light-theme span:not(.orbit-ingredient-title):not(.age-tab-active *):not(.enabled-submit-btn *),
 .light-theme label,
 .light-theme div:not([class*="text-"]):not(.pointer-events-none *):not(.orbit-ingredient-card *) {
   color: #0f172a !important;
@@ -141,22 +141,36 @@
   -webkit-text-fill-color: #0f172a !important;
 }
 
-.light-theme .text-white:not(.age-tab-active):not(.age-tab-active *):not(button[type="submit"]):not(button[type="submit"] *):not([class*="bg-indigo-600"]):not([class*="bg-indigo-600"] *):not([class*="bg-rose-600"]):not([class*="bg-rose-600"] *):not([class*="bg-emerald-600"]):not([class*="bg-emerald-600"] *) {
+.light-theme .text-white:not(.age-tab-active):not(.age-tab-active *):not(.enabled-submit-btn):not(.enabled-submit-btn *):not([class*="bg-indigo-600"]):not([class*="bg-indigo-600"] *):not([class*="bg-rose-600"]):not([class*="bg-rose-600"] *):not([class*="bg-emerald-600"]):not([class*="bg-emerald-600"] *) {
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
 }
 
-/* Explicit PURE WHITE text for active age tabs, submit buttons, and primary solid action buttons in Light Mode */
+/* Explicit PURE WHITE text for enabled submit buttons, active age tabs, and primary solid action buttons in Light Mode */
 .light-theme .age-tab-active,
 .light-theme .age-tab-active *,
-.light-theme button[type="submit"],
-.light-theme button[type="submit"] *,
+.light-theme button[type="submit"]:not(:disabled):not(.disabled-submit-btn),
+.light-theme button[type="submit"]:not(:disabled):not(.disabled-submit-btn) *,
+.light-theme .enabled-submit-btn,
+.light-theme .enabled-submit-btn *,
 .light-theme .bg-indigo-600,
 .light-theme .bg-indigo-600 *,
 .light-theme [class*="bg-gradient-to-r"],
 .light-theme [class*="bg-gradient-to-r"] * {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+/* Explicit DARK SLATE text for disabled submit buttons in Light Mode */
+.light-theme button[type="submit"]:disabled,
+.light-theme button[type="submit"]:disabled *,
+.light-theme .disabled-submit-btn,
+.light-theme .disabled-submit-btn * {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155 !important;
   font-weight: 900 !important;
 }
 
