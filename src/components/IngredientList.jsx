@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, RefreshCw, Layers } from 'lucide-react';
+import { ChevronDown, RefreshCw, Layers, MapPin } from 'lucide-react';
 import IngredientImage from './IngredientImage.jsx';
 
 export default function IngredientList({ ingredients, baseServings, currentServings, swaps = [] }) {
@@ -74,6 +74,12 @@ export default function IngredientList({ ingredients, baseServings, currentServi
                     <span className="text-xs sm:text-sm font-semibold text-slate-100 block break-words leading-snug">
                       {ing.name}
                     </span>
+                    {ing.commonlyAvailable && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800 mt-1">
+                        <MapPin className="w-3 h-3 text-indigo-400" />
+                        {ing.commonlyAvailable}
+                      </span>
+                    )}
                     {alternatives && (
                       <span className="text-[11px] text-indigo-400 font-medium flex items-center gap-1 mt-0.5">
                         <RefreshCw className="w-3 h-3" />

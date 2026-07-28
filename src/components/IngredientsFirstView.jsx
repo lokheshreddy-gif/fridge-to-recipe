@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ChefHat, Sparkles, Utensils, Clock, Layers, Flame, Heart, ShoppingBag, Activity, Info } from 'lucide-react';
+import { ArrowLeft, ChefHat, Sparkles, Utensils, Clock, Layers, Flame, Heart, ShoppingBag, Activity, Info, MapPin } from 'lucide-react';
 import ServingsControl from './ServingsControl.jsx';
 import IngredientImage from './IngredientImage.jsx';
+import OpeningFridgeScene from './animations/OpeningFridgeScene.jsx';
 
 export default function IngredientsFirstView({
   recipe,
@@ -55,7 +56,11 @@ export default function IngredientsFirstView({
   };
 
   return (
-    <div className="min-h-dvh w-full flex flex-col bg-slate-950 text-slate-100 pb-20">
+    <div className="min-h-dvh w-full flex flex-col bg-slate-950 text-slate-100 pb-20 relative">
+      
+      {/* Task 3: Animated "Opening the Fridge" Background Scene */}
+      <OpeningFridgeScene />
+
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <button
@@ -90,7 +95,7 @@ export default function IngredientsFirstView({
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
+      <main className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 relative z-10">
         
         {/* Title Header */}
         <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden text-center sm:text-left">
@@ -116,7 +121,7 @@ export default function IngredientsFirstView({
           )}
         </div>
 
-        {/* Feature 6: Nutrition & Age-Appropriate Guidance Card */}
+        {/* Nutrition & Age-Appropriate Guidance Card */}
         {recipe.nutrition && (
           <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-slate-700/60 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
@@ -215,10 +220,19 @@ export default function IngredientsFirstView({
                     <span className="text-xs sm:text-sm font-bold text-slate-100 leading-snug break-words block">
                       {ing.name}
                     </span>
+
+                    {/* Task 2: "Commonly Found at Home" Location Tag */}
+                    {ing.commonlyAvailable && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800 mt-1">
+                        <MapPin className="w-3 h-3 text-indigo-400" />
+                        {ing.commonlyAvailable}
+                      </span>
+                    )}
+
                     <button
                       type="button"
                       onClick={() => onAddIngredientToShoppingList(ing.name)}
-                      className="text-[11px] text-emerald-400 hover:text-emerald-300 font-semibold mt-1 flex items-center gap-1 cursor-pointer"
+                      className="text-[11px] text-emerald-400 hover:text-emerald-300 font-semibold mt-1 flex items-center gap-1 cursor-pointer block"
                     >
                       + Add to shopping list
                     </button>

@@ -32,7 +32,8 @@ You MUST respond ONLY with a raw, valid JSON object matching this EXACT schema:
       "name": "string (Exact ingredient name)",
       "amount": 3,
       "unit": "cloves",
-      "icon": "garlic"
+      "icon": "garlic",
+      "commonlyAvailable": "string (e.g. 'Pantry', 'Fridge door', 'Fridge — dairy shelf', 'Produce drawer', 'Spice rack', 'Freezer')"
     }
   ],
   "steps": [
@@ -60,8 +61,9 @@ You MUST respond ONLY with a raw, valid JSON object matching this EXACT schema:
 RULES:
 1. Return ONLY valid JSON matching this exact schema. No markdown fences (do NOT use \`\`\`json), no prose before or after, no commentary.
 2. Icon keywords must be simple lowercase terms from: "salt", "garlic", "lemon", "chicken", "beef", "meat", "oil", "vegetable", "spinach", "herb", "cheese", "pasta", "butter", "pepper".
-3. Ensure baseServings is a positive integer (e.g., 2 or 4).
-4. Provide realistic prepTimeMinutes, cookTimeMinutes, step durationMinutes, nutrition estimates per serving, and age-appropriate guidance.`;
+3. Ensure commonlyAvailable per ingredient is a realistic short location tag (e.g. 'Pantry', 'Fridge door', 'Fridge — dairy shelf', 'Produce drawer', 'Spice rack', 'Freezer').
+4. Ensure baseServings is a positive integer (e.g., 2 or 4).
+5. Provide realistic prepTimeMinutes, cookTimeMinutes, step durationMinutes, nutrition estimates per serving, and age-appropriate guidance.`;
 
 /**
  * Dynamic fallback recipe generator for offline/testing mode when no live API key is configured.
@@ -69,6 +71,17 @@ RULES:
  */
 function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
   const text = ingredientsInput.toLowerCase();
+
+  // Helper location assigner
+  const assignLocation = (name = '') => {
+    const term = name.toLowerCase();
+    if (term.includes('egg') || term.includes('milk') || term.includes('butter') || term.includes('cheese') || term.includes('cream')) return 'Fridge — dairy shelf';
+    if (term.includes('spinach') || term.includes('broccoli') || term.includes('tomato') || term.includes('lemon') || term.includes('herb') || term.includes('chive')) return 'Produce drawer';
+    if (term.includes('chicken') || term.includes('beef') || term.includes('pork') || term.includes('tofu') || term.includes('meat')) return 'Fridge — meat shelf';
+    if (term.includes('salt') || term.includes('pepper') || term.includes('chili') || term.includes('ginger') || term.includes('spice')) return 'Spice rack';
+    if (term.includes('pasta') || term.includes('spaghetti') || term.includes('oil') || term.includes('sauce') || term.includes('rice')) return 'Pantry';
+    return 'Pantry';
+  };
 
   // 1. Morning Omelette / Eggs pattern
   if (text.includes('egg') || text.includes('omelette') || text.includes('cheddar') || text.includes('chive')) {
@@ -79,11 +92,11 @@ function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
       prepTimeMinutes: 5,
       cookTimeMinutes: 5,
       ingredients: [
-        { id: 'ing-1', name: 'Fresh Eggs', amount: 4, unit: 'large eggs', icon: 'cheese' },
-        { id: 'ing-2', name: 'Cheddar Cheese', amount: 0.5, unit: 'cup, shredded', icon: 'cheese' },
-        { id: 'ing-3', name: 'Cherry Tomatoes', amount: 0.5, unit: 'cup, halved', icon: 'vegetable' },
-        { id: 'ing-4', name: 'Unsalted Butter', amount: 1.5, unit: 'tbsp', icon: 'oil' },
-        { id: 'ing-5', name: 'Sea Salt & Chives', amount: 0.5, unit: 'tsp', icon: 'salt' }
+        { id: 'ing-1', name: 'Fresh Eggs', amount: 4, unit: 'large eggs', icon: 'cheese', commonlyAvailable: 'Fridge — dairy shelf' },
+        { id: 'ing-2', name: 'Cheddar Cheese', amount: 0.5, unit: 'cup, shredded', icon: 'cheese', commonlyAvailable: 'Fridge — dairy shelf' },
+        { id: 'ing-3', name: 'Cherry Tomatoes', amount: 0.5, unit: 'cup, halved', icon: 'vegetable', commonlyAvailable: 'Produce drawer' },
+        { id: 'ing-4', name: 'Unsalted Butter', amount: 1.5, unit: 'tbsp', icon: 'oil', commonlyAvailable: 'Fridge door' },
+        { id: 'ing-5', name: 'Sea Salt & Chives', amount: 0.5, unit: 'tsp', icon: 'salt', commonlyAvailable: 'Spice rack' }
       ],
       steps: [
         { id: 'step-1', instruction: 'Whisk fresh eggs in a bowl with sea salt until completely smooth and frothy.', durationMinutes: 2 },
@@ -109,11 +122,11 @@ function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
       prepTimeMinutes: 5,
       cookTimeMinutes: 10,
       ingredients: [
-        { id: 'ing-1', name: 'Spaghetti Pasta', amount: 8, unit: 'oz', icon: 'pasta' },
-        { id: 'ing-2', name: 'Garlic Cloves', amount: 6, unit: 'cloves, thinly sliced', icon: 'garlic' },
-        { id: 'ing-3', name: 'Extra Virgin Olive Oil', amount: 3, unit: 'tbsp', icon: 'oil' },
-        { id: 'ing-4', name: 'Red Chili Flakes', amount: 1, unit: 'tsp', icon: 'pepper' },
-        { id: 'ing-5', name: 'Parmesan Cheese', amount: 0.25, unit: 'cup, grated', icon: 'cheese' }
+        { id: 'ing-1', name: 'Spaghetti Pasta', amount: 8, unit: 'oz', icon: 'pasta', commonlyAvailable: 'Pantry' },
+        { id: 'ing-2', name: 'Garlic Cloves', amount: 6, unit: 'cloves, thinly sliced', icon: 'garlic', commonlyAvailable: 'Pantry' },
+        { id: 'ing-3', name: 'Extra Virgin Olive Oil', amount: 3, unit: 'tbsp', icon: 'oil', commonlyAvailable: 'Pantry shelf' },
+        { id: 'ing-4', name: 'Red Chili Flakes', amount: 1, unit: 'tsp', icon: 'pepper', commonlyAvailable: 'Spice rack' },
+        { id: 'ing-5', name: 'Parmesan Cheese', amount: 0.25, unit: 'cup, grated', icon: 'cheese', commonlyAvailable: 'Fridge — dairy shelf' }
       ],
       steps: [
         { id: 'step-1', instruction: 'Boil spaghetti in a pot of generously salted water until al dente, reserving 0.5 cup pasta water.', durationMinutes: 9 },
@@ -139,11 +152,11 @@ function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
       prepTimeMinutes: 10,
       cookTimeMinutes: 10,
       ingredients: [
-        { id: 'ing-1', name: 'Firm Tofu', amount: 14, unit: 'oz, cubed', icon: 'vegetable' },
-        { id: 'ing-2', name: 'Fresh Broccoli', amount: 2, unit: 'cups, florets', icon: 'vegetable' },
-        { id: 'ing-3', name: 'Soy Sauce', amount: 2, unit: 'tbsp', icon: 'oil' },
-        { id: 'ing-4', name: 'Fresh Ginger', amount: 1, unit: 'tbsp, minced', icon: 'garlic' },
-        { id: 'ing-5', name: 'Sesame Oil', amount: 1, unit: 'tbsp', icon: 'oil' }
+        { id: 'ing-1', name: 'Firm Tofu', amount: 14, unit: 'oz, cubed', icon: 'vegetable', commonlyAvailable: 'Fridge shelf' },
+        { id: 'ing-2', name: 'Fresh Broccoli', amount: 2, unit: 'cups, florets', icon: 'vegetable', commonlyAvailable: 'Produce drawer' },
+        { id: 'ing-3', name: 'Soy Sauce', amount: 2, unit: 'tbsp', icon: 'oil', commonlyAvailable: 'Fridge door' },
+        { id: 'ing-4', name: 'Fresh Ginger', amount: 1, unit: 'tbsp, minced', icon: 'garlic', commonlyAvailable: 'Produce drawer' },
+        { id: 'ing-5', name: 'Sesame Oil', amount: 1, unit: 'tbsp', icon: 'oil', commonlyAvailable: 'Pantry' }
       ],
       steps: [
         { id: 'step-1', instruction: 'Press tofu dry with paper towels and cut into 1-inch cubes.', durationMinutes: 3 },
@@ -176,7 +189,8 @@ function generateDynamicMockRecipe(ingredientsInput = '', ageGroup = 'Adult') {
       name: item,
       amount: idx === 0 ? 2 : 1,
       unit: idx === 0 ? 'cups' : 'tbsp',
-      icon: item.toLowerCase().includes('chicken') || item.toLowerCase().includes('beef') ? 'meat' : 'vegetable'
+      icon: item.toLowerCase().includes('chicken') || item.toLowerCase().includes('beef') ? 'meat' : 'vegetable',
+      commonlyAvailable: assignLocation(item)
     })),
     steps: [
       { id: 'step-1', instruction: `Wash, prep, and slice your ${primaryItem} and ${secondaryItem}.`, durationMinutes: 3 },
