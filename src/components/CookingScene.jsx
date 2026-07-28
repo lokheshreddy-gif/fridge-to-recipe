@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import IngredientImage from './IngredientImage.jsx';
-import { getIngredientIcon } from './icons/AnimatedIcons.jsx';
 
 /**
  * Parses instruction text to identify mentioned recipe ingredients and the primary culinary action
@@ -9,23 +8,22 @@ import { getIngredientIcon } from './icons/AnimatedIcons.jsx';
 function parseStepContext(instruction = '', ingredientsList = []) {
   const text = instruction.toLowerCase();
 
-  // 1. Detect matching ingredients from recipe ingredients list
+  // 1. Detect matching ingredients from recipe ingredients list (case-insensitive, length >= 2)
   const matchedIngredients = ingredientsList.filter((ing) => {
     if (!ing || !ing.name) return false;
     const name = ing.name.toLowerCase();
-    // Check main word match or exact substring
-    const words = name.split(/\s+/).filter((w) => w.length > 2);
+    const words = name.split(/[\s,/-]+/).filter((w) => w.length >= 2);
     return text.includes(name) || words.some((w) => text.includes(w));
   });
 
   // 2. Detect Action Keyword & Vessel Type
   let actionType = 'default';
 
-  if (/\b(chop|dice|slice|cut|mince|peel|carve)\b/.test(text)) {
+  if (/\b(chop|dice|slice|cut|mince|peel|carve|prep)\b/.test(text)) {
     actionType = 'chop';
-  } else if (/\b(sear|fry|saute|heat|brown|skillet|pan)\b/.test(text)) {
+  } else if (/\b(sear|fry|saute|heat|brown|skillet|pan|sear)\b/.test(text)) {
     actionType = 'sear';
-  } else if (/\b(boil|simmer|reduce|poach|steam)\b/.test(text)) {
+  } else if (/\b(boil|simmer|reduce|poach|steam|water)\b/.test(text)) {
     actionType = 'boil';
   } else if (/\b(mix|stir|whisk|combine|toss|fold|blend)\b/.test(text)) {
     actionType = 'mix';
@@ -41,10 +39,17 @@ function parseStepContext(instruction = '', ingredientsList = []) {
 export default function CookingScene({ step, allIngredients = [] }) {
   const { matchedIngredients, actionType } = parseStepContext(step?.instruction || '', allIngredients);
 
-  // Fallback to first 2 ingredients if no direct word match found in text
-  const displayIngredients = matchedIngredients.length > 0 
+  // Robust display ingredients selection — ALWAYS guaranteed non-empty!
+  let displayIngredients = matchedIngredients.length > 0 
     ? matchedIngredients.slice(0, 3) 
-    : allIngredients.slice(0, 2);
+    : (allIngredients.length > 0 ? allIngredients.slice(0, 2) : []);
+
+  if (displayIngredients.length === 0) {
+    console.warn(`[CookingScene] No ingredients found for step: "${step?.instruction}", using default ingredient fallback.`);
+    displayIngredients = [
+      { id: 'fallback-1', name: 'Fresh Ingredients', icon: 'vegetable' }
+    ];
+  }
 
   return (
     <div className="relative w-full max-w-lg h-60 sm:h-64 bg-slate-950 rounded-3xl border border-slate-700/80 shadow-2xl overflow-hidden flex items-center justify-center p-4">
@@ -143,7 +148,6 @@ export default function CookingScene({ step, allIngredients = [] }) {
         {/* Vessel Graphic */}
         {actionType === 'sear' && (
           <div className="relative w-64 h-24 bg-slate-900 border-4 border-slate-700 rounded-b-3xl shadow-2xl flex items-center justify-center">
-            {/* Pan handle */}
             <div className="absolute -left-12 top-2 w-12 h-4 bg-slate-800 border-2 border-slate-700 rounded-l-md" />
             <div className="w-56 h-14 bg-gradient-to-r from-amber-950/60 via-slate-900 to-amber-950/60 rounded-b-2xl border-t border-amber-500/30" />
           </div>
@@ -151,7 +155,6 @@ export default function CookingScene({ step, allIngredients = [] }) {
 
         {actionType === 'boil' && (
           <div className="relative w-56 h-28 bg-slate-900 border-4 border-slate-700 rounded-b-2xl shadow-2xl flex items-end justify-center overflow-hidden">
-            {/* Handles */}
             <div className="absolute -left-4 top-4 w-4 h-8 bg-slate-800 border-2 border-slate-700 rounded-l-md" />
             <div className="absolute -right-4 top-4 w-4 h-8 bg-slate-800 border-2 border-slate-700 rounded-r-md" />
             <div className="w-full h-16 bg-sky-950/80 border-t border-sky-400/40" />
@@ -190,10 +193,10 @@ export default function CookingScene({ step, allIngredients = [] }) {
           </div>
         )}
 
-        {/* INGREDIENTS DROPPING IN LAYER */}
+        {/* INGREDIENTS DROPPING IN LAYER — Guaranteed non-empty */}
         <div className="absolute inset-0 flex items-center justify-center gap-3 px-4 z-20">
           {displayIngredients.map((ing, idx) => {
-            const isMeat = /chicken|beef|meat|steak|pork|fish|turkey/i.test(ing.name || ing.icon);
+            const isMeat = /chicken|beef|meat|steak|pork|fish|turkey/i.test(ing.name || ing.icon || '');
 
             return (
               <motion.div

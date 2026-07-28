@@ -17,7 +17,6 @@ export function SaltIcon() {
     >
       <rect x="7" y="8" width="10" height="12" rx="2" className="stroke-indigo-400" fill="rgba(99, 102, 241, 0.1)" />
       <path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" className="stroke-slate-300" />
-      {/* Salt particles */}
       <motion.circle
         animate={{ y: [0, 3, 0], opacity: [0.4, 1, 0.4] }}
         transition={{ duration: 1.2, repeat: Infinity }}
@@ -101,7 +100,6 @@ export function OilIcon() {
     >
       <path d="M10 2h4v3h-4z" className="stroke-emerald-300" />
       <path d="M8 8a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2Z" className="stroke-emerald-400" fill="rgba(52, 211, 153, 0.15)" />
-      {/* Animated droplet */}
       <motion.path
         animate={{ y: [0, 4, 0], opacity: [0.2, 1, 0.2] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
@@ -156,7 +154,7 @@ export function VegetableIcon() {
   );
 }
 
-// 7. Default Neutral Chef Hat Icon fallback
+// 7. Default Neutral Chef Hat Icon fallback (Guaranteed fallback)
 export function DefaultIcon() {
   return (
     <motion.svg
@@ -177,28 +175,53 @@ export function DefaultIcon() {
   );
 }
 
-// Icon keyword matcher function
+/**
+ * Robust, case-insensitive keyword matcher function with expanded category coverage.
+ * Always returns a valid SVG component — NEVER null or undefined.
+ * Logs console.warn when falling through to DefaultIcon.
+ */
 export function getIngredientIcon(iconKeyword = '', ingredientName = '') {
-  const key = (iconKeyword || ingredientName).toLowerCase();
+  const key = `${iconKeyword} ${ingredientName}`.toLowerCase();
 
-  if (key.includes('salt') || key.includes('pepper') || key.includes('spice') || key.includes('seasoning')) {
+  // Spices & Seasonings
+  if (/\b(salt|pepper|spice|seasoning|chili|flak|sugar|cinnamon|paprika|cumin|curry)\b/.test(key)) {
     return <SaltIcon />;
   }
-  if (key.includes('garlic') || key.includes('onion') || key.includes('shallot')) {
+
+  // Garlic & Onions
+  if (/\b(garlic|onion|shallot|scallion|leek)\b/.test(key)) {
     return <GarlicIcon />;
   }
-  if (key.includes('lemon') || key.includes('lime') || key.includes('citrus') || key.includes('acid')) {
+
+  // Citrus & Acids
+  if (/\b(lemon|lime|citrus|orange|acid|vinegar)\b/.test(key)) {
     return <LemonIcon />;
   }
-  if (key.includes('oil') || key.includes('butter') || key.includes('fat') || key.includes('vinegar')) {
+
+  // Oils, Fats & Liquids
+  if (/\b(oil|butter|fat|sauce|soy|sesame|dressing|cream)\b/.test(key)) {
     return <OilIcon />;
   }
-  if (key.includes('chicken') || key.includes('beef') || key.includes('pork') || key.includes('meat') || key.includes('turkey') || key.includes('steak') || key.includes('fish') || key.includes('salmon')) {
+
+  // Proteins & Meats
+  if (/\b(chicken|beef|pork|meat|turkey|steak|fish|salmon|tofu|egg|bacon|ham|shrimp|seafood|protein)\b/.test(key)) {
     return <MeatIcon />;
   }
-  if (key.includes('spinach') || key.includes('vegetable') || key.includes('herb') || key.includes('kale') || key.includes('tomato') || key.includes('pepper') || key.includes('green') || key.includes('parsley') || key.includes('basil')) {
+
+  // Vegetables, Greens & Herbs
+  if (/\b(spinach|vegetable|veggie|herb|kale|tomato|pepper|bell pepper|green|parsley|basil|chive|broccoli|onion|carrot|mushroom|zucchini|cucumber|celery|corn|pea|lettuce)\b/.test(key)) {
     return <VegetableIcon />;
   }
 
+  // Dairy & Grains fallback mapping to nearest existing icon
+  if (/\b(cheese|cheddar|feta|mozzarella|parmesan|milk|yogurt)\b/.test(key)) {
+    return <OilIcon />;
+  }
+  if (/\b(pasta|spaghetti|rice|noodle|bread|grain|flour|oat)\b/.test(key)) {
+    return <SaltIcon />;
+  }
+
+  // Fallback to DefaultIcon and log console.warn for transparency
+  console.warn(`[AnimatedIcons] No specific icon match for keyword: "${iconKeyword}" (Name: "${ingredientName}"), using DefaultIcon fallback.`);
   return <DefaultIcon />;
 }

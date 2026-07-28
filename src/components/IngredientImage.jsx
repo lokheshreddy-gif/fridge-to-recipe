@@ -7,33 +7,52 @@ const LOCAL_PHOTO_MAP = {
   meat: '/ingredient-images/chicken.png',
   turkey: '/ingredient-images/chicken.png',
   pork: '/ingredient-images/chicken.png',
+  steak: '/ingredient-images/chicken.png',
+  protein: '/ingredient-images/chicken.png',
   garlic: '/ingredient-images/garlic.png',
   onion: '/ingredient-images/garlic.png',
   shallot: '/ingredient-images/garlic.png',
+  scallion: '/ingredient-images/garlic.png',
   spinach: '/ingredient-images/spinach.png',
   kale: '/ingredient-images/spinach.png',
   greens: '/ingredient-images/spinach.png',
   herb: '/ingredient-images/spinach.png',
+  parsley: '/ingredient-images/spinach.png',
+  basil: '/ingredient-images/spinach.png',
+  chive: '/ingredient-images/spinach.png',
+  broccoli: '/ingredient-images/spinach.png',
+  lettuce: '/ingredient-images/spinach.png',
   lemon: '/ingredient-images/lemon.png',
   lime: '/ingredient-images/lemon.png',
   citrus: '/ingredient-images/lemon.png',
+  orange: '/ingredient-images/lemon.png',
   oil: '/ingredient-images/oil.png',
   butter: '/ingredient-images/oil.png',
   fat: '/ingredient-images/oil.png',
+  vinegar: '/ingredient-images/oil.png',
+  sauce: '/ingredient-images/oil.png',
+  sesame: '/ingredient-images/oil.png',
+  soy: '/ingredient-images/oil.png',
   salt: '/ingredient-images/salt.png',
   pepper: '/ingredient-images/salt.png',
   spice: '/ingredient-images/salt.png',
   seasoning: '/ingredient-images/salt.png',
+  chili: '/ingredient-images/salt.png',
+  sugar: '/ingredient-images/salt.png',
   vegetable: '/ingredient-images/vegetable.png',
   tomato: '/ingredient-images/vegetable.png',
-  carrot: '/ingredient-images/vegetable.png'
+  carrot: '/ingredient-images/vegetable.png',
+  mushroom: '/ingredient-images/vegetable.png',
+  zucchini: '/ingredient-images/vegetable.png',
+  pea: '/ingredient-images/vegetable.png',
+  corn: '/ingredient-images/vegetable.png'
 };
 
 export default function IngredientImage({ iconKeyword = '', name = '', className = 'w-12 h-12' }) {
   const [imageError, setImageError] = useState(false);
 
   const getKey = () => {
-    const term = (iconKeyword || name).toLowerCase();
+    const term = `${iconKeyword} ${name}`.toLowerCase();
     for (const key of Object.keys(LOCAL_PHOTO_MAP)) {
       if (term.includes(key)) return key;
     }
@@ -55,6 +74,11 @@ export default function IngredientImage({ iconKeyword = '', name = '', className
         />
       </div>
     );
+  }
+
+  // Log console.warn for photo asset fallback tracking
+  if (!matchedKey) {
+    console.warn(`[IngredientImage] No photographic asset match for: "${iconKeyword || name}", falling back to animated SVG icon.`);
   }
 
   // Graceful Fallback: Render our animated SVG icon suite if no photo is available or if photo fails to load
