@@ -37,11 +37,11 @@ export default function IngredientList({ ingredients, baseServings, currentServi
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          <Layers className="w-5 h-5 text-indigo-400" />
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Layers className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
           Ingredients ({ingredients.length})
         </h3>
-        <span className="text-xs text-slate-400 font-medium">
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
           Click item for substitution swaps
         </span>
       </div>
@@ -57,13 +57,13 @@ export default function IngredientList({ ingredients, baseServings, currentServi
               initial={{ opacity: 0, x: -15 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: idx * 0.05 }}
-              className="glass-card rounded-2xl border border-slate-700/60 overflow-hidden transition-all duration-200"
+              className="glass-card rounded-2xl border border-slate-200 dark:border-slate-700/60 overflow-hidden transition-all duration-200"
             >
               {/* Main Ingredient Row */}
               <div
                 onClick={() => alternatives && toggleSwap(ing.name)}
                 className={`p-3.5 sm:p-4 flex items-center justify-between gap-3 ${
-                  alternatives ? 'cursor-pointer hover:bg-slate-800/80' : ''
+                  alternatives ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80' : ''
                 }`}
               >
                 <div className="flex items-center gap-3.5 min-w-0 flex-1">
@@ -71,17 +71,17 @@ export default function IngredientList({ ingredients, baseServings, currentServi
                   <IngredientImage iconKeyword={ing.icon} name={ing.name} className="w-10 h-10" />
 
                   <div className="min-w-0 flex-1">
-                    <span className="text-xs sm:text-sm font-semibold text-slate-100 block break-words leading-snug">
+                    <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-slate-100 block break-words leading-snug">
                       {ing.name}
                     </span>
                     {ing.commonlyAvailable && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800 mt-1">
-                        <MapPin className="w-3 h-3 text-indigo-400" />
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800 mt-1">
+                        <MapPin className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />
                         {ing.commonlyAvailable}
                       </span>
                     )}
                     {alternatives && (
-                      <span className="text-[11px] text-indigo-400 font-medium flex items-center gap-1 mt-0.5">
+                      <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1 mt-0.5">
                         <RefreshCw className="w-3 h-3" />
                         {alternatives.length} swap suggestions
                       </span>
@@ -91,7 +91,7 @@ export default function IngredientList({ ingredients, baseServings, currentServi
 
                 <div className="flex items-center gap-3 shrink-0">
                   {/* Amount Badge */}
-                  <div className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-bold text-xs sm:text-sm">
+                  <div className="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 font-extrabold text-xs sm:text-sm">
                     {formatAmount(ing.amount)} {ing.unit}
                   </div>
 
@@ -115,17 +115,17 @@ export default function IngredientList({ ingredients, baseServings, currentServi
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    className="bg-indigo-950/40 border-t border-indigo-500/20 px-4 py-3 text-xs"
+                    className="bg-indigo-50 dark:bg-indigo-950/40 border-t border-indigo-200 dark:border-indigo-500/20 px-4 py-3 text-xs"
                   >
-                    <div className="font-semibold text-indigo-300 mb-2 flex items-center gap-1.5">
-                      <RefreshCw className="w-3.5 h-3.5 text-indigo-400" />
+                    <div className="font-bold text-indigo-900 dark:text-indigo-300 mb-2 flex items-center gap-1.5">
+                      <RefreshCw className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
                       Possible Substitutions:
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {alternatives.map((alt, altIdx) => (
                         <span
                           key={altIdx}
-                          className="bg-indigo-900/60 text-indigo-200 border border-indigo-500/30 px-2.5 py-1 rounded-lg font-medium"
+                          className="bg-indigo-100 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-500/30 px-2.5 py-1 rounded-lg font-semibold"
                         >
                           {alt}
                         </span>
