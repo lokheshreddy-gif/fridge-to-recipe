@@ -60,20 +60,20 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
   const timerPercentage = totalDuration > 0 ? Math.round(((totalDuration - timerSeconds) / totalDuration) * 100) : 0;
 
   return (
-    <div className="min-h-dvh w-full flex flex-col bg-slate-950 text-slate-100 pb-16">
+    <div className="min-h-dvh w-full flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-16">
       {/* Top Header Navigation */}
-      <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-100/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <button
           type="button"
           onClick={onBackToIngredients}
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-700/80 px-3.5 py-2 rounded-xl transition-all cursor-pointer active:scale-95"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 px-3.5 py-2 rounded-xl transition-all cursor-pointer active:scale-95 shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Review Ingredients
         </button>
 
-        <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-full">
-          <Flame className="w-4 h-4 text-indigo-400" />
+        <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 px-3 py-1.5 rounded-full">
+          <Flame className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
           Phase 2: Animated "Making Of" Sequence
         </div>
       </header>
@@ -83,7 +83,7 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
         
         {/* Step Progress Top Bar */}
         <div className="space-y-2 mb-6">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <div className="flex items-center justify-between text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
             <span>
               {isFinished ? 'Recipe Complete!' : `Step ${currentStepIndex + 1} of ${totalSteps}`}
             </span>
@@ -92,7 +92,7 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
             </span>
           </div>
 
-          <div className="w-full h-2.5 bg-slate-900 rounded-full border border-slate-800 p-0.5 overflow-hidden">
+          <div className="w-full h-2.5 bg-slate-200 dark:bg-slate-900 rounded-full border border-slate-300 dark:border-slate-800 p-0.5 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{
@@ -115,7 +115,7 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-700/60 shadow-2xl space-y-6 my-auto text-center flex flex-col items-center"
+              className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700/60 shadow-2xl space-y-6 my-auto text-center flex flex-col items-center"
             >
               {/* Rich Data-Driven Animated Cooking Scene */}
               <CookingScene
@@ -125,19 +125,19 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
 
               {/* Step Title & Instruction */}
               <div className="max-w-2xl space-y-2">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
                   <Sparkles className="w-3.5 h-3.5" />
                   Step Instruction {currentStepIndex + 1}
                 </span>
 
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white leading-relaxed">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white leading-relaxed">
                   {currentStep.instruction}
                 </h2>
               </div>
 
               {/* Step Timer Ring (If durationMinutes present) */}
               {currentStep.durationMinutes && (
-                <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 flex items-center justify-between gap-4 w-full max-w-sm">
+                <div className="bg-slate-900 text-slate-100 p-4 rounded-2xl border border-slate-800 flex items-center justify-between gap-4 w-full max-w-sm shadow-md">
                   <div className="flex items-center gap-3">
                     <div className="relative w-12 h-12 flex items-center justify-center">
                       <svg className="w-12 h-12 transform -rotate-90">
@@ -157,7 +157,7 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
                     </div>
 
                     <div className="text-left">
-                      <span className="text-xs text-slate-400 font-semibold block">Timer</span>
+                      <span className="text-xs text-slate-300 font-semibold block">Timer</span>
                       <span className="text-lg font-extrabold text-white font-mono">
                         {formatTimer(timerSeconds)}
                       </span>
@@ -179,64 +179,61 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
               )}
             </motion.div>
           ) : (
-            /* Finished Celebration Screen */
+            /* Recipe Finished Celebration Card */
             <motion.div
               key="finished"
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.4 }}
-              className="glass-panel rounded-3xl p-8 sm:p-12 border border-slate-700/60 shadow-2xl text-center space-y-6 my-auto flex flex-col items-center"
+              className="glass-panel rounded-3xl p-8 border border-emerald-500/40 shadow-2xl space-y-6 my-auto text-center flex flex-col items-center max-w-lg mx-auto"
             >
-              <div className="w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 shadow-xl shadow-emerald-500/20">
+              <div className="w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-xl">
                 <Award className="w-10 h-10 animate-bounce" />
               </div>
 
-              <div className="space-y-2 max-w-lg">
-                <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-3.5 py-1 rounded-full uppercase tracking-wider">
-                  Success! Recipe Finished
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-black text-white">
-                  Bon Appétit! {recipe.title} is Ready!
+              <div className="space-y-2">
+                <h2 className="text-3xl font-black text-slate-900 dark:text-white">
+                  Bon Appétit! 🍽️
                 </h2>
-                <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                  All {totalSteps} cooking steps have been completed for {servings} servings. Serve hot and enjoy your creation!
+                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed font-medium">
+                  You’ve successfully completed all steps for <strong>{recipe.title}</strong>. Your dish is plated and ready to serve!
                 </p>
               </div>
 
-              <div className="pt-4 flex flex-wrap gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 w-full pt-2">
                 <button
                   type="button"
                   onClick={() => setCurrentStepIndex(0)}
-                  className="px-6 py-3 rounded-2xl bg-slate-900 text-slate-200 border border-slate-700 hover:bg-slate-800 transition-all font-bold text-sm flex items-center gap-2 cursor-pointer"
+                  className="flex-1 py-3 px-4 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <RotateCcw className="w-4 h-4" />
-                  Replay Sequence
+                  Cook Again
                 </button>
 
                 <button
                   type="button"
                   onClick={onBackToIngredients}
-                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm shadow-lg cursor-pointer"
+                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs shadow-lg hover:shadow-indigo-500/25 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Back to Ingredients
+                  <CheckCircle2 className="w-4 h-4" />
+                  Back to Recipe
                 </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* User-Controlled Navigation Buttons */}
+        {/* Step Navigation Footer Controls */}
         {!isFinished && (
-          <div className="flex items-center justify-between gap-4 mt-8 pt-4 border-t border-slate-800">
+          <div className="flex items-center justify-between gap-4 pt-6">
             <button
               type="button"
               onClick={handlePrevStep}
               disabled={currentStepIndex === 0}
-              className={`px-5 py-3 rounded-2xl border font-bold text-sm flex items-center gap-2 transition-all cursor-pointer ${
+              className={`py-3 px-5 rounded-2xl border font-extrabold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer ${
                 currentStepIndex === 0
-                  ? 'border-slate-800 text-slate-600 bg-slate-900/40 cursor-not-allowed'
-                  : 'border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800'
+                  ? 'border-slate-300 dark:border-slate-800 text-slate-400 bg-slate-100 dark:bg-slate-900/40 cursor-not-allowed'
+                  : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm'
               }`}
             >
               <ChevronLeft className="w-4 h-4" />
@@ -248,9 +245,9 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
               onClick={handleNextStep}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-extrabold text-sm shadow-lg shadow-indigo-500/25 flex items-center gap-2 cursor-pointer"
+              className="py-3.5 px-7 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-black text-xs sm:text-sm shadow-xl shadow-indigo-500/25 cursor-pointer flex items-center gap-2"
             >
-              {isLastStep ? 'Finish Cooking 🎉' : 'Next Step'}
+              {isLastStep ? 'Finish Dish 🎉' : 'Next Step'}
               <ChevronRight className="w-4 h-4" />
             </motion.button>
           </div>
