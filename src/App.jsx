@@ -6,7 +6,7 @@ import LoadingState from './components/LoadingState.jsx';
 import ErrorState from './components/ErrorState.jsx';
 import RecipeCard from './components/RecipeCard.jsx';
 import FavoritesModal from './components/FavoritesModal.jsx';
-import FridgeWatermark from './components/FridgeWatermark.jsx';
+import OpeningFridgeScene from './components/animations/OpeningFridgeScene.jsx';
 import { validateRecipe } from './utils/validateRecipe.js';
 
 export default function App() {
@@ -142,8 +142,8 @@ export default function App() {
   return (
     <div className={`min-h-dvh w-full font-sans transition-colors duration-300 relative ${theme === 'dark' ? 'dark-theme bg-slate-950 text-slate-100' : 'light-theme bg-slate-50 text-slate-900'}`}>
       
-      {/* Background Fridge Watermark Graphic */}
-      <FridgeWatermark />
+      {/* Background Animated Opening & Closing Fridge Scene */}
+      <OpeningFridgeScene />
 
       {/* Universal Top Navbar Toolbar */}
       <TopNavbar
