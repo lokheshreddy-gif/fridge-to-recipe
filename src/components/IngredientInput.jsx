@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2 } from 'lucide-react';
 
 const TRENDING_COMBOS = [
-  { name: '🔥 Chicken, Garlic, Spinach & Lemon', text: 'Chicken breast, garlic, spinach, lemon, olive oil, salt' },
-  { name: '🥦 Tofu, Broccoli, Soy Sauce & Ginger', text: 'Firm tofu, broccoli florets, soy sauce, fresh ginger, sesame oil, garlic' },
-  { name: '🍝 Pasta, Olive Oil & Chili Flakes', text: 'Spaghetti, garlic cloves, olive oil, red chili flakes, parsley, parmesan cheese' },
-  { name: '🥑 Avocado, Eggs, Tomatoes & Toast', text: 'Avocado, eggs, cherry tomatoes, sourdough bread, butter, black pepper' }
+  { name: '🍳 Morning Omelette (Eggs, Cheese & Tomatoes)', text: 'Eggs, cheddar cheese, cherry tomatoes, butter, salt, chives' },
+  { name: '🍝 Garlic Olive Oil Pasta (Aglio e Olio)', text: 'Spaghetti, garlic, olive oil, red chili flakes, parmesan cheese, salt' },
+  { name: '🥦 Ginger Soy Tofu & Broccoli Stir-Fry', text: 'Firm tofu, broccoli, soy sauce, fresh ginger, sesame oil' },
+  { name: '🍗 Chicken, Garlic, Spinach & Lemon', text: 'Chicken breast, garlic, spinach, lemon, olive oil, salt' }
 ];
 
 const AGE_GROUPS = ['Child', 'Teen', 'Adult', 'Senior'];
@@ -30,10 +30,12 @@ export default function IngredientInput({
     e.preventDefault();
     setTouched(true);
     if (isEmpty || isLoading) return;
+    console.log('[Form Submit] Raw Ingredients Input Payload:', ingredientsText);
     onSubmit(ingredientsText, selectedAgeGroup, testMode === 'normal' ? null : testMode);
   };
 
   const handleSelectPreset = (presetText) => {
+    console.log('[Preset Chip Selected] New text:', presetText);
     setIngredientsText(presetText);
     setTouched(false);
   };
@@ -152,7 +154,7 @@ export default function IngredientInput({
             )}
           </div>
 
-          {/* Feature 6: Age Group Selector */}
+          {/* Age Group Selector */}
           <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
             <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
               <Users2 className="w-4 h-4 text-indigo-400" />
@@ -176,11 +178,11 @@ export default function IngredientInput({
             </div>
           </div>
 
-          {/* Feature 5: Trending Combinations */}
+          {/* Trending Combinations */}
           <div>
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2 flex items-center gap-1.5">
               <Flame className="w-3.5 h-3.5 text-amber-400" />
-              Trending Ingredient Combinations:
+              Quick Presets & Trending Combinations:
             </span>
             <div className="flex flex-wrap gap-2">
               {TRENDING_COMBOS.map((combo, idx) => (
