@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronLeft, ChevronRight, Clock, CheckCircle2, RotateCcw, Flame, Sparkles, Award } from 'lucide-react';
-import { getCookingActionAnimation } from './animations/CookingActionAnimations.jsx';
+import CookingScene from './CookingScene.jsx';
 
 export default function CookingSequence({ recipe, servings, onBackToIngredients }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -117,10 +117,11 @@ export default function CookingSequence({ recipe, servings, onBackToIngredients 
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-700/60 shadow-2xl space-y-6 my-auto text-center flex flex-col items-center"
             >
-              {/* Animated Action Vector Illustration */}
-              <div className="py-2">
-                {getCookingActionAnimation(currentStep.instruction)}
-              </div>
+              {/* Rich Data-Driven Animated Cooking Scene */}
+              <CookingScene
+                step={currentStep}
+                allIngredients={recipe.ingredients || []}
+              />
 
               {/* Step Title & Instruction */}
               <div className="max-w-2xl space-y-2">
