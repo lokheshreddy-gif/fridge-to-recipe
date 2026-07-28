@@ -51,7 +51,7 @@ export default function CookingScene({ step, allIngredients = [] }) {
   }
 
   return (
-    <div className="relative w-full max-w-xl h-64 sm:h-72 bg-slate-100 dark:bg-slate-950 rounded-3xl border border-slate-300 dark:border-slate-700/80 shadow-2xl overflow-hidden flex items-center justify-center p-4 transition-colors">
+    <div className="cooking-scene-box relative w-full max-w-xl h-64 sm:h-72 bg-slate-100 dark:bg-slate-950 rounded-3xl border border-slate-300 dark:border-slate-700/80 shadow-2xl overflow-hidden flex items-center justify-center p-4 transition-colors">
       
       {/* Dynamic Background Heat Glow */}
       <div
@@ -168,14 +168,14 @@ export default function CookingScene({ step, allIngredients = [] }) {
         
         {/* Vessel Graphic */}
         {actionType === 'sear' && (
-          <div className="relative w-72 h-28 bg-white dark:bg-slate-900 border-4 border-slate-300 dark:border-slate-700 rounded-b-3xl shadow-2xl flex items-center justify-center">
+          <div className="skillet-vessel relative w-72 h-28 bg-white dark:bg-slate-900 border-4 border-slate-300 dark:border-slate-700 rounded-b-3xl shadow-2xl flex items-center justify-center">
             <div className="absolute -left-14 top-3 w-14 h-5 bg-slate-300 dark:bg-slate-800 border-2 border-slate-400 dark:border-slate-700 rounded-l-md" />
-            <div className="w-64 h-16 bg-gradient-to-r from-amber-200/50 via-slate-100 to-amber-200/50 dark:from-amber-950/70 dark:via-slate-900 dark:to-amber-950/70 rounded-b-2xl border-t border-amber-500/40" />
+            <div className="skillet-interior w-64 h-16 bg-gradient-to-r from-amber-200/50 via-slate-100 to-amber-200/50 dark:from-amber-950/70 dark:via-slate-900 dark:to-amber-950/70 rounded-b-2xl border-t border-amber-500/40" />
           </div>
         )}
 
         {actionType === 'boil' && (
-          <div className="relative w-64 h-32 bg-white dark:bg-slate-900 border-4 border-slate-300 dark:border-slate-700 rounded-b-2xl shadow-2xl flex items-end justify-center overflow-hidden">
+          <div className="pot-vessel relative w-64 h-32 bg-white dark:bg-slate-900 border-4 border-slate-300 dark:border-slate-700 rounded-b-2xl shadow-2xl flex items-end justify-center overflow-hidden">
             <div className="absolute -left-5 top-5 w-5 h-9 bg-slate-300 dark:bg-slate-800 border-2 border-slate-400 dark:border-slate-700 rounded-l-md" />
             <div className="absolute -right-5 top-5 w-5 h-9 bg-slate-300 dark:bg-slate-800 border-2 border-slate-400 dark:border-slate-700 rounded-r-md" />
             <motion.div
@@ -187,13 +187,13 @@ export default function CookingScene({ step, allIngredients = [] }) {
         )}
 
         {(actionType === 'mix' || actionType === 'default') && (
-          <div className="relative w-68 h-32 bg-indigo-50 dark:bg-indigo-950/90 border-4 border-indigo-300 dark:border-indigo-500/60 rounded-b-full shadow-2xl flex items-center justify-center overflow-hidden">
+          <div className="bowl-vessel relative w-68 h-32 bg-indigo-50 dark:bg-indigo-950/90 border-4 border-indigo-300 dark:border-indigo-500/60 rounded-b-full shadow-2xl flex items-center justify-center overflow-hidden">
             <div className="w-56 h-20 bg-purple-100/60 dark:bg-purple-900/50 rounded-b-full border-t border-purple-400/40" />
           </div>
         )}
 
         {actionType === 'bake' && (
-          <div className="relative w-72 h-36 bg-white dark:bg-slate-950 border-4 border-slate-300 dark:border-slate-700 rounded-2xl p-2 flex flex-col justify-between shadow-2xl">
+          <div className="oven-vessel relative w-72 h-36 bg-white dark:bg-slate-950 border-4 border-slate-300 dark:border-slate-700 rounded-2xl p-2 flex flex-col justify-between shadow-2xl">
             <div className="w-full h-2.5 bg-gradient-to-r from-orange-600 via-amber-300 to-orange-600 rounded-full" />
             <div className="w-full h-20 bg-amber-100/60 dark:bg-amber-950/50 border border-amber-400/40 dark:border-amber-500/30 rounded-xl" />
             <div className="w-full h-2.5 bg-gradient-to-r from-orange-600 via-amber-300 to-orange-600 rounded-full" />
@@ -201,13 +201,13 @@ export default function CookingScene({ step, allIngredients = [] }) {
         )}
 
         {actionType === 'chop' && (
-          <div className="relative w-72 h-28 bg-amber-100 dark:bg-amber-950/90 border-4 border-amber-300 dark:border-amber-800/80 rounded-2xl shadow-2xl flex items-center justify-center">
+          <div className="board-vessel relative w-72 h-28 bg-amber-100 dark:bg-amber-950/90 border-4 border-amber-300 dark:border-amber-800/80 rounded-2xl shadow-2xl flex items-center justify-center">
             <div className="w-64 h-20 bg-amber-200/50 dark:bg-amber-900/50 border border-amber-400/60 dark:border-amber-700/60 rounded-xl" />
           </div>
         )}
 
         {actionType === 'plate' && (
-          <div className="relative w-72 h-28 bg-white dark:bg-slate-950 border-4 border-slate-300 dark:border-slate-300 rounded-full shadow-2xl flex items-center justify-center">
+          <div className="plate-vessel relative w-72 h-28 bg-white dark:bg-slate-950 border-4 border-slate-300 dark:border-slate-300 rounded-full shadow-2xl flex items-center justify-center">
             <div className="w-56 h-18 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-full" />
           </div>
         )}
@@ -242,10 +242,10 @@ export default function CookingScene({ step, allIngredients = [] }) {
                 }}
                 className="relative"
               >
-                {/* Ingredient Card Thumbnail */}
-                <div className="bg-white dark:bg-slate-900/95 p-2 rounded-2xl border border-slate-300 dark:border-slate-700/90 shadow-2xl flex items-center gap-2 backdrop-blur-md">
+                {/* Ingredient Card Thumbnail with explicit .orbit-ingredient-card styling */}
+                <div className="orbit-ingredient-card p-2 rounded-2xl border shadow-2xl flex items-center gap-2 backdrop-blur-md">
                   <IngredientImage iconKeyword={ing.icon} name={ing.name} className="w-10 h-10 shrink-0" />
-                  <span className="text-xs font-black text-slate-900 dark:text-slate-100 max-w-24 truncate">
+                  <span className="orbit-ingredient-title text-xs font-black max-w-24 truncate">
                     {ing.name}
                   </span>
                 </div>
@@ -277,7 +277,7 @@ export default function CookingScene({ step, allIngredients = [] }) {
       </div>
 
       {/* SIMPLE ENGLISH TOP SCENE BADGE */}
-      <div className="absolute top-3 left-3 z-30 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700/80 text-[11px] font-black text-slate-900 dark:text-slate-100 shadow-md">
+      <div className="scene-badge absolute top-3 left-3 z-30 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border text-[11px] font-black shadow-md">
         <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
         <span className="uppercase tracking-wider">
           {actionType === 'sear'

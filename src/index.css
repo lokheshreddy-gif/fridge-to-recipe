@@ -85,10 +85,10 @@
   color: #0f172a !important;
 }
 
-/* 1. All Slate & Dark Color Background Containers in Light Theme convert to Light Slate/Soft Tint (excluding background animations) */
-.light-theme [class*="bg-slate-950"]:not(.pointer-events-none):not(.pointer-events-none *),
-.light-theme [class*="bg-slate-900"]:not(.pointer-events-none):not(.pointer-events-none *),
-.light-theme [class*="bg-slate-800"]:not(.pointer-events-none):not(.pointer-events-none *),
+/* 1. All Slate & Dark Color Background Containers in Light Theme convert to Light Slate/Soft Tint (excluding background animations and orbit cards) */
+.light-theme [class*="bg-slate-950"]:not(.pointer-events-none):not(.pointer-events-none *):not(.orbit-ingredient-card):not(.orbit-ingredient-card *),
+.light-theme [class*="bg-slate-900"]:not(.pointer-events-none):not(.pointer-events-none *):not(.orbit-ingredient-card):not(.orbit-ingredient-card *),
+.light-theme [class*="bg-slate-800"]:not(.pointer-events-none):not(.pointer-events-none *):not(.orbit-ingredient-card):not(.orbit-ingredient-card *),
 .light-theme [class*="bg-amber-950"]:not(.pointer-events-none):not(.pointer-events-none *),
 .light-theme [class*="bg-rose-950"]:not(.pointer-events-none):not(.pointer-events-none *),
 .light-theme [class*="bg-yellow-950"]:not(.pointer-events-none):not(.pointer-events-none *),
@@ -99,9 +99,9 @@
   color: #0f172a !important;
 }
 
-.light-theme [class*="bg-slate-950"]:not(.pointer-events-none) *,
-.light-theme [class*="bg-slate-900"]:not(.pointer-events-none) *,
-.light-theme [class*="bg-slate-800"]:not(.pointer-events-none) *,
+.light-theme [class*="bg-slate-950"]:not(.pointer-events-none):not(.orbit-ingredient-card) *,
+.light-theme [class*="bg-slate-900"]:not(.pointer-events-none):not(.orbit-ingredient-card) *,
+.light-theme [class*="bg-slate-800"]:not(.pointer-events-none):not(.orbit-ingredient-card) *,
 .light-theme [class*="bg-amber-950"]:not(.pointer-events-none) *,
 .light-theme [class*="bg-rose-950"]:not(.pointer-events-none) *,
 .light-theme [class*="bg-yellow-950"]:not(.pointer-events-none) *,
@@ -127,9 +127,9 @@
 }
 
 .light-theme p,
-.light-theme span,
+.light-theme span:not(.orbit-ingredient-title),
 .light-theme label,
-.light-theme div:not([class*="text-"]):not(.pointer-events-none *) {
+.light-theme div:not([class*="text-"]):not(.pointer-events-none *):not(.orbit-ingredient-card *) {
   color: #0f172a !important;
 }
 
@@ -179,7 +179,61 @@
   -webkit-text-fill-color: #64748b !important;
 }
 
+/* Orbiting Ingredient Cards styling */
+.light-theme .orbit-ingredient-card {
+  background-color: #ffffff !important;
+  border: 2px solid #cbd5e1 !important;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+}
+
+.light-theme .orbit-ingredient-title {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  font-weight: 900 !important;
+}
+
+.dark-theme .orbit-ingredient-card {
+  background-color: #0f172a !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark-theme .orbit-ingredient-title {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  font-weight: 900 !important;
+}
+
+/* Scene Badge styling */
+.light-theme .scene-badge {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+.dark-theme .scene-badge {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+/* Vessel styling */
+.light-theme .skillet-vessel,
+.light-theme .pot-vessel,
+.light-theme .bowl-vessel,
+.light-theme .oven-vessel,
+.light-theme .plate-vessel {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light-theme .skillet-interior {
+  background: linear-gradient(to right, #fef3c7, #ffffff, #fef3c7) !important;
+}
+
 /* Background Fridge Scene Light Mode Custom Styling */
-.light-theme .pointer-events-none {
+.light-theme .pointer-events-none:not(.orbit-ingredient-card) {
   opacity: 0.75 !important;
 }
