@@ -1,12 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sun, Moon, Heart, ChefHat } from 'lucide-react';
+import { Sun, Moon, Heart, ChefHat, DoorOpen } from 'lucide-react';
 
 export default function TopNavbar({
   theme,
   onToggleTheme,
   favoritesCount,
-  onOpenFavorites
+  onOpenFavorites,
+  onOpenFridgeIntro
 }) {
   return (
     <div className="w-full bg-slate-100/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 px-4 sm:px-8 py-3 flex items-center justify-between z-40 relative">
@@ -22,6 +23,21 @@ export default function TopNavbar({
 
       {/* Toolbar Controls */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Replay Fridge Opening Intro Button */}
+        {onOpenFridgeIntro && (
+          <motion.button
+            type="button"
+            onClick={onOpenFridgeIntro}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 px-3 py-1.5 rounded-xl transition-all cursor-pointer shadow-xs"
+            title="Open Fridge Doors Animation"
+          >
+            <DoorOpen className="w-4 h-4 text-emerald-500" />
+            <span className="hidden sm:inline">Open Fridge</span>
+          </motion.button>
+        )}
+
         {/* Favorites Modal Button */}
         <motion.button
           type="button"

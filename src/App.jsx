@@ -7,12 +7,16 @@ import ErrorState from './components/ErrorState.jsx';
 import RecipeCard from './components/RecipeCard.jsx';
 import FavoritesModal from './components/FavoritesModal.jsx';
 import OpeningFridgeScene from './components/animations/OpeningFridgeScene.jsx';
+import WelcomeFridgeIntro from './components/animations/WelcomeFridgeIntro.jsx';
 import { validateRecipe } from './utils/validateRecipe.js';
 
 export default function App() {
   const [appState, setAppState] = useState('INPUT'); // 'INPUT' | 'LOADING' | 'ERROR' | 'RECIPE'
   const [recipeData, setRecipeData] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Initial Website Load Welcome Fridge Opening Animation
+  const [showWelcomeIntro, setShowWelcomeIntro] = useState(true);
 
   // Light/Dark Theme state
   const [theme, setTheme] = useState('dark');
@@ -98,28 +102,18 @@ export default function App() {
       const resData = await response.json();
       if (activeRequestIdRef.current !== requestId) return;
 
-      let parsedRecipe = null;
-      if (resData.rawText) {
-        try {
-          parsedRecipe = JSON.parse(resData.rawText);
-        } catch (jsonErr) {
-          console.error('[JSON Parse Failure]', jsonErr, resData.rawText);
-          throw new Error("Couldn't understand that recipe. The AI response was malformed.");
-        }
-      } else if (resData.title && resData.ingredients) {
-        parsedRecipe = resData;
-      } else {
-        throw new Error("Couldn't understand that recipe format from server.");
+      const validation = validateRecipe(resData);
+      if (!validation.isValid) {
+        throw new Error(`Recipe structure error: ${validation.reason}`);
       }
 
-      validateRecipe(parsedRecipe);
-      setRecipeData(parsedRecipe);
+      setRecipeData(validation.data);
       setAppState('RECIPE');
     } catch (err) {
       if (err.name === 'AbortError') return;
       if (activeRequestIdRef.current !== requestId) return;
-      console.error('[App Error]', err);
-      setErrorMessage(err.message || 'Failed to generate recipe. Please check your connection and try again.');
+      console.error('[Generate Recipe Error]', err);
+      setErrorMessage(err.message || 'Failed to generate recipe. Please check your network or try again.');
       setAppState('ERROR');
     }
   };
@@ -132,40 +126,56 @@ export default function App() {
   };
 
   const handleReset = () => {
-    setAppState('INPUT');
+    activeRequestIdRef.current++;
+    if (abortControllerRef.current) abortControllerRef.current.abort();
+    if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current);
     setRecipeData(null);
     setErrorMessage('');
+    setAppState('INPUT');
   };
 
-  const isCurrentRecipeFavorite = recipeData ? favorites.some((r) => r.title === recipeData.title) : false;
+  const isCurrentRecipeFavorite = recipeData
+    ? favorites.some((r) => r.title === recipeData.title)
+    : false;
 
   return (
-    <div className={`min-h-dvh w-full font-sans transition-colors duration-300 relative ${theme === 'dark' ? 'dark-theme bg-slate-950 text-slate-100' : 'light-theme bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-dvh w-full relative overflow-x-hidden font-sans transition-colors duration-300 ${theme === 'dark' ? 'dark-theme bg-slate-950 text-slate-100' : 'light-theme bg-slate-50 text-slate-900'}`}>
       
-      {/* Background Animated Opening & Closing Fridge Scene */}
+      {/* 1. INITIAL WEBSITE LOAD FULL-SCREEN WELCOME FRIDGE OPENING INTRO ANIMATION */}
+      <AnimatePresence>
+        {showWelcomeIntro && (
+          <WelcomeFridgeIntro
+            onComplete={() => setShowWelcomeIntro(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* 2. CONTINUOUS FULL-PAGE BACKGROUND FRIDGE SCENE */}
       <OpeningFridgeScene />
 
-      {/* Universal Top Navbar Toolbar */}
+      {/* 3. TOP NAVIGATION BAR */}
       <TopNavbar
         theme={theme}
         onToggleTheme={handleToggleTheme}
         favoritesCount={favorites.length}
         onOpenFavorites={() => setIsFavoritesOpen(true)}
+        onOpenFridgeIntro={() => setShowWelcomeIntro(true)}
       />
 
-      {/* Favorites Modal */}
+      {/* FAVORITES MODAL */}
       <FavoritesModal
         isOpen={isFavoritesOpen}
         onClose={() => setIsFavoritesOpen(false)}
         favorites={favorites}
-        onSelectRecipe={(recipe) => {
-          setRecipeData(recipe);
-          setAppState('RECIPE');
-        }}
         onRemoveFavorite={handleRemoveFavorite}
+        onSelectRecipe={(r) => {
+          setRecipeData(r);
+          setAppState('RECIPE');
+          setIsFavoritesOpen(false);
+        }}
       />
 
-      {/* Main View Flow */}
+      {/* MAIN SCREEN STATES */}
       <AnimatePresence mode="wait">
         {appState === 'INPUT' && (
           <motion.div
