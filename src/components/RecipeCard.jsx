@@ -7,9 +7,7 @@ export default function RecipeCard({
   recipe,
   onReset,
   isFavorite,
-  onToggleFavorite,
-  onAddIngredientToShoppingList,
-  onAddAllToShoppingList
+  onToggleFavorite
 }) {
   const [phase, setPhase] = useState('INGREDIENTS'); // 'INGREDIENTS' (Phase 1) | 'COOKING_SEQUENCE' (Phase 2)
   const [selectedServings, setSelectedServings] = useState(recipe.baseServings || 2);
@@ -41,8 +39,6 @@ export default function RecipeCard({
               onReset={onReset}
               isFavorite={isFavorite}
               onToggleFavorite={onToggleFavorite}
-              onAddIngredientToShoppingList={onAddIngredientToShoppingList}
-              onAddAllToShoppingList={onAddAllToShoppingList}
             />
           </motion.div>
         ) : (

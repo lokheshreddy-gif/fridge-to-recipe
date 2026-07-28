@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ChefHat, Sparkles, Utensils, Clock, Layers, Flame, Heart, ShoppingBag, Activity, Info, MapPin } from 'lucide-react';
+import { ArrowLeft, ChefHat, Sparkles, Utensils, Clock, Layers, Flame, Heart, Activity, Info, MapPin } from 'lucide-react';
 import ServingsControl from './ServingsControl.jsx';
 import IngredientImage from './IngredientImage.jsx';
 import OpeningFridgeScene from './animations/OpeningFridgeScene.jsx';
@@ -10,9 +10,7 @@ export default function IngredientsFirstView({
   onStartCooking,
   onReset,
   isFavorite = false,
-  onToggleFavorite,
-  onAddIngredientToShoppingList,
-  onAddAllToShoppingList
+  onToggleFavorite
 }) {
   const [servings, setServings] = useState(recipe.baseServings || 2);
 
@@ -184,21 +182,11 @@ export default function IngredientsFirstView({
 
         {/* Staggered Ingredients Grid */}
         <div>
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div className="flex items-center justify-between gap-2 mb-4">
             <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
               <Layers className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
               Kitchen Counter ({recipe.ingredients.length} Items Laid Out)
             </h2>
-
-            {/* Add all to shopping list button */}
-            <button
-              type="button"
-              onClick={() => onAddAllToShoppingList(recipe.ingredients)}
-              className="text-xs bg-emerald-600/10 hover:bg-emerald-600/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 px-3.5 py-2 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
-            >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              Add Missing Items to List
-            </button>
           </div>
 
           <motion.div
@@ -228,14 +216,6 @@ export default function IngredientsFirstView({
                         {ing.commonlyAvailable}
                       </span>
                     )}
-
-                    <button
-                      type="button"
-                      onClick={() => onAddIngredientToShoppingList(ing.name)}
-                      className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold mt-1 flex items-center gap-1 cursor-pointer block"
-                    >
-                      + Add to shopping list
-                    </button>
                   </div>
                 </div>
 

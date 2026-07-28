@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TopNavbar from './components/TopNavbar.jsx';
 import IngredientInput from './components/IngredientInput.jsx';
@@ -6,7 +6,6 @@ import LoadingState from './components/LoadingState.jsx';
 import ErrorState from './components/ErrorState.jsx';
 import RecipeCard from './components/RecipeCard.jsx';
 import FavoritesModal from './components/FavoritesModal.jsx';
-import ShoppingListDrawer from './components/ShoppingListDrawer.jsx';
 import { validateRecipe } from './utils/validateRecipe.js';
 
 export default function App() {
@@ -14,18 +13,14 @@ export default function App() {
   const [recipeData, setRecipeData] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Feature 1: Light/Dark Theme state
+  // Light/Dark Theme state
   const [theme, setTheme] = useState('dark');
 
-  // Feature 2: Favorites state
+  // Favorites state
   const [favorites, setFavorites] = useState([]);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
 
-  // Feature 3: Shopping List state
-  const [shoppingList, setShoppingList] = useState([]);
-  const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
-
-  // Feature 4: Recent Search History state
+  // Recent Search History state
   const [recentHistory, setRecentHistory] = useState([]);
 
   // Active Request tracking
@@ -54,35 +49,6 @@ export default function App() {
 
   const handleRemoveFavorite = (title) => {
     setFavorites((prev) => prev.filter((r) => r.title !== title));
-  };
-
-  // Shopping List Management
-  const handleAddShoppingItem = (itemText) => {
-    if (!itemText) return;
-    setShoppingList((prev) => [
-      { id: `shop-${Date.now()}-${Math.random()}`, ingredient: itemText, checked: false },
-      ...prev
-    ]);
-  };
-
-  const handleAddAllToShoppingList = (ingredientsArray = []) => {
-    const newItems = ingredientsArray.map((ing) => ({
-      id: `shop-${Date.now()}-${Math.random()}`,
-      ingredient: `${ing.amount} ${ing.unit} ${ing.name}`.trim(),
-      checked: false
-    }));
-    setShoppingList((prev) => [...newItems, ...prev]);
-    setIsShoppingListOpen(true);
-  };
-
-  const handleToggleShoppingItem = (id) => {
-    setShoppingList((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item))
-    );
-  };
-
-  const handleClearCompletedShopping = () => {
-    setShoppingList((prev) => prev.filter((item) => !item.checked));
   };
 
   // Generate Recipe handler
@@ -181,8 +147,6 @@ export default function App() {
         onToggleTheme={handleToggleTheme}
         favoritesCount={favorites.length}
         onOpenFavorites={() => setIsFavoritesOpen(true)}
-        shoppingListCount={shoppingList.filter((i) => !i.checked).length}
-        onOpenShoppingList={() => setIsShoppingListOpen(true)}
       />
 
       {/* Favorites Modal */}
@@ -195,16 +159,6 @@ export default function App() {
           setAppState('RECIPE');
         }}
         onRemoveFavorite={handleRemoveFavorite}
-      />
-
-      {/* Shopping List Drawer */}
-      <ShoppingListDrawer
-        isOpen={isShoppingListOpen}
-        onClose={() => setIsShoppingListOpen(false)}
-        shoppingList={shoppingList}
-        onToggleItem={handleToggleShoppingItem}
-        onAddItem={handleAddShoppingItem}
-        onClearCompleted={handleClearCompletedShopping}
       />
 
       {/* Main View Flow */}
@@ -267,8 +221,6 @@ export default function App() {
               onReset={handleReset}
               isFavorite={isCurrentRecipeFavorite}
               onToggleFavorite={() => handleToggleFavorite(recipeData)}
-              onAddIngredientToShoppingList={handleAddShoppingItem}
-              onAddAllToShoppingList={handleAddAllToShoppingList}
             />
           </motion.div>
         )}
