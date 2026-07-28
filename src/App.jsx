@@ -6,6 +6,7 @@ import LoadingState from './components/LoadingState.jsx';
 import ErrorState from './components/ErrorState.jsx';
 import RecipeCard from './components/RecipeCard.jsx';
 import FavoritesModal from './components/FavoritesModal.jsx';
+import FridgeWatermark from './components/FridgeWatermark.jsx';
 import { validateRecipe } from './utils/validateRecipe.js';
 
 export default function App() {
@@ -139,8 +140,11 @@ export default function App() {
   const isCurrentRecipeFavorite = recipeData ? favorites.some((r) => r.title === recipeData.title) : false;
 
   return (
-    <div className={`min-h-dvh w-full font-sans transition-colors duration-300 ${theme === 'dark' ? 'dark-theme bg-slate-950 text-slate-100' : 'light-theme bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-dvh w-full font-sans transition-colors duration-300 relative ${theme === 'dark' ? 'dark-theme bg-slate-950 text-slate-100' : 'light-theme bg-slate-50 text-slate-900'}`}>
       
+      {/* Background Fridge Watermark Graphic */}
+      <FridgeWatermark />
+
       {/* Universal Top Navbar Toolbar */}
       <TopNavbar
         theme={theme}
@@ -170,7 +174,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="min-h-dvh w-full"
+            className="min-h-dvh w-full relative z-10"
           >
             <IngredientInput
               onSubmit={handleGenerateRecipe}
@@ -188,7 +192,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="min-h-dvh w-full"
+            className="min-h-dvh w-full relative z-10"
           >
             <LoadingState onCancel={handleCancelRequest} />
           </motion.div>
@@ -201,7 +205,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="min-h-dvh w-full"
+            className="min-h-dvh w-full relative z-10"
           >
             <ErrorState error={errorMessage} onRetry={handleReset} />
           </motion.div>
@@ -214,7 +218,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="min-h-dvh w-full"
+            className="min-h-dvh w-full relative z-10"
           >
             <RecipeCard
               recipe={recipeData}
