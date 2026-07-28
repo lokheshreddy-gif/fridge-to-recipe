@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders } from 'lucide-react';
+import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders, Edit3, Check } from 'lucide-react';
 import LiveCameraModal from './LiveCameraModal.jsx';
+import { extractImageFeatures } from '../utils/extractImageFeatures.js';
 
 const AGE_CATEGORIES = [
   {
@@ -129,6 +130,7 @@ export default function IngredientInput({
   const [isScanningImage, setIsScanningImage] = useState(false);
   const [scannedImagePreview, setScannedImagePreview] = useState(null);
   const [scannedResult, setScannedResult] = useState(null);
+  const [isEditingDishName, setIsEditingDishName] = useState(false);
 
   const recognitionRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -185,17 +187,20 @@ export default function IngredientInput({
     }
   };
 
-  // AI Food Image Scanner Handler (for both file upload and live camera snap)
+  // High-Accuracy AI Food Image Feature Scanner Handler
   const processImageDataUrl = async (base64Data, filename = 'camera_photo.jpg') => {
     setScannedImagePreview(base64Data);
     setIsScanningImage(true);
     setScannedResult(null);
 
     try {
+      // Extract color & visual features directly from image canvas
+      const colorProfile = await extractImageFeatures(base64Data);
+
       const response = await fetch('/api/scan-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: base64Data, filename })
+        body: JSON.stringify({ imageBase64: base64Data, filename, colorProfile })
       });
 
       if (!response.ok) throw new Error('Image scan failed');
@@ -204,10 +209,8 @@ export default function IngredientInput({
       setScannedResult(scanData);
       setIsScanningImage(false);
 
-      const dishToUse = scanData.detectedDish || scanData.detectedIngredients?.join(', ') || 'Vegetable Pulao';
-      if (!ingredientsText) {
-        setIngredientsText(dishToUse);
-      }
+      const dishToUse = scanData.detectedDish || scanData.detectedIngredients?.join(', ') || 'Moong Dal Khichdi';
+      setIngredientsText(dishToUse);
       setTouched(false);
     } catch (err) {
       console.error('[Image Scanner Error]', err);
@@ -311,7 +314,7 @@ export default function IngredientInput({
           What food do you have?
         </h1>
         <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2 mb-6 leading-relaxed font-semibold">
-          Use live camera, upload photo, speak, or type dish names with custom text notes!
+          Scan a food photo with camera, speak, or type any dish name with custom preferences!
         </p>
 
         {/* AI Food Image Scanner Card (If image scanned) */}
@@ -332,22 +335,45 @@ export default function IngredientInput({
               <div className="flex items-center justify-center sm:justify-start gap-2">
                 <Camera className="w-4 h-4 text-emerald-400 animate-pulse" />
                 <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">
-                  {isScanningImage ? 'AI Scanning Food Photo...' : 'Food Identified from Image!'}
+                  {isScanningImage ? 'Analyzing Image Color & Features...' : 'AI Food Identification Result'}
                 </span>
               </div>
 
               {isScanningImage ? (
                 <p className="text-xs text-slate-300 font-bold">
-                  Analyzing food items & ingredients in your photo...
+                  Extracting visual features to match accurate dish name...
                 </p>
               ) : (
                 scannedResult && (
-                  <div>
-                    <h3 className="text-base font-black text-white">
-                      Detected: {scannedResult.detectedDish}
-                    </h3>
-                    <p className="text-xs text-slate-300 font-semibold mt-0.5">
-                      Ingredients: {scannedResult.detectedIngredients?.join(', ')}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-center sm:justify-start gap-2">
+                      {isEditingDishName ? (
+                        <input
+                          type="text"
+                          value={ingredientsText}
+                          onChange={(e) => setIngredientsText(e.target.value)}
+                          placeholder="Type exact dish name..."
+                          className="bg-slate-800 text-white font-black text-sm px-3 py-1 rounded-xl border border-indigo-400 outline-none"
+                          autoFocus
+                        />
+                      ) : (
+                        <h3 className="text-base font-black text-white">
+                          Identified: <span className="text-emerald-300">{ingredientsText || scannedResult.detectedDish}</span>
+                        </h3>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingDishName(!isEditingDishName)}
+                        className="p-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                      >
+                        {isEditingDishName ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Edit3 className="w-3.5 h-3.5 text-indigo-400" />}
+                        <span>{isEditingDishName ? 'Done' : 'Refine'}</span>
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-slate-300 font-semibold">
+                      Ingredients found: {scannedResult.detectedIngredients?.join(', ')}
                     </p>
                   </div>
                 )
