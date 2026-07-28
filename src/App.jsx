@@ -146,6 +146,8 @@ export default function App() {
         {showWelcomeIntro && (
           <WelcomeFridgeIntro
             onComplete={() => setShowWelcomeIntro(false)}
+            theme={theme}
+            onToggleTheme={handleToggleTheme}
           />
         )}
       </AnimatePresence>
