@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight } from 'lucide-react';
+import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff } from 'lucide-react';
 
 const AGE_CATEGORIES = [
   {
@@ -119,10 +119,61 @@ export default function IngredientInput({
   const [touched, setTouched] = useState(false);
   const [testMode, setTestMode] = useState('normal');
   const [showHistory, setShowHistory] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
+  const recognitionRef = useRef(null);
   const activeCategory = AGE_CATEGORIES[selectedCategoryIndex];
   const isEmpty = !ingredientsText.trim();
   const showError = touched && isEmpty;
+
+  // Voice Input Handler via Web Speech API
+  const handleToggleVoiceInput = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Voice input is supported in Google Chrome, Edge, and Safari browsers.');
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          setIsListening(true);
+        };
+
+        recognition.onresult = (event) => {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            transcript += event.results[i][0].transcript;
+          }
+          setIngredientsText(transcript);
+          if (touched) setTouched(false);
+        };
+
+        recognition.onerror = (event) => {
+          console.error('[Speech Recognition Error]', event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
+      } catch (err) {
+        console.error('[Speech Exception]', err);
+        setIsListening(false);
+      }
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -182,7 +233,7 @@ export default function IngredientInput({
           What food do you have?
         </h1>
         <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2 mb-6 leading-relaxed font-semibold">
-          Type any dish name (like <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"chole bhature"</strong>, <strong className="text-slate-900 dark:text-white">"khichdi"</strong>) or type ingredients in your fridge!
+          Type or speak any dish name (like <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"chole bhature"</strong>, <strong className="text-slate-900 dark:text-white">"khichdi"</strong>) or ingredients in your fridge!
         </p>
 
         {/* Recent Search History */}
@@ -220,31 +271,57 @@ export default function IngredientInput({
           )}
         </AnimatePresence>
 
-        {/* Form */}
+        {/* Form with Voice Input */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="relative">
-            <div className={`glass-input rounded-2xl p-1 transition-all bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 ${showError ? 'ring-2 ring-rose-500 border-rose-500' : ''}`}>
+            <div className={`glass-input rounded-2xl p-1 transition-all bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 relative ${showError ? 'ring-2 ring-rose-500 border-rose-500' : ''}`}>
               <textarea
                 value={ingredientsText}
                 onChange={(e) => {
                   setIngredientsText(e.target.value);
                   if (touched) setTouched(false);
                 }}
-                placeholder="Type here e.g. veg pulao, paneer butter masala, rice, eggs, tomato..."
+                placeholder="Type or click microphone to speak dish name e.g. veg pulao, paneer butter masala, eggs..."
                 rows={3}
-                className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-500 text-base p-4 outline-none resize-none font-bold leading-relaxed"
+                className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-500 text-base p-4 pr-16 outline-none resize-none font-bold leading-relaxed"
                 autoFocus
               />
+
+              {/* Voice Input Microphone Button */}
+              <button
+                type="button"
+                onClick={handleToggleVoiceInput}
+                title={isListening ? "Stop listening" : "Click to speak dish or ingredients"}
+                className={`absolute right-3.5 top-3.5 p-3 rounded-2xl transition-all cursor-pointer flex items-center justify-center ${
+                  isListening
+                    ? 'bg-rose-600 text-white animate-pulse shadow-lg ring-4 ring-rose-500/30'
+                    : 'bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-700'
+                }`}
+              >
+                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </button>
             </div>
 
-            {showError && (
+            {/* Listening Status Banner */}
+            {isListening && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-rose-600 text-xs font-black mt-2 px-1"
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping shrink-0" />
+                <span>Listening... Speak your dish name or ingredients clearly now!</span>
+              </motion.div>
+            )}
+
+            {showError && !isListening && (
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-1.5 text-rose-600 text-xs mt-2 font-black px-1"
               >
                 <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                Please type a food or ingredient name.
+                Please type or speak a food or ingredient name.
               </motion.div>
             )}
           </div>
