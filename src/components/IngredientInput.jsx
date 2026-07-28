@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders } from 'lucide-react';
+import LiveCameraModal from './LiveCameraModal.jsx';
 
 const AGE_CATEGORIES = [
   {
@@ -115,11 +116,14 @@ export default function IngredientInput({
   onSelectHistory
 }) {
   const [ingredientsText, setIngredientsText] = useState('');
+  const [textReference, setTextReference] = useState('');
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(3); // Default: Adults (Ages 26-50)
   const [touched, setTouched] = useState(false);
   const [testMode, setTestMode] = useState('normal');
   const [showHistory, setShowHistory] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isLiveCameraOpen, setIsLiveCameraOpen] = useState(false);
+  const [showCamOptions, setShowCamOptions] = useState(false);
 
   // AI Image Scanner state
   const [isScanningImage, setIsScanningImage] = useState(false);
@@ -129,7 +133,7 @@ export default function IngredientInput({
   const recognitionRef = useRef(null);
   const fileInputRef = useRef(null);
   const activeCategory = AGE_CATEGORIES[selectedCategoryIndex];
-  const isEmpty = !ingredientsText.trim();
+  const isEmpty = !ingredientsText.trim() && !scannedImagePreview;
   const showError = touched && isEmpty;
 
   // Voice Input Handler via Web Speech API
@@ -181,42 +185,44 @@ export default function IngredientInput({
     }
   };
 
-  // AI Food Image Scanner Handler
-  const handleImageFileChange = async (e) => {
+  // AI Food Image Scanner Handler (for both file upload and live camera snap)
+  const processImageDataUrl = async (base64Data, filename = 'camera_photo.jpg') => {
+    setScannedImagePreview(base64Data);
+    setIsScanningImage(true);
+    setScannedResult(null);
+
+    try {
+      const response = await fetch('/api/scan-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: base64Data, filename })
+      });
+
+      if (!response.ok) throw new Error('Image scan failed');
+
+      const scanData = await response.json();
+      setScannedResult(scanData);
+      setIsScanningImage(false);
+
+      const dishToUse = scanData.detectedDish || scanData.detectedIngredients?.join(', ') || 'Vegetable Pulao';
+      if (!ingredientsText) {
+        setIngredientsText(dishToUse);
+      }
+      setTouched(false);
+    } catch (err) {
+      console.error('[Image Scanner Error]', err);
+      setIsScanningImage(false);
+    }
+  };
+
+  const handleImageFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setShowCamOptions(false);
 
     const reader = new FileReader();
-    reader.onload = async () => {
-      const base64Data = reader.result;
-      setScannedImagePreview(base64Data);
-      setIsScanningImage(true);
-      setScannedResult(null);
-
-      try {
-        const response = await fetch('/api/scan-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageBase64: base64Data, filename: file.name })
-        });
-
-        if (!response.ok) throw new Error('Image scan failed');
-
-        const scanData = await response.json();
-        setScannedResult(scanData);
-        setIsScanningImage(false);
-
-        // Auto populate text & predict recipe!
-        const dishToUse = scanData.detectedDish || scanData.detectedIngredients?.join(', ') || 'Vegetable Pulao';
-        setIngredientsText(dishToUse);
-        setTouched(false);
-
-        // Predict and open recipe
-        onSubmit(dishToUse, activeCategory.id, testMode === 'normal' ? null : testMode);
-      } catch (err) {
-        console.error('[Image Scanner Error]', err);
-        setIsScanningImage(false);
-      }
+    reader.onload = () => {
+      processImageDataUrl(reader.result, file.name);
     };
     reader.readAsDataURL(file);
   };
@@ -225,7 +231,16 @@ export default function IngredientInput({
     e.preventDefault();
     setTouched(true);
     if (isEmpty || isLoading) return;
-    onSubmit(ingredientsText, activeCategory.id, testMode === 'normal' ? null : testMode);
+
+    let combinedQuery = ingredientsText.trim();
+    if (scannedResult && !combinedQuery) {
+      combinedQuery = scannedResult.detectedDish;
+    }
+    if (textReference.trim()) {
+      combinedQuery += ` (Note: ${textReference.trim()})`;
+    }
+
+    onSubmit(combinedQuery, activeCategory.id, testMode === 'normal' ? null : testMode);
   };
 
   const handleSelectPreset = (presetText) => {
@@ -236,6 +251,14 @@ export default function IngredientInput({
 
   return (
     <div className="min-h-dvh w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 radial-glow relative overflow-y-auto bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+      
+      {/* Live Camera Modal */}
+      <LiveCameraModal
+        isOpen={isLiveCameraOpen}
+        onClose={() => setIsLiveCameraOpen(false)}
+        onCapturePhoto={(photoDataUrl) => processImageDataUrl(photoDataUrl, 'live_camera_snap.jpg')}
+      />
+
       <motion.div
         initial={{ opacity: 0, y: 25, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -243,12 +266,11 @@ export default function IngredientInput({
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-3xl glass-panel rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl relative z-10 my-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
       >
-        {/* Hidden Camera/File Input */}
+        {/* Hidden File Input */}
         <input
           type="file"
           ref={fileInputRef}
           accept="image/*"
-          capture="environment"
           onChange={handleImageFileChange}
           className="hidden"
         />
@@ -289,13 +311,12 @@ export default function IngredientInput({
           What food do you have?
         </h1>
         <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2 mb-6 leading-relaxed font-semibold">
-          Scan a food photo, speak, or type any dish name (like <strong className="text-slate-900 dark:text-white">"veg pulao"</strong>, <strong className="text-slate-900 dark:text-white">"paneer butter masala"</strong>)!
+          Use live camera, upload photo, speak, or type dish names with custom text notes!
         </p>
 
-        {/* AI Food Image Scanner Card (If image uploaded/scanning) */}
+        {/* AI Food Image Scanner Card (If image scanned) */}
         {scannedImagePreview && (
           <div className="mb-6 p-4 rounded-3xl bg-slate-900 text-slate-100 border border-indigo-500/40 shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-center gap-4">
-            {/* Image Thumbnail with Scanning Laser Line */}
             <div className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-indigo-400 shrink-0 bg-slate-950">
               <img src={scannedImagePreview} alt="Scanned Food" className="w-full h-full object-cover" />
               {isScanningImage && (
@@ -311,13 +332,13 @@ export default function IngredientInput({
               <div className="flex items-center justify-center sm:justify-start gap-2">
                 <Camera className="w-4 h-4 text-emerald-400 animate-pulse" />
                 <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">
-                  {isScanningImage ? 'AI Scanning Food Photo...' : 'Food Identified!'}
+                  {isScanningImage ? 'AI Scanning Food Photo...' : 'Food Identified from Image!'}
                 </span>
               </div>
 
               {isScanningImage ? (
                 <p className="text-xs text-slate-300 font-bold">
-                  Analyzing food items & ingredients in your image to predict recipe...
+                  Analyzing food items & ingredients in your photo...
                 </p>
               ) : (
                 scannedResult && (
@@ -326,7 +347,7 @@ export default function IngredientInput({
                       Detected: {scannedResult.detectedDish}
                     </h3>
                     <p className="text-xs text-slate-300 font-semibold mt-0.5">
-                      Ingredients found: {scannedResult.detectedIngredients?.join(', ')}
+                      Ingredients: {scannedResult.detectedIngredients?.join(', ')}
                     </p>
                   </div>
                 )
@@ -370,7 +391,7 @@ export default function IngredientInput({
           )}
         </AnimatePresence>
 
-        {/* Form with Voice & Image Scanner Controls */}
+        {/* Form with Live Camera, Image Upload & Text Reference */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="relative">
             <div className={`glass-input rounded-2xl p-1 transition-all bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 relative ${showError ? 'ring-2 ring-rose-500 border-rose-500' : ''}`}>
@@ -380,25 +401,62 @@ export default function IngredientInput({
                   setIngredientsText(e.target.value);
                   if (touched) setTouched(false);
                 }}
-                placeholder="Scan photo, click microphone to speak, or type dish name..."
+                placeholder="Scan live camera, upload image, speak microphone, or type dish name..."
                 rows={3}
                 className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-500 text-base p-4 pr-28 outline-none resize-none font-bold leading-relaxed"
                 autoFocus
               />
 
-              {/* Toolbar Buttons: Camera Photo Scanner + Voice Microphone */}
-              <div className="absolute right-3 top-3 flex items-center gap-1.5">
-                {/* AI Camera Image Scanner Button */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  title="Scan food photo or take picture"
-                  className="p-2.5 rounded-xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-slate-700 border border-emerald-200 dark:border-slate-700 transition-all cursor-pointer flex items-center justify-center"
-                >
-                  <Camera className="w-5 h-5" />
-                </button>
+              {/* Toolbar Controls */}
+              <div className="absolute right-3 top-3 flex items-center gap-1.5 z-20">
+                {/* Camera Options Trigger */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowCamOptions(!showCamOptions)}
+                    title="Camera Scanner Options"
+                    className="p-2.5 rounded-xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-slate-700 border border-emerald-200 dark:border-slate-700 transition-all cursor-pointer flex items-center justify-center"
+                  >
+                    <Camera className="w-5 h-5" />
+                  </button>
 
-                {/* Voice Input Microphone Button */}
+                  {/* Camera Options Dropdown Menu */}
+                  <AnimatePresence>
+                    {showCamOptions && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 top-12 w-48 bg-slate-900 border border-slate-700 rounded-2xl p-1.5 shadow-2xl space-y-1 z-30 text-xs"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowCamOptions(false);
+                            setIsLiveCameraOpen(true);
+                          }}
+                          className="w-full p-2.5 rounded-xl hover:bg-indigo-600/30 text-white font-bold flex items-center gap-2 text-left cursor-pointer transition-all"
+                        >
+                          <Video className="w-4 h-4 text-emerald-400" />
+                          Live Camera Scanner
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowCamOptions(false);
+                            fileInputRef.current?.click();
+                          }}
+                          className="w-full p-2.5 rounded-xl hover:bg-indigo-600/30 text-white font-bold flex items-center gap-2 text-left cursor-pointer transition-all"
+                        >
+                          <ImagePlus className="w-4 h-4 text-indigo-400" />
+                          Upload Photo File
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Voice Microphone Button */}
                 <button
                   type="button"
                   onClick={handleToggleVoiceInput}
@@ -433,9 +491,24 @@ export default function IngredientInput({
                 className="flex items-center gap-1.5 text-rose-600 text-xs mt-2 font-black px-1"
               >
                 <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                Please scan a photo, speak, or type a food name.
+                Please scan photo, speak, or type a food name.
               </motion.div>
             )}
+          </div>
+
+          {/* Text Reference & Preferences Input */}
+          <div className="bg-slate-100 dark:bg-slate-900/80 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-1.5">
+            <label className="text-xs font-black text-slate-900 dark:text-slate-300 flex items-center gap-1.5">
+              <Sliders className="w-3.5 h-3.5 text-indigo-500" />
+              Text Reference & Custom Preferences (Optional):
+            </label>
+            <input
+              type="text"
+              value={textReference}
+              onChange={(e) => setTextReference(e.target.value)}
+              placeholder="e.g. Extra spicy, no garlic, low salt, quick 10 min cooking..."
+              className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-500 text-xs p-3 rounded-xl border border-slate-300 dark:border-slate-700 outline-none font-bold"
+            />
           </div>
 
           {/* Age Group Selector */}
