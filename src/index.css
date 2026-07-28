@@ -73,21 +73,17 @@
 }
 
 /* 1. All Slate Background Containers in Light Theme convert to Light Slate */
-.light-theme .bg-slate-950,
-.light-theme .bg-slate-900,
-.light-theme .bg-slate-900\/90,
-.light-theme .bg-slate-900\/80,
-.light-theme .bg-slate-900\/60,
-.light-theme .bg-slate-800,
-.light-theme .bg-slate-800\/80 {
+.light-theme [class*="bg-slate-950"],
+.light-theme [class*="bg-slate-900"],
+.light-theme [class*="bg-slate-800"] {
   background-color: #f1f5f9 !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
 
-.light-theme .bg-slate-950 *,
-.light-theme .bg-slate-900 *,
-.light-theme .bg-slate-800 * {
+.light-theme [class*="bg-slate-950"] *,
+.light-theme [class*="bg-slate-900"] *,
+.light-theme [class*="bg-slate-800"] * {
   color: #0f172a !important;
 }
 
@@ -159,14 +155,14 @@
 
 /* 6. Age Guidance Banner in Light Theme */
 .light-theme .bg-indigo-50,
-.light-theme .bg-indigo-500\/10 {
+.light-theme [class*="bg-indigo-500"] {
   background-color: #eef2ff !important;
   border-color: #c7d2fe !important;
   color: #1e1b4b !important;
 }
 
 .light-theme .bg-indigo-50 *,
-.light-theme .bg-indigo-500\/10 * {
+.light-theme [class*="bg-indigo-500"] * {
   color: #1e1b4b !important;
 }
 

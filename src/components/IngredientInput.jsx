@@ -73,7 +73,7 @@ const HERO_DISH_CARDS = [
     badge: 'Popular',
     query: 'Vegetable Pulao',
     photo: '/ingredient-images/vegetable.png',
-    cardBg: 'bg-amber-50/80 dark:bg-amber-950/20 border-amber-200 dark:border-amber-500/40',
+    cardBg: 'bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-500/40',
     badgeBg: 'bg-amber-600 text-white'
   },
   {
@@ -83,7 +83,7 @@ const HERO_DISH_CARDS = [
     badge: 'Rich & Spicy',
     query: 'Paneer Butter Masala',
     photo: '/ingredient-images/garlic.png',
-    cardBg: 'bg-rose-50/80 dark:bg-rose-950/20 border-rose-200 dark:border-rose-500/40',
+    cardBg: 'bg-rose-50 dark:bg-rose-950 border-rose-200 dark:border-rose-500/40',
     badgeBg: 'bg-rose-600 text-white'
   },
   {
@@ -93,7 +93,7 @@ const HERO_DISH_CARDS = [
     badge: 'Gut-Friendly',
     query: 'Moong Dal Khichdi',
     photo: '/ingredient-images/salt.png',
-    cardBg: 'bg-yellow-50/80 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-500/40',
+    cardBg: 'bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-500/40',
     badgeBg: 'bg-yellow-600 text-white'
   },
   {
@@ -103,7 +103,7 @@ const HERO_DISH_CARDS = [
     badge: 'Iron-Rich',
     query: 'Palak Paneer',
     photo: '/ingredient-images/spinach.png',
-    cardBg: 'bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-500/40',
+    cardBg: 'bg-emerald-50 dark:bg-emerald-950 border-emerald-200 dark:border-emerald-500/40',
     badgeBg: 'bg-emerald-600 text-white'
   }
 ];
@@ -253,14 +253,14 @@ export default function IngredientInput({
             )}
           </div>
 
-          {/* Age Group Life Stage Selector */}
-          <div className="space-y-2 bg-slate-100 dark:bg-slate-900/90 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
+          {/* Age Group Life Stage Selector Container */}
+          <div className="space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
             <div className="flex items-center justify-between mb-1">
               <label className="text-xs font-black text-slate-900 dark:text-slate-200 flex items-center gap-1.5">
                 <Users2 className="w-4 h-4 text-indigo-500" />
                 Select Life Stage for Age-Tailored Nutrition:
               </label>
-              <span className="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400">
+              <span className="text-[11px] font-black text-indigo-600 dark:text-indigo-400">
                 {activeCategory.label}
               </span>
             </div>
@@ -271,10 +271,10 @@ export default function IngredientInput({
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategoryIndex(idx)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
                     selectedCategoryIndex === idx
                       ? 'bg-indigo-600 text-white shadow-md'
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 border border-slate-300 dark:border-slate-700'
+                      : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 hover:text-indigo-600 border border-slate-300 dark:border-slate-700'
                   }`}
                 >
                   {cat.shortLabel}
@@ -284,7 +284,7 @@ export default function IngredientInput({
 
             {/* Dynamic Preset Chips for Selected Age Category */}
             <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-              <span className="text-[11px] font-extrabold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-2">
+              <span className="text-[11px] font-black text-slate-700 dark:text-slate-400 uppercase tracking-wider block mb-2">
                 Recommended Dishes for {activeCategory.shortLabel}:
               </span>
               <div className="flex flex-wrap gap-2">
@@ -293,7 +293,7 @@ export default function IngredientInput({
                     key={dIdx}
                     type="button"
                     onClick={() => handleSelectPreset(dish.query)}
-                    className="text-xs bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-slate-900 dark:text-slate-200 border border-slate-300 dark:border-slate-700 px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-xs"
+                    className="text-xs bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 px-3 py-1.5 rounded-xl font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-xs"
                   >
                     {dish.name}
                   </button>
