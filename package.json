@@ -17,6 +17,7 @@
     "express": "^4.21.2",
     "framer-motion": "^12.4.7",
     "lucide-react": "^0.475.0",
+    "puppeteer-core": "^25.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
