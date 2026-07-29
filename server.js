@@ -269,8 +269,8 @@ function generateDynamicMockRecipe(ingredientsText, ageGroup, isLeftoverMode = f
   };
 }
 
-// POST /api/scan-image Endpoint (AI Computer Vision Food Scanner)
-app.post('/api/scan-image', async (req, res) => {
+// POST /api/scan-image Endpoint (AI Computer Vision Food Scanner with Route Aliases for Vercel)
+app.post(['/api/scan-image', '/scan-image'], async (req, res) => {
   const { imageBase64, filename = '', colorProfile = {} } = req.body;
 
   if (!imageBase64) {
@@ -361,7 +361,7 @@ app.post('/api/scan-image', async (req, res) => {
 });
 
 // POST /api/suggest-complementary endpoint
-app.post('/api/suggest-complementary', (req, res) => {
+app.post(['/api/suggest-complementary', '/suggest-complementary'], (req, res) => {
   const { items = [] } = req.body;
   const suggestions = [];
 
@@ -387,7 +387,7 @@ app.post('/api/suggest-complementary', (req, res) => {
 });
 
 // POST /api/generate endpoint
-app.post('/api/generate', async (req, res) => {
+app.post(['/api/generate', '/generate'], async (req, res) => {
   const { ingredients, ageGroup = 'Adult', isLeftoverMode = false, testMode = null } = req.body;
 
   if (!ingredients || typeof ingredients !== 'string' || !ingredients.trim()) {
