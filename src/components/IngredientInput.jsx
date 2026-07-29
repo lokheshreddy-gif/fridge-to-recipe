@@ -235,13 +235,20 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
   };
 
   // Process Base64 or Blob Photo Data via AI Scanner (/api/scan-image)
-  const processCapturedPhotoData = async (base64Data, filename = 'camera_capture.jpg') => {
+  const processCapturedPhotoData = async (base64Data, filename = 'food_image.jpg', fileObj = null) => {
     setIsScanningPhoto(true);
     setScanStatusMessage('AI Scanner analyzing food image features...');
 
     try {
-      // Analyze color tones
-      const colorProfile = { dominantHue: filename.toLowerCase().includes('spinach') ? 'green' : filename.toLowerCase().includes('paneer') ? 'red' : 'yellow' };
+      let colorProfile = { dominantHue: filename.toLowerCase().includes('spinach') ? 'green' : filename.toLowerCase().includes('paneer') ? 'red' : 'yellow' };
+      
+      if (fileObj) {
+        try {
+          colorProfile = await extractImageFeatures(fileObj);
+        } catch (e) {
+          console.log('[Extract Error]', e);
+        }
+      }
 
       const res = await fetch('/api/scan-image', {
         method: 'POST',
@@ -259,7 +266,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
           if (inputMode === 'leftovers') {
             handleAddLeftoverItem(data.detectedDish, '1 portion');
           } else {
-            setFreshText(data.detectedDish);
+            setFreshText((prev) => prev ? `${prev}, ${data.detectedDish}` : data.detectedDish);
           }
           setScanStatusMessage(`✨ AI Scan Identified: ${data.detectedDish}`);
         }
@@ -280,9 +287,10 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      processCapturedPhotoData(reader.result, file.name);
+      processCapturedPhotoData(reader.result, file.name, file);
     };
     reader.readAsDataURL(file);
+    e.target.value = ''; // Reset input element so uploading the same file again triggers onChange
   };
 
   const selectedAgeCategoryObj = AGE_CATEGORIES.find((c) => c.id === selectedAge) || AGE_CATEGORIES[3];
@@ -290,6 +298,15 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8 sm:py-12 select-none">
       
+      {/* HIDDEN FILE INPUT (AVAILABLE ACROSS BOTH MODES) */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handlePhotoUpload}
+        className="hidden"
+      />
+
       {/* HEADER TITLE & TAGLINE */}
       <div className="text-center mb-8 space-y-3">
         <motion.div
@@ -426,13 +443,6 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
                   >
                     <ImagePlus className="w-4 h-4 text-indigo-500" />
                   </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoUpload}
-                    className="hidden"
-                  />
                 </div>
               </div>
             </div>
@@ -445,6 +455,8 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
               onAddLeftover={handleAddLeftoverItem}
               onRemoveLeftover={handleRemoveLeftoverItem}
               onClearAll={handleClearAllLeftovers}
+              onOpenUpload={() => fileInputRef.current?.click()}
+              onOpenCamera={() => setIsCameraOpen(true)}
               errorMsg={errorMsg}
             />
           )}

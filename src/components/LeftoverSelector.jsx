@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Recycle, Plus, Trash2, Clock, Sparkles, AlertCircle, Lightbulb, Check, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { Recycle, Plus, Trash2, Clock, Sparkles, AlertCircle, Lightbulb, Check, AlertTriangle, ShieldAlert, ImagePlus, Video } from 'lucide-react';
 
 const QUICK_LEFTOVER_SUGGESTIONS = [
   { name: 'Cooked Rice', icon: '🍚', defaultQty: '2 cups', daysOld: 1, freshness: 'Fresh Today' },
@@ -36,6 +36,8 @@ export default function LeftoverSelector({
   onAddLeftover,
   onRemoveLeftover,
   onClearAll,
+  onOpenUpload,
+  onOpenCamera,
   errorMsg
 }) {
   const [customName, setCustomName] = useState('');
@@ -115,10 +117,37 @@ export default function LeftoverSelector({
 
       {/* Quick Add Suggestions */}
       <div className="space-y-3">
-        <label className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
-          <Sparkles className="w-4 h-4 text-[#E07A5F]" />
-          <span>Popular Cooked Leftovers Quick-Add:</span>
-        </label>
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-[#E07A5F]" />
+            <span>Popular Cooked Leftovers Quick-Add:</span>
+          </label>
+          <div className="flex items-center gap-2">
+            {onOpenCamera && (
+              <button
+                type="button"
+                onClick={onOpenCamera}
+                className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-xs font-bold flex items-center gap-1 hover:bg-amber-200 cursor-pointer transition-all"
+                title="Scan Live Camera"
+              >
+                <Video className="w-3.5 h-3.5 text-[#E07A5F]" />
+                <span>Live Scan</span>
+              </button>
+            )}
+            {onOpenUpload && (
+              <button
+                type="button"
+                onClick={onOpenUpload}
+                className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-xs font-bold flex items-center gap-1 hover:bg-amber-200 cursor-pointer transition-all"
+                title="Upload Leftover Food Photo"
+              >
+                <ImagePlus className="w-3.5 h-3.5 text-[#E07A5F]" />
+                <span>Add Photo</span>
+              </button>
+            )}
+          </div>
+        </div>
+        
         <div className="flex flex-wrap gap-2">
           {QUICK_LEFTOVER_SUGGESTIONS.map((item) => {
             const isAdded = leftoversList.some((l) => l.name.toLowerCase() === item.name.toLowerCase());
@@ -149,7 +178,7 @@ export default function LeftoverSelector({
         </div>
       </div>
 
-      {/* Custom Leftover Input (Non-nested container to avoid form bubbling) */}
+      {/* Custom Leftover Input */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <input
           type="text"
