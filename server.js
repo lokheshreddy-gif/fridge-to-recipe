@@ -83,12 +83,124 @@ Your task:
 5. Include a "Sustainability Impact" note (e.g., "Saves 500g food waste")
 Set "isLeftoverRecipe": true, "sustainabilityScore": "98% Waste Reduction", "sustainabilityImpact": "Saves 500g food waste", "compatibilityMatch": "98% Match", and "usesAllIngredients": true.`;
 
+// Rich Dish-Specific Database for Accurate Recipes
+const DISH_RECIPE_DATABASE = {
+  'paneer butter masala': {
+    title: 'Restaurant Style Paneer Butter Masala',
+    description: 'Soft paneer cubes simmered in a rich, velvety tomato and butter cream sauce.',
+    baseServings: 2,
+    prepTimeMinutes: 10,
+    cookTimeMinutes: 15,
+    ingredients: [
+      { id: 'ing-1', name: 'Fresh Paneer Cubes', amount: 250, unit: 'g', icon: 'cheese', commonlyAvailable: 'Fridge' },
+      { id: 'ing-2', name: 'Tomato & Onion Gravy Puree', amount: 2, unit: 'cups', icon: 'vegetable', commonlyAvailable: 'Fridge' },
+      { id: 'ing-3', name: 'Butter & Fresh Cream', amount: 2, unit: 'spoons', icon: 'butter', commonlyAvailable: 'Fridge door' },
+      { id: 'ing-4', name: 'Garlic & Ginger Paste', amount: 1, unit: 'spoon', icon: 'garlic', commonlyAvailable: 'Spice box' },
+      { id: 'ing-5', name: 'Garam Masala & Spices', amount: 1, unit: 'spoon', icon: 'herb', commonlyAvailable: 'Spice box' }
+    ],
+    steps: [
+      { id: 'step-1', instruction: 'Cut 250g of fresh paneer into neat bite-sized cubes.', durationMinutes: 3 },
+      { id: 'step-2', instruction: 'Melt 2 spoons of butter in a cooking pan over medium flame. Add garlic-ginger paste and fry for 1 minute.', durationMinutes: 2 },
+      { id: 'step-3', instruction: 'Add tomato puree, salt, and red chili powder. Cook for 5 minutes until gravy becomes thick and shiny.', durationMinutes: 5 },
+      { id: 'step-4', instruction: 'Add paneer cubes and 2 spoons of fresh cream. Stir gently and simmer on low heat for 4 minutes.', durationMinutes: 4 },
+      { id: 'step-5', instruction: 'Sprinkle kasuri methi (dried fenugreek) on top and serve hot with naan or pulao!', durationMinutes: 1 }
+    ],
+    swaps: [
+      { ingredient: 'Fresh Cream', alternatives: ['Whisked Yogurt', 'Cashew Paste'] },
+      { ingredient: 'Paneer', alternatives: ['Tofu Cubes', 'Boiled Potato Cubes'] }
+    ],
+    nutrition: { caloriesPerServing: 420, proteinGrams: 18, carbsGrams: 16, fatGrams: 32 }
+  },
+
+  'palak paneer': {
+    title: 'Classic Garlic Palak Paneer',
+    description: 'Fresh spinach puree simmered with paneer cubes, garlic, and mild spices.',
+    baseServings: 2,
+    prepTimeMinutes: 10,
+    cookTimeMinutes: 15,
+    ingredients: [
+      { id: 'ing-1', name: 'Fresh Spinach (Palak)', amount: 2, unit: 'bunches', icon: 'spinach', commonlyAvailable: 'Vegetable box' },
+      { id: 'ing-2', name: 'Paneer Cubes', amount: 200, unit: 'g', icon: 'cheese', commonlyAvailable: 'Fridge' },
+      { id: 'ing-3', name: 'Chopped Garlic & Onion', amount: 4, unit: 'cloves', icon: 'garlic', commonlyAvailable: 'Spice box' },
+      { id: 'ing-4', name: 'Cooking Oil or Ghee', amount: 1.5, unit: 'spoons', icon: 'oil', commonlyAvailable: 'Pantry' },
+      { id: 'ing-5', name: 'Salt & Cumin Seeds', amount: 1, unit: 'spoon', icon: 'salt', commonlyAvailable: 'Spice box' }
+    ],
+    steps: [
+      { id: 'step-1', instruction: 'Blanch spinach leaves in boiling water for 2 minutes, then blend into a smooth green puree.', durationMinutes: 4 },
+      { id: 'step-2', instruction: 'Heat ghee in a pan. Add cumin seeds and chopped garlic. Fry until garlic turns golden brown.', durationMinutes: 2 },
+      { id: 'step-3', instruction: 'Pour spinach puree into the pan. Add salt, cumin powder, and cook for 5 minutes.', durationMinutes: 5 },
+      { id: 'step-4', instruction: 'Add paneer cubes and simmer gently for 4 minutes so paneer absorbs the green curry flavor.', durationMinutes: 4 }
+    ],
+    swaps: [{ ingredient: 'Paneer', alternatives: ['Tofu', 'Boiled Potatoes'] }],
+    nutrition: { caloriesPerServing: 310, proteinGrams: 16, carbsGrams: 12, fatGrams: 22 }
+  },
+
+  'moong dal khichdi': {
+    title: 'Comforting Moong Dal Khichdi',
+    description: 'Soft yellow moong dal and rice cooked together with ghee, cumin seeds, and turmeric.',
+    baseServings: 2,
+    prepTimeMinutes: 5,
+    cookTimeMinutes: 15,
+    ingredients: [
+      { id: 'ing-1', name: 'Yellow Moong Dal', amount: 0.5, unit: 'cup', icon: 'vegetable', commonlyAvailable: 'Pantry' },
+      { id: 'ing-2', name: 'White Rice', amount: 0.5, unit: 'cup', icon: 'pasta', commonlyAvailable: 'Pantry' },
+      { id: 'ing-3', name: 'Desi Ghee', amount: 2, unit: 'spoons', icon: 'butter', commonlyAvailable: 'Pantry' },
+      { id: 'ing-4', name: 'Cumin Seeds & Turmeric', amount: 1, unit: 'spoon', icon: 'garlic', commonlyAvailable: 'Spice box' },
+      { id: 'ing-5', name: 'Salt', amount: 1, unit: 'spoon', icon: 'salt', commonlyAvailable: 'Spice box' }
+    ],
+    steps: [
+      { id: 'step-1', instruction: 'Wash rice and moong dal together in clean water 2 times.', durationMinutes: 3 },
+      { id: 'step-2', instruction: 'Heat 2 spoons of ghee in a cooker. Add cumin seeds and a pinch of asafoetida (hing).', durationMinutes: 2 },
+      { id: 'step-3', instruction: 'Add washed dal, rice, turmeric, salt, and 3.5 cups of water.', durationMinutes: 2 },
+      { id: 'step-4', instruction: 'Pressure cook for 4 whistles until soft and creamy.', durationMinutes: 8 }
+    ],
+    swaps: [{ ingredient: 'Yellow Moong Dal', alternatives: ['Toor Dal', 'Masoor Dal'] }],
+    nutrition: { caloriesPerServing: 280, proteinGrams: 11, carbsGrams: 46, fatGrams: 6 }
+  },
+
+  'vegetable pulao': {
+    title: 'Aromatic Veggie Pulao',
+    description: 'Fragrant basmati rice tossed with green peas, carrots, ghee, and whole mild spices.',
+    baseServings: 2,
+    prepTimeMinutes: 10,
+    cookTimeMinutes: 15,
+    ingredients: [
+      { id: 'ing-1', name: 'Basmati Rice', amount: 1, unit: 'cup', icon: 'pasta', commonlyAvailable: 'Pantry' },
+      { id: 'ing-2', name: 'Mixed Veggies (Peas, Carrots)', amount: 1, unit: 'cup', icon: 'vegetable', commonlyAvailable: 'Fridge' },
+      { id: 'ing-3', name: 'Ghee', amount: 2, unit: 'spoons', icon: 'oil', commonlyAvailable: 'Pantry' },
+      { id: 'ing-4', name: 'Whole Spices (Cardamom, Clove)', amount: 1, unit: 'pinch', icon: 'herb', commonlyAvailable: 'Spice box' }
+    ],
+    steps: [
+      { id: 'step-1', instruction: 'Soak basmati rice in water for 15 minutes before cooking.', durationMinutes: 5 },
+      { id: 'step-2', instruction: 'Heat ghee in a pan. Fry whole spices, green peas, and diced carrots for 3 minutes.', durationMinutes: 3 },
+      { id: 'step-3', instruction: 'Add soaked rice, 2 cups of water, and salt. Cover and cook on medium flame for 10 minutes until rice is fluffy.', durationMinutes: 10 }
+    ],
+    swaps: [{ ingredient: 'Basmati Rice', alternatives: ['Brown Rice', 'Quinoa'] }],
+    nutrition: { caloriesPerServing: 320, proteinGrams: 7, carbsGrams: 54, fatGrams: 9 }
+  }
+};
+
 /**
  * Generate a dynamic recipe object fallback for offline/development mode
  */
 function generateDynamicMockRecipe(ingredientsText, ageGroup, isLeftoverMode = false) {
   const cleanInput = (ingredientsText || '').trim();
   const lowerInput = cleanInput.toLowerCase();
+
+  // Check specific matched dish in database
+  for (const [key, preset] of Object.entries(DISH_RECIPE_DATABASE)) {
+    if (lowerInput.includes(key)) {
+      return {
+        ...preset,
+        isLeftoverRecipe: isLeftoverMode,
+        sustainabilityScore: isLeftoverMode ? '98% Waste Reduction' : '95%',
+        sustainabilityImpact: isLeftoverMode ? 'Saves 500g food waste' : 'Zero Waste Friendly',
+        compatibilityMatch: '98% Match',
+        usesAllIngredients: true,
+        ageNote: `Tailored for ${ageGroup}s! Easy to prepare with simple ingredients.`
+      };
+    }
+  }
 
   // Leftover Specific Dynamic Fallback
   if (isLeftoverMode || lowerInput.includes('leftover') || lowerInput.includes('cooked')) {
