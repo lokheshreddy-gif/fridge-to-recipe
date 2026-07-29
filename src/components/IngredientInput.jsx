@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders, Edit3, Check, Recycle, Plus, Trash2, Clock } from 'lucide-react';
 import LiveCameraModal from './LiveCameraModal.jsx';
+import LeftoverSelector from './LeftoverSelector.jsx';
 import { extractImageFeatures } from '../utils/extractImageFeatures.js';
 
 const AGE_CATEGORIES = [
@@ -59,17 +60,6 @@ const AGE_CATEGORIES = [
   }
 ];
 
-const QUICK_LEFTOVER_SUGGESTIONS = [
-  { name: 'Cooked Rice', icon: '🍚', defaultQty: '2 cups', freshness: 'Fresh Today' },
-  { name: 'Leftover Chicken', icon: '🍗', defaultQty: '300g', freshness: 'Use Soon (1-2 days)' },
-  { name: 'Cooked Vegetables', icon: '🥦', defaultQty: '1 bowl', freshness: 'Fresh Today' },
-  { name: 'Leftover Naan/Roti', icon: '🫓', defaultQty: '3 pieces', freshness: 'Use Soon (1-2 days)' },
-  { name: 'Cooked Beans/Dal', icon: '🫘', defaultQty: '1 cup', freshness: 'Fresh Today' },
-  { name: 'Leftover Pasta', icon: '🍝', defaultQty: '1.5 cups', freshness: 'Use Soon (1-2 days)' },
-  { name: 'Boiled Potatoes', icon: '🥔', defaultQty: '4 items', freshness: 'Fresh Today' },
-  { name: 'Leftover Curry', icon: '🍳', defaultQty: '1 bowl', freshness: 'Use Soon (1-2 days)' }
-];
-
 const HERO_DISH_CARDS = [
   {
     id: 'pulao',
@@ -115,8 +105,6 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
     { id: '1', name: 'Cooked Rice', quantity: '2 cups', freshness: 'Fresh Today' },
     { id: '2', name: 'Leftover Chicken', quantity: '300g', freshness: 'Use Soon (1-2 days)' }
   ]);
-  const [customLeftoverName, setCustomLeftoverName] = useState('');
-  const [customLeftoverQty, setCustomLeftoverQty] = useState('1 portion');
 
   const [selectedAge, setSelectedAge] = useState('Adult');
   const [errorMsg, setErrorMsg] = useState('');
@@ -134,7 +122,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
     setErrorMsg('');
   };
 
-  // Add Leftover item
+  // Add Leftover item with validation
   const handleAddLeftoverItem = (name, quantity = '1 portion', freshness = 'Fresh Today') => {
     if (!name.trim()) return;
     if (leftoversList.length >= 10) {
@@ -150,12 +138,17 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
       ...prev,
       { id: `leftover-${Date.now()}-${Math.random()}`, name: name.trim(), quantity, freshness }
     ]);
-    setCustomLeftoverName('');
     setErrorMsg('');
   };
 
   const handleRemoveLeftoverItem = (id) => {
     setLeftoversList((prev) => prev.filter((item) => item.id !== id));
+    setErrorMsg('');
+  };
+
+  const handleClearAllLeftovers = () => {
+    setLeftoversList([]);
+    setErrorMsg('');
   };
 
   // Handle Form Submit
@@ -163,7 +156,11 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
     e.preventDefault();
     if (inputMode === 'leftovers') {
       if (leftoversList.length === 0) {
-        setErrorMsg('Please add at least one leftover food item to generate a zero-waste recipe.');
+        setErrorMsg('Please add at least one leftover item.');
+        return;
+      }
+      if (leftoversList.length > 10) {
+        setErrorMsg('Maximum 10 leftover items allowed.');
         return;
       }
       const leftoverPayload = leftoversList.map((item) => `${item.name} (${item.quantity})`).join(', ');
@@ -227,7 +224,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
     }
   };
 
-  // Food Photo Upload & High-Accuracy Color-Correlated Feature Classification
+  // Food Photo Upload
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -304,7 +301,11 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl space-y-6 relative overflow-hidden"
+        className={`glass-panel p-6 sm:p-8 rounded-3xl border shadow-2xl space-y-6 relative overflow-hidden transition-colors duration-300 ${
+          inputMode === 'leftovers'
+            ? 'border-amber-400/60 dark:border-amber-600/40 bg-amber-50/20 dark:bg-slate-900/90'
+            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+        }`}
       >
         {/* MODE SWITCHER TAB BAR */}
         <div className="flex items-center justify-center p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
@@ -326,11 +327,11 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             onClick={() => handleSwitchMode('leftovers')}
             className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 ${
               inputMode === 'leftovers'
-                ? 'bg-emerald-600 text-white shadow-md border border-emerald-500'
+                ? 'bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white shadow-md border border-amber-500'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Recycle className={`w-4 h-4 ${inputMode === 'leftovers' ? 'text-emerald-200 animate-spin-slow' : ''}`} />
+            <Recycle className={`w-4 h-4 ${inputMode === 'leftovers' ? 'text-amber-200 animate-spin-slow' : ''}`} />
             <span>♻️ Leftover Food (Zero Waste)</span>
           </button>
         </div>
@@ -394,111 +395,15 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             </div>
           )}
 
-          {/* MODE 2: LEFTOVER FOOD (ZERO WASTE) */}
+          {/* MODE 2: LEFTOVER FOOD (ZERO WASTE DEDICATED COMPONENT) */}
           {inputMode === 'leftovers' && (
-            <div className="space-y-6">
-              
-              {/* Quick Add Leftover Suggestions */}
-              <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-                  <Recycle className="w-4 h-4" />
-                  <span>Popular Leftover Quick-Add:</span>
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {QUICK_LEFTOVER_SUGGESTIONS.map((item) => (
-                    <motion.button
-                      key={item.name}
-                      type="button"
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.96 }}
-                      onClick={() => handleAddLeftoverItem(item.name, item.defaultQty, item.freshness)}
-                      className="px-3.5 py-2 rounded-xl border border-emerald-300 dark:border-emerald-500/30 bg-emerald-50/80 dark:bg-emerald-950/40 text-slate-900 dark:text-slate-100 font-bold text-xs flex items-center gap-1.5 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 cursor-pointer transition-all shadow-sm"
-                    >
-                      <span>{item.icon}</span>
-                      <span>{item.name}</span>
-                      <Plus className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Custom Leftover Add Input */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  value={customLeftoverName}
-                  onChange={(e) => setCustomLeftoverName(e.target.value)}
-                  placeholder="Type custom leftover item (e.g. Boiled Egg)..."
-                  className="sm:col-span-2 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-medium text-sm outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAddLeftoverItem(customLeftoverName, customLeftoverQty)}
-                  className="py-3 px-4 rounded-xl bg-emerald-600 text-white font-black text-sm flex items-center justify-center gap-2 hover:bg-emerald-500 cursor-pointer transition-all shadow-md"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Leftover</span>
-                </button>
-              </div>
-
-              {/* Selected Leftovers List */}
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    Selected Leftovers ({leftoversList.length}/10):
-                  </span>
-                  {leftoversList.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setLeftoversList([])}
-                      className="text-xs font-bold text-rose-500 hover:underline cursor-pointer"
-                    >
-                      Clear All
-                    </button>
-                  )}
-                </div>
-
-                {leftoversList.length === 0 ? (
-                  <div className="p-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 text-center text-xs font-semibold text-slate-500">
-                    No leftover items selected yet. Click quick-add buttons above or type leftovers.
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {leftoversList.map((item) => (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-2"
-                      >
-                        <div className="space-y-0.5">
-                          <span className="text-sm font-bold text-slate-900 dark:text-white block">
-                            {item.name}
-                          </span>
-                          <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-500">
-                            <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">{item.quantity}</span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-amber-500" />
-                              {item.freshness}
-                            </span>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveLeftoverItem(item.id)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer transition-all"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+            <LeftoverSelector
+              leftoversList={leftoversList}
+              onAddLeftover={handleAddLeftoverItem}
+              onRemoveLeftover={handleRemoveLeftoverItem}
+              onClearAll={handleClearAllLeftovers}
+              errorMsg={errorMsg}
+            />
           )}
 
           {/* AGE CATEGORY FILTER */}
@@ -518,7 +423,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
                   onClick={() => setSelectedAge(cat.id)}
                   className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                     selectedAge === cat.id
-                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
+                      ? inputMode === 'leftovers' ? 'bg-amber-600 text-white border-amber-600 shadow-md' : 'bg-indigo-600 text-white border-indigo-600 shadow-md'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -543,7 +448,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             )}
           </AnimatePresence>
 
-          {/* SUBMIT BUTTON */}
+          {/* SUBMIT BUTTON WITH COOKED AMBER STYLING */}
           <motion.button
             type="submit"
             disabled={isLoading}
@@ -551,14 +456,14 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             whileTap={{ scale: 0.99 }}
             className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 text-white ${
               inputMode === 'leftovers'
-                ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:shadow-emerald-500/25'
+                ? 'bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:shadow-amber-500/25'
                 : 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:shadow-indigo-500/25'
             }`}
           >
             {inputMode === 'leftovers' ? (
               <>
                 <Recycle className="w-5 h-5 animate-spin-slow" />
-                <span>Generate Leftover Recipes (Zero Waste)</span>
+                <span>Make Recipe (Leftovers)</span>
                 <ArrowRight className="w-5 h-5" />
               </>
             ) : (

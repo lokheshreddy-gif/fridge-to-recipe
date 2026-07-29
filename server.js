@@ -70,41 +70,15 @@ RULES:
 const LEFTOVER_SYSTEM_PROMPT = `${SYSTEM_PROMPT}
 
 SPECIAL LEFTOVER ZERO-WASTE INSTRUCTION:
-The user is providing LEFTOVER food items.
-1. Generate a quick 15-20 minute recipe using ONLY these leftovers plus simple pantry staples (oil, salt, ghee, spices, garlic).
-2. Set "isLeftoverRecipe": true and "sustainabilityScore": "98% Waste Reduction".
-3. Explain how to re-purpose and heat leftovers safely so no food is wasted!`;
-
-/**
- * 25 Age-Specific Recipes in Plain, Basic, Simple English
- */
-const AGE_RECIPE_DATABASE = {
-  // --- TODDLERS & INFANTS (Ages 1-3) ---
-  'moong dal khichdi': {
-    title: 'Simple Yellow Moong Dal Khichdi',
-    description: 'A soft, light rice and lentil meal cooked in ghee that is very gentle on the stomach.',
-    baseServings: 2,
-    prepTimeMinutes: 10,
-    cookTimeMinutes: 15,
-    ingredients: [
-      { id: 'ing-1', name: 'Yellow Moong Dal', amount: 0.5, unit: 'cup', icon: 'vegetable', commonlyAvailable: 'Pantry' },
-      { id: 'ing-2', name: 'Rice', amount: 0.5, unit: 'cup', icon: 'pasta', commonlyAvailable: 'Pantry' },
-      { id: 'ing-3', name: 'Ghee (Butter)', amount: 1, unit: 'spoon', icon: 'oil', commonlyAvailable: 'Fridge door' },
-      { id: 'ing-4', name: 'Cumin and Turmeric', amount: 0.5, unit: 'small spoon', icon: 'salt', commonlyAvailable: 'Spice box' }
-    ],
-    steps: [
-      { id: 'step-1', instruction: 'Wash the yellow dal and rice together with clean water 3 times.', durationMinutes: 3 },
-      { id: 'step-2', instruction: 'Heat 1 spoon of ghee in a cooker. Fry cumin seeds and a little turmeric for 1 minute.', durationMinutes: 2 },
-      { id: 'step-3', instruction: 'Add the washed dal, rice, and 3 cups of water. Close lid and cook for 4 whistles until soft.', durationMinutes: 10 },
-      { id: 'step-4', instruction: 'Mash the food gently with a spoon. Add a tiny drop of ghee and serve warm.', durationMinutes: 2 }
-    ],
-    swaps: [
-      { ingredient: 'Yellow Moong Dal', alternatives: ['Toor Dal', 'Masoor Dal'] }
-    ],
-    nutrition: { caloriesPerServing: 260, proteinGrams: 9, carbsGrams: 42, fatGrams: 6 },
-    ageNote: 'Good for Babies (Ages 1–3): Soft, easy to swallow, and gives good energy.'
-  }
-};
+You are a creative chef helping reduce food waste.
+Generate recipes using ONLY these leftover ingredients.
+Recipes must:
+- Use only the provided leftovers (no fresh ingredients)
+- Be quick (15-30 minutes max)
+- Prioritize using all ingredients
+- Be practical and tasty
+- Include wastage reduction tips in the ageNote/description field
+Set "isLeftoverRecipe": true and "sustainabilityScore": "98% Waste Reduction".`;
 
 /**
  * Generate a dynamic recipe object fallback for offline/development mode
@@ -174,12 +148,53 @@ function generateDynamicMockRecipe(ingredientsText, ageGroup, isLeftoverMode = f
   };
 }
 
+// POST /api/suggest-complementary endpoint
+app.post('/api/suggest-complementary', (req, res) => {
+  const { items = [] } = req.body;
+  const suggestions = [];
+
+  const itemNames = items.map((i) => (typeof i === 'string' ? i : i.name || '').toLowerCase());
+
+  if (itemNames.some((n) => n.includes('rice'))) {
+    suggestions.push({ name: 'Leftover Curry', icon: '🍳', qty: '1 bowl' });
+    suggestions.push({ name: 'Curd / Yogurt', icon: '🥛', qty: '1 cup' });
+  }
+  if (itemNames.some((n) => n.includes('chicken'))) {
+    suggestions.push({ name: 'Tortilla / Roti Wrap', icon: '🫓', qty: '2 wraps' });
+  }
+  if (itemNames.some((n) => n.includes('veggie') || n.includes('vegetable'))) {
+    suggestions.push({ name: 'Boiled Potatoes', icon: '🥔', qty: '2 items' });
+  }
+
+  // Fallback defaults
+  if (suggestions.length === 0) {
+    suggestions.push({ name: 'Ghee / Butter', icon: '🧈', qty: '1 spoon' });
+    suggestions.push({ name: 'Garlic & Spices', icon: '🧄', qty: '1 pinch' });
+  }
+
+  res.json({ suggestions });
+});
+
 // POST /api/generate endpoint
 app.post('/api/generate', async (req, res) => {
   const { ingredients, ageGroup = 'Adult', isLeftoverMode = false, testMode = null } = req.body;
 
   if (!ingredients || typeof ingredients !== 'string' || !ingredients.trim()) {
+    if (isLeftoverMode) {
+      return res.status(400).json({ error: 'Please add at least one leftover item.' });
+    }
     return res.status(400).json({ error: 'Please type or select ingredients first.' });
+  }
+
+  // Strict Validation Rules
+  const itemsList = ingredients.split(',').map((s) => s.trim()).filter(Boolean);
+  if (isLeftoverMode) {
+    if (itemsList.length === 0) {
+      return res.status(400).json({ error: 'Please add at least one leftover item.' });
+    }
+    if (itemsList.length > 10) {
+      return res.status(400).json({ error: 'Maximum 10 leftover items allowed.' });
+    }
   }
 
   const apiKey = process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY || process.env.OPENROUTER_API_KEY;
@@ -196,7 +211,7 @@ app.post('/api/generate', async (req, res) => {
     if (process.env.GEMINI_API_KEY) {
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
       const selectedPrompt = isLeftoverMode ? LEFTOVER_SYSTEM_PROMPT : SYSTEM_PROMPT;
-      const fullPromptText = `${selectedPrompt}\n\nTarget Age Group: ${ageGroup}\nUser Ingredients (${isLeftoverMode ? 'LEFTOVER ITEMS' : 'FRESH'}):\n${ingredients}`;
+      const fullPromptText = `${selectedPrompt}\n\nTarget Age Group: ${ageGroup}\nUser Ingredients (${isLeftoverMode ? 'LEFTOVER ITEMS ONLY' : 'FRESH'}):\n${ingredients}`;
 
       const response = await fetch(geminiUrl, {
         method: 'POST',
