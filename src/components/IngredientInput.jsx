@@ -363,7 +363,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
   const selectedAgeCategoryObj = AGE_CATEGORIES.find((c) => c.id === selectedAge) || AGE_CATEGORIES[3];
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-8 sm:py-12 select-none">
+    <div className="w-full max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-12 select-none">
       
       {/* HIDDEN FILE INPUT (AVAILABLE ACROSS BOTH MODES) */}
       <input
@@ -374,21 +374,21 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
         className="hidden"
       />
 
-      {/* HEADER TITLE & TAGLINE */}
-      <div className="text-center mb-8 space-y-3">
+      {/* HEADER TITLE & TAGLINE (MOBILE-FIRST TYPOGRAPHY) */}
+      <div className="text-center mb-6 sm:mb-8 space-y-2.5 sm:space-y-3">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold uppercase tracking-wider shadow-sm"
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider shadow-sm"
         >
-          <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 animate-pulse" />
           <span>AI-Powered Recipe Generator</span>
         </motion.div>
         
-        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
           What food do you have?
         </h1>
-        <p className="text-sm sm:text-base font-semibold text-slate-600 dark:text-slate-300 max-w-xl mx-auto">
+        <p className="text-xs sm:text-base font-semibold text-slate-600 dark:text-slate-300 max-w-xl mx-auto px-2">
           Turn your fresh ingredients or leftover food into easy, step-by-step home recipes in seconds.
         </p>
       </div>
@@ -400,9 +400,9 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mb-4 p-3.5 rounded-2xl bg-indigo-600 text-white font-extrabold text-xs text-center shadow-lg border border-indigo-400 flex items-center justify-center gap-2 max-w-md mx-auto"
+            className="mb-4 p-3 sm:p-3.5 rounded-2xl bg-indigo-600 text-white font-extrabold text-xs text-center shadow-lg border border-indigo-400 flex items-center justify-center gap-2 max-w-md mx-auto"
           >
-            <CheckCircle className="w-4 h-4 text-emerald-300 animate-bounce" />
+            <CheckCircle className="w-4 h-4 text-emerald-300 animate-bounce shrink-0" />
             <span>{scanStatusMessage}</span>
           </motion.div>
         )}
@@ -417,54 +417,54 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             exit={{ opacity: 0, y: -10 }}
             className="mb-4 p-3 rounded-2xl bg-slate-900 text-white text-xs font-bold text-center shadow-lg border border-slate-700 flex items-center justify-center gap-2 max-w-md mx-auto"
           >
-            <Info className="w-4 h-4 text-indigo-400" />
+            <Info className="w-4 h-4 text-indigo-400 shrink-0" />
             <span>{toastMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* MAIN INPUT CARD */}
+      {/* MAIN INPUT CARD (MOBILE-OPTIMIZED PADDING & TOUCH TARGETS) */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className={`glass-panel p-6 sm:p-8 rounded-3xl border shadow-2xl space-y-6 relative overflow-hidden transition-colors duration-300 ${
+        className={`glass-panel p-4 sm:p-8 rounded-3xl border shadow-2xl space-y-5 sm:space-y-6 relative overflow-hidden transition-colors duration-300 ${
           inputMode === 'leftovers'
             ? 'border-[#E07A5F]/60 dark:border-amber-600/40 bg-amber-50/20 dark:bg-slate-900/90'
             : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
         }`}
       >
-        {/* MODE SWITCHER TAB BAR (0.3s SMOOTH ANIMATION) */}
-        <div className="flex items-center justify-center p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-all duration-300">
+        {/* MODE SWITCHER TAB BAR (RESPONSIVE TOUCH BUTTONS) */}
+        <div className="flex items-center justify-center p-1 sm:p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-all duration-300 gap-1">
           <button
             type="button"
             onClick={() => handleSwitchMode('fresh')}
-            className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 ${
+            className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition-all duration-300 active:scale-98 ${
               inputMode === 'fresh'
                 ? 'bg-[#6366F1] text-white shadow-md border border-indigo-500'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Utensils className="w-4 h-4" />
-            <span>🥗 Fresh Ingredients</span>
+            <Utensils className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="truncate">🥗 Fresh Ingredients</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleSwitchMode('leftovers')}
-            className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 ${
+            className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition-all duration-300 active:scale-98 ${
               inputMode === 'leftovers'
                 ? 'bg-[#E07A5F] text-white shadow-md border border-[#E07A5F]'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Recycle className={`w-4 h-4 ${inputMode === 'leftovers' ? 'animate-spin-slow' : ''}`} />
-            <span>♻️ Leftover Food</span>
+            <Recycle className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${inputMode === 'leftovers' ? 'animate-spin-slow' : ''}`} />
+            <span className="truncate">♻️ Leftover Food</span>
           </button>
         </div>
 
         {/* INPUT MODE CONTENTS */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
           
           {/* MODE 1: FRESH INGREDIENTS */}
           {inputMode === 'fresh' && (
@@ -475,15 +475,15 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
                   onChange={(e) => setFreshText(e.target.value)}
                   placeholder="e.g. Rice, tomatoes, paneer, garlic, butter, chicken..."
                   rows={3}
-                  className="w-full p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium text-base resize-none outline-none transition-all shadow-inner"
+                  className="w-full p-3.5 sm:p-4 pb-14 sm:pb-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium text-sm sm:text-base resize-none outline-none transition-all shadow-inner"
                 />
 
                 {/* Micro / Camera / Photo Buttons */}
-                <div className="absolute right-3 bottom-3 flex items-center gap-2">
+                <div className="absolute right-2.5 bottom-2.5 flex items-center gap-1.5 sm:gap-2">
                   <button
                     type="button"
                     onClick={handleToggleVoice}
-                    className={`p-2.5 rounded-xl border cursor-pointer transition-all ${
+                    className={`p-2.5 rounded-xl border cursor-pointer transition-all active:scale-95 ${
                       isListening
                         ? 'bg-rose-500 text-white border-rose-600 animate-pulse'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -496,7 +496,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
                   <button
                     type="button"
                     onClick={() => setIsCameraOpen(true)}
-                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-all"
+                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-all active:scale-95"
                     title="Live Camera Scanner"
                   >
                     <Video className="w-4 h-4 text-indigo-500" />
@@ -505,7 +505,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-all"
+                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-all active:scale-95"
                     title="Upload Food Photo"
                   >
                     <ImagePlus className="w-4 h-4 text-indigo-500" />
@@ -528,29 +528,30 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             />
           )}
 
-          {/* AGE CATEGORY FILTER */}
-          <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+          {/* AGE CATEGORY FILTER (SWIPEABLE HORIZONTAL SCROLL ON MOBILE) */}
+          <div className="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users2 className="w-4 h-4 text-indigo-500" />
-                <label className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <div className="flex items-center gap-1.5">
+                <Users2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                <label className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Cooking For (Age Group):
                 </label>
               </div>
               {inputMode === 'leftovers' && (
-                <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
-                  Leftover recipes tailored for {selectedAgeCategoryObj.label}
+                <span className="text-[10px] sm:text-[11px] font-bold text-amber-700 dark:text-amber-400 truncate max-w-[180px] sm:max-w-none">
+                  Tailored for {selectedAgeCategoryObj.shortLabel}
                 </span>
               )}
             </div>
             
-            <div className="flex flex-wrap gap-2">
+            {/* SWIPEABLE PILLS ON MOBILE */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar sm:flex-wrap">
               {AGE_CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedAge(cat.id)}
-                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shrink-0 active:scale-95 ${
                     selectedAge === cat.id
                       ? inputMode === 'leftovers' ? 'bg-[#E07A5F] text-white border-[#E07A5F] shadow-md' : 'bg-[#6366F1] text-white border-indigo-600 shadow-md'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -569,7 +570,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2"
+                className="p-3 sm:p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2"
               >
                 <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
                 <span>{errorMsg}</span>
@@ -577,13 +578,13 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             )}
           </AnimatePresence>
 
-          {/* SUBMIT BUTTON WITH COOKED AMBER / TERRASCOTTA #E07A5F STYLING */}
+          {/* SUBMIT BUTTON WITH MOBILE TOUCH FEEDBACK */}
           <motion.button
             type="submit"
             disabled={isLoading || (inputMode === 'leftovers' && leftoversList.length === 0)}
             whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 text-white ${
+            whileTap={{ scale: 0.98 }}
+            className={`w-full py-3.5 sm:py-4 px-5 rounded-2xl font-black text-sm sm:text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 text-white ${
               inputMode === 'leftovers'
                 ? leftoversList.length === 0
                   ? 'bg-amber-300 dark:bg-amber-950 text-amber-700 opacity-60 cursor-not-allowed border border-amber-400'
@@ -593,15 +594,15 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
           >
             {inputMode === 'leftovers' ? (
               <>
-                <Recycle className="w-5 h-5 animate-spin-slow" />
+                <Recycle className="w-4 h-4 sm:w-5 sm:h-5 animate-spin-slow" />
                 <span>Make Recipe (Leftovers)</span>
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </>
             ) : (
               <>
-                <Utensils className="w-5 h-5" />
+                <Utensils className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Generate Recipes</span>
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </>
             )}
           </motion.button>
@@ -610,27 +611,28 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
 
       {/* POPULAR DISH CARDS SECTION */}
       {inputMode === 'fresh' && (
-        <div className="mt-12 space-y-4">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center">
+        <div className="mt-8 sm:mt-12 space-y-3 sm:space-y-4">
+          <h3 className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center">
             Or Pick Popular Instant Recipes:
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {HERO_DISH_CARDS.map((card) => (
               <motion.div
                 key={card.id}
                 whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => onSubmit(card.query, selectedAge)}
-                className={`p-5 rounded-3xl border cursor-pointer shadow-lg space-y-3 transition-all ${card.cardBg}`}
+                className={`p-4 sm:p-5 rounded-3xl border cursor-pointer shadow-lg space-y-2.5 sm:space-y-3 transition-all ${card.cardBg}`}
               >
                 <div className="flex items-center justify-between">
                   <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${card.badgeBg}`}>
                     {card.badge}
                   </span>
-                  <img src={card.photo} alt={card.title} className="w-8 h-8 object-contain" />
+                  <img src={card.photo} alt={card.title} className="w-7 h-7 sm:w-8 sm:h-8 object-contain" />
                 </div>
                 <div>
-                  <h4 className="text-base font-black text-slate-900 dark:text-white">{card.title}</h4>
-                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 line-clamp-2 mt-1">{card.desc}</p>
+                  <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">{card.title}</h4>
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 line-clamp-2 mt-0.5">{card.desc}</p>
                 </div>
               </motion.div>
             ))}

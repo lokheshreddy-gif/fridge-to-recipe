@@ -100,62 +100,62 @@ export default function LeftoverSelector({
   };
 
   return (
-    <div className="space-y-6 select-none">
+    <div className="space-y-4 sm:space-y-6 select-none">
       
       {/* Cooked Theme Banner in Warm Orange/Terracotta #E07A5F */}
-      <div className="p-4 rounded-2xl bg-[#E07A5F]/10 border border-[#E07A5F]/40 text-slate-900 dark:text-amber-200 text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 shadow-inner">
-        <div className="flex items-center gap-2.5">
-          <Recycle className="w-5 h-5 text-[#E07A5F] shrink-0 animate-spin-slow" />
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-[#E07A5F]/10 border border-[#E07A5F]/40 text-slate-900 dark:text-amber-200 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-inner">
+        <div className="flex items-center gap-2">
+          <Recycle className="w-4 h-4 sm:w-5 sm:h-5 text-[#E07A5F] shrink-0 animate-spin-slow" />
           <span>
-            <strong className="font-extrabold text-[#E07A5F]">Zero-Waste Leftover Mode:</strong> Track cooked leftovers & generate 15-30 min meals that use 100% of your items!
+            <strong className="font-extrabold text-[#E07A5F]">Zero-Waste Leftover Mode:</strong> Track cooked leftovers & generate 15-30 min meals!
           </span>
         </div>
-        <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#E07A5F] text-white shrink-0 shadow-sm">
+        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2 py-0.5 sm:py-1 rounded-full bg-[#E07A5F] text-white shrink-0 self-end sm:self-auto shadow-sm">
           Cooked Theme (#E07A5F)
         </span>
       </div>
 
       {/* Quick Add Suggestions */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-[#E07A5F]" />
-            <span>Popular Cooked Leftovers Quick-Add:</span>
+      <div className="space-y-2.5 sm:space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <label className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5 truncate">
+            <Sparkles className="w-3.5 h-3.5 text-[#E07A5F] shrink-0" />
+            <span className="truncate">Popular Leftovers Quick-Add:</span>
           </label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 shrink-0">
             {onOpenCamera && (
               <button
                 type="button"
                 onClick={onOpenCamera}
-                className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-xs font-bold flex items-center gap-1 hover:bg-amber-200 cursor-pointer transition-all"
+                className="px-2 py-1 rounded-lg bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[11px] font-bold flex items-center gap-1 hover:bg-amber-200 cursor-pointer transition-all active:scale-95"
                 title="Scan Live Camera"
               >
-                <Video className="w-3.5 h-3.5 text-[#E07A5F]" />
-                <span>Live Scan</span>
+                <Video className="w-3 h-3 text-[#E07A5F]" />
+                <span className="hidden sm:inline">Live Scan</span>
               </button>
             )}
             {onOpenUpload && (
               <button
                 type="button"
                 onClick={onOpenUpload}
-                className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-xs font-bold flex items-center gap-1 hover:bg-amber-200 cursor-pointer transition-all"
+                className="px-2 py-1 rounded-lg bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[11px] font-bold flex items-center gap-1 hover:bg-amber-200 cursor-pointer transition-all active:scale-95"
                 title="Upload Leftover Food Photo"
               >
-                <ImagePlus className="w-3.5 h-3.5 text-[#E07A5F]" />
-                <span>Add Photo</span>
+                <ImagePlus className="w-3 h-3 text-[#E07A5F]" />
+                <span className="hidden sm:inline">Add Photo</span>
               </button>
             )}
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {QUICK_LEFTOVER_SUGGESTIONS.map((item) => {
             const isAdded = leftoversList.some((l) => l.name.toLowerCase() === item.name.toLowerCase());
             return (
               <motion.button
                 key={item.name}
                 type="button"
-                whileHover={{ scale: 1.04 }}
+                whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={(e) => {
                   e.preventDefault();
@@ -163,7 +163,7 @@ export default function LeftoverSelector({
                   if (!isAdded) validateAndAdd(item.name, item.defaultQty, item.daysOld);
                 }}
                 disabled={isAdded}
-                className={`px-3.5 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-sm ${
+                className={`px-3 py-1.5 sm:py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-sm active:scale-95 ${
                   isAdded
                     ? 'bg-amber-200/60 dark:bg-amber-950/80 border-amber-400/50 text-amber-900 dark:text-amber-300 opacity-60 cursor-not-allowed'
                     : 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-500/30 text-amber-950 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/60'
@@ -171,27 +171,27 @@ export default function LeftoverSelector({
               >
                 <span>{item.icon}</span>
                 <span>{item.name}</span>
-                {isAdded ? <Check className="w-3.5 h-3.5 text-[#E07A5F]" /> : <Plus className="w-3.5 h-3.5 text-[#E07A5F]" />}
+                {isAdded ? <Check className="w-3 h-3 text-[#E07A5F]" /> : <Plus className="w-3 h-3 text-[#E07A5F]" />}
               </motion.button>
             );
           })}
         </div>
       </div>
 
-      {/* Custom Leftover Input */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+      {/* Custom Leftover Input (Responsive Grid) */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 sm:gap-3">
         <input
           type="text"
           value={customName}
           onChange={(e) => setCustomName(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type leftover (e.g. Cooked Egg Curry)..."
-          className="sm:col-span-2 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700/60 text-slate-900 dark:text-white font-medium text-sm outline-none focus:ring-2 focus:ring-[#E07A5F]"
+          className="sm:col-span-2 p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700/60 text-slate-900 dark:text-white font-medium text-xs sm:text-sm outline-none focus:ring-2 focus:ring-[#E07A5F]"
         />
         <select
           value={customQty}
           onChange={(e) => setCustomQty(e.target.value)}
-          className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700/60 text-slate-900 dark:text-white font-bold text-xs outline-none focus:ring-2 focus:ring-[#E07A5F]"
+          className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700/60 text-slate-900 dark:text-white font-bold text-xs outline-none focus:ring-2 focus:ring-[#E07A5F]"
         >
           <option value="1 portion">1 portion</option>
           <option value="1 cup">1 cup</option>
@@ -207,7 +207,7 @@ export default function LeftoverSelector({
             e.stopPropagation();
             handleAddCustom();
           }}
-          className="py-3.5 px-4 rounded-xl bg-[#E07A5F] hover:bg-[#d46a4e] text-white font-black text-sm flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-98"
+          className="py-3 sm:py-3.5 px-4 rounded-xl bg-[#E07A5F] hover:bg-[#d46a4e] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-md active:scale-98 w-full"
         >
           <Plus className="w-4 h-4" />
           <span>+ Add Leftover</span>
@@ -221,7 +221,7 @@ export default function LeftoverSelector({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2"
+            className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2"
           >
             <ShieldAlert className="w-4 h-4 shrink-0 text-rose-500" />
             <span>{validationError || errorMsg}</span>
@@ -236,13 +236,13 @@ export default function LeftoverSelector({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800 space-y-2.5 shadow-sm"
+            className="p-3.5 sm:p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800 space-y-2 shadow-sm"
           >
-            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-orange-800 dark:text-orange-300">
-              <Lightbulb className="w-4 h-4 text-orange-500" />
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-black uppercase tracking-wider text-orange-800 dark:text-orange-300">
+              <Lightbulb className="w-3.5 h-3.5 text-orange-500 shrink-0" />
               <span>Smart Complementary Pairings:</span>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {complementaryItems.map((comp) => (
                 <button
                   key={comp.name}
@@ -252,7 +252,7 @@ export default function LeftoverSelector({
                     e.stopPropagation();
                     validateAndAdd(comp.name, comp.qty, 1);
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-orange-300 dark:border-orange-700 text-slate-900 dark:text-white font-bold text-xs flex items-center gap-1.5 hover:bg-orange-100 cursor-pointer transition-all"
+                  className="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-orange-300 dark:border-orange-700 text-slate-900 dark:text-white font-bold text-xs flex items-center gap-1 hover:bg-orange-100 cursor-pointer transition-all active:scale-95"
                 >
                   <span>{comp.icon}</span>
                   <span>{comp.name}</span>
@@ -265,9 +265,9 @@ export default function LeftoverSelector({
       </AnimatePresence>
 
       {/* Selected Leftovers List Display */}
-      <div className="space-y-3 pt-2">
+      <div className="space-y-2.5 pt-1">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Selected Leftovers ({leftoversList.length}/10):
           </span>
           {leftoversList.length > 0 && (
@@ -286,14 +286,14 @@ export default function LeftoverSelector({
         </div>
 
         {leftoversList.length === 0 ? (
-          <div className="p-8 rounded-2xl border border-dashed border-amber-300 dark:border-amber-800/60 text-center space-y-2 bg-amber-50/40 dark:bg-amber-950/20">
-            <Recycle className="w-8 h-8 text-[#E07A5F] mx-auto animate-pulse" />
+          <div className="p-6 sm:p-8 rounded-2xl border border-dashed border-amber-300 dark:border-amber-800/60 text-center space-y-1.5 bg-amber-50/40 dark:bg-amber-950/20">
+            <Recycle className="w-7 h-7 text-[#E07A5F] mx-auto animate-pulse" />
             <p className="text-xs font-bold text-amber-800 dark:text-amber-300">
               No leftovers added yet — Click quick-add buttons above or type leftovers.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {leftoversList.map((item) => {
               const isOld = item.freshness?.includes('3 Days') || item.freshness?.includes('Quickly');
               return (
@@ -303,20 +303,20 @@ export default function LeftoverSelector({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   whileHover={{ y: -2 }}
-                  className={`p-3.5 rounded-2xl bg-white dark:bg-slate-900 border shadow-sm flex items-center justify-between gap-2 hover:shadow-md transition-all ${
+                  className={`p-3 rounded-2xl bg-white dark:bg-slate-900 border shadow-sm flex items-center justify-between gap-2 hover:shadow-md transition-all ${
                     isOld ? 'border-amber-500 bg-amber-50/60 dark:bg-amber-950/40' : 'border-amber-200 dark:border-amber-800/80'
                   }`}
                 >
-                  <div className="space-y-1">
-                    <span className="text-sm font-black text-slate-900 dark:text-white block">
+                  <div className="space-y-0.5">
+                    <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white block">
                       {item.name}
                     </span>
-                    <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
-                      <span className="text-amber-800 dark:text-amber-300 font-extrabold bg-amber-100 dark:bg-amber-950/80 px-2 py-0.5 rounded-md border border-amber-300 dark:border-amber-700">
+                    <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-slate-500">
+                      <span className="text-amber-800 dark:text-amber-300 font-extrabold bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.5 rounded-md border border-amber-300 dark:border-amber-700">
                         {item.quantity}
                       </span>
                       <span>•</span>
-                      <span className={`flex items-center gap-1 font-extrabold ${isOld ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                      <span className={`flex items-center gap-0.5 font-extrabold ${isOld ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                         {isOld ? <AlertTriangle className="w-3 h-3 text-amber-500" /> : <Clock className="w-3 h-3 text-emerald-500" />}
                         {item.freshness}
                       </span>
@@ -330,10 +330,10 @@ export default function LeftoverSelector({
                       e.stopPropagation();
                       onRemoveLeftover(item.id);
                     }}
-                    className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer transition-all"
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer transition-all active:scale-95"
                     title="Remove Item"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                 </motion.div>
               );
