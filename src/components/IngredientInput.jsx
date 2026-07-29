@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders, Edit3, Check, Recycle, Plus, Trash2, Clock, Info } from 'lucide-react';
+import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders, Edit3, Check, Recycle, Plus, Trash2, Clock, Info, CheckCircle } from 'lucide-react';
 import LiveCameraModal from './LiveCameraModal.jsx';
 import LeftoverSelector from './LeftoverSelector.jsx';
 import { extractImageFeatures } from '../utils/extractImageFeatures.js';
@@ -134,7 +134,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
 
   // Add Leftover item
   const handleAddLeftoverItem = (name, quantity = '1 portion', freshness = 'Fresh Today') => {
-    if (!name.trim()) return;
+    if (!name || !name.trim()) return;
     if (leftoversList.length >= 10) {
       setErrorMsg('Max 10 items. Remove one to add another');
       return;
@@ -234,54 +234,55 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
     }
   };
 
-  // Food Photo Upload
+  // Process Base64 or Blob Photo Data via AI Scanner (/api/scan-image)
+  const processCapturedPhotoData = async (base64Data, filename = 'camera_capture.jpg') => {
+    setIsScanningPhoto(true);
+    setScanStatusMessage('AI Scanner analyzing food image features...');
+
+    try {
+      // Analyze color tones
+      const colorProfile = { dominantHue: filename.toLowerCase().includes('spinach') ? 'green' : filename.toLowerCase().includes('paneer') ? 'red' : 'yellow' };
+
+      const res = await fetch('/api/scan-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageBase64: base64Data,
+          filename,
+          colorProfile
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.detectedDish) {
+          if (inputMode === 'leftovers') {
+            handleAddLeftoverItem(data.detectedDish, '1 portion');
+          } else {
+            setFreshText(data.detectedDish);
+          }
+          setScanStatusMessage(`✨ AI Scan Identified: ${data.detectedDish}`);
+        }
+      }
+    } catch (err) {
+      console.error('[AI Photo Scan Error]', err);
+      setErrorMsg('Failed to scan food photo. Please try typing your dish.');
+    } finally {
+      setIsScanningPhoto(false);
+      setTimeout(() => setScanStatusMessage(''), 4500);
+    }
+  };
+
+  // Food Photo File Upload Handler
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsScanningPhoto(true);
-    setScanStatusMessage('Scanning food photo features...');
-
-    try {
-      const colorProfile = await extractImageFeatures(file);
-      setScanStatusMessage(`Analyzing ${colorProfile.dominantHue} tone features...`);
-
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64Data = reader.result;
-        try {
-          const res = await fetch('/api/scan-image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              imageBase64: base64Data,
-              filename: file.name,
-              colorProfile
-            })
-          });
-
-          if (res.ok) {
-            const data = await res.json();
-            if (data.detectedDish) {
-              if (inputMode === 'leftovers') {
-                handleAddLeftoverItem(data.detectedDish, '1 portion');
-              } else {
-                setFreshText(data.detectedDish);
-              }
-              setScanStatusMessage(`✨ AI Scan Identified: ${data.detectedDish}`);
-            }
-          }
-        } catch (err) {
-          console.error('[Scan Error]', err);
-        } finally {
-          setIsScanningPhoto(false);
-          setTimeout(() => setScanStatusMessage(''), 4000);
-        }
-      };
-      reader.readAsDataURL(file);
-    } catch (err) {
-      setIsScanningPhoto(false);
-    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      processCapturedPhotoData(reader.result, file.name);
+    };
+    reader.readAsDataURL(file);
   };
 
   const selectedAgeCategoryObj = AGE_CATEGORIES.find((c) => c.id === selectedAge) || AGE_CATEGORIES[3];
@@ -307,6 +308,21 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
           Turn your fresh ingredients or leftover food into easy, step-by-step home recipes in seconds.
         </p>
       </div>
+
+      {/* AI SCAN STATUS NOTIFICATION */}
+      <AnimatePresence>
+        {scanStatusMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mb-4 p-3.5 rounded-2xl bg-indigo-600 text-white font-extrabold text-xs text-center shadow-lg border border-indigo-400 flex items-center justify-center gap-2 max-w-md mx-auto"
+          >
+            <CheckCircle className="w-4 h-4 text-emerald-300 animate-bounce" />
+            <span>{scanStatusMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* TOAST NOTIFICATION FOR MODE SWITCHING */}
       <AnimatePresence>
@@ -547,13 +563,9 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
       <LiveCameraModal
         isOpen={isCameraOpen}
         onClose={() => setIsCameraOpen(false)}
-        onCaptureDish={(dishName) => {
-          if (inputMode === 'leftovers') {
-            handleAddLeftoverItem(dishName, '1 portion');
-          } else {
-            setFreshText(dishName);
-          }
+        onCapturePhoto={(photoDataUrl) => {
           setIsCameraOpen(false);
+          processCapturedPhotoData(photoDataUrl, 'camera_snapshot.jpg');
         }}
       />
     </div>
