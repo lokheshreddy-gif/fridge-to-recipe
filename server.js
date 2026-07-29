@@ -341,6 +341,12 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`[Fridge to Recipe Backend] Running on http://localhost:${PORT}`);
-});
+// Start local listener only when run directly (not in Vercel Serverless environment)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[Fridge to Recipe Backend] Running on http://localhost:${PORT}`);
+  });
+}
+
+// Export default app for Vercel Serverless Function compatibility
+export default app;
