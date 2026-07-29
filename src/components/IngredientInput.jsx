@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders, Edit3, Check, Recycle, Plus, Trash2, Clock } from 'lucide-react';
+import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders, Edit3, Check, Recycle, Plus, Trash2, Clock, Info } from 'lucide-react';
 import LiveCameraModal from './LiveCameraModal.jsx';
 import LeftoverSelector from './LeftoverSelector.jsx';
 import { extractImageFeatures } from '../utils/extractImageFeatures.js';
@@ -108,6 +108,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
 
   const [selectedAge, setSelectedAge] = useState('Adult');
   const [errorMsg, setErrorMsg] = useState('');
+  const [toastMessage, setToastMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
 
   // Live Camera Scanner State
@@ -116,17 +117,26 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
   const [isScanningPhoto, setIsScanningPhoto] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Toggle input mode without clearing previous inputs
+  // Toggle input mode with smooth toast notification
   const handleSwitchMode = (mode) => {
+    if (mode === inputMode) return;
     setInputMode(mode);
     setErrorMsg('');
+
+    if (mode === 'leftovers') {
+      setToastMessage('Switched to Leftover mode (Fresh ingredients saved)');
+    } else {
+      setToastMessage('Switched to Fresh Ingredients mode (Leftovers list saved)');
+    }
+
+    setTimeout(() => setToastMessage(''), 3500);
   };
 
-  // Add Leftover item with validation
+  // Add Leftover item
   const handleAddLeftoverItem = (name, quantity = '1 portion', freshness = 'Fresh Today') => {
     if (!name.trim()) return;
     if (leftoversList.length >= 10) {
-      setErrorMsg('Maximum 10 leftover items allowed per recipe session.');
+      setErrorMsg('Max 10 items. Remove one to add another');
       return;
     }
     const exists = leftoversList.some((item) => item.name.toLowerCase() === name.trim().toLowerCase());
@@ -156,11 +166,11 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
     e.preventDefault();
     if (inputMode === 'leftovers') {
       if (leftoversList.length === 0) {
-        setErrorMsg('Please add at least one leftover item.');
+        setErrorMsg('Add at least 1 leftover item to get recipes');
         return;
       }
       if (leftoversList.length > 10) {
-        setErrorMsg('Maximum 10 leftover items allowed.');
+        setErrorMsg('Max 10 items. Remove one to add another');
         return;
       }
       const leftoverPayload = leftoversList.map((item) => `${item.name} (${item.quantity})`).join(', ');
@@ -274,6 +284,8 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
     }
   };
 
+  const selectedAgeCategoryObj = AGE_CATEGORIES.find((c) => c.id === selectedAge) || AGE_CATEGORIES[3];
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8 sm:py-12 select-none">
       
@@ -296,6 +308,21 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
         </p>
       </div>
 
+      {/* TOAST NOTIFICATION FOR MODE SWITCHING */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mb-4 p-3 rounded-2xl bg-slate-900 text-white text-xs font-bold text-center shadow-lg border border-slate-700 flex items-center justify-center gap-2 max-w-md mx-auto"
+          >
+            <Info className="w-4 h-4 text-indigo-400" />
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* MAIN INPUT CARD */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
@@ -303,36 +330,36 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
         transition={{ duration: 0.4 }}
         className={`glass-panel p-6 sm:p-8 rounded-3xl border shadow-2xl space-y-6 relative overflow-hidden transition-colors duration-300 ${
           inputMode === 'leftovers'
-            ? 'border-amber-400/60 dark:border-amber-600/40 bg-amber-50/20 dark:bg-slate-900/90'
+            ? 'border-[#E07A5F]/60 dark:border-amber-600/40 bg-amber-50/20 dark:bg-slate-900/90'
             : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
         }`}
       >
-        {/* MODE SWITCHER TAB BAR */}
-        <div className="flex items-center justify-center p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        {/* MODE SWITCHER TAB BAR (0.3s SMOOTH ANIMATION) */}
+        <div className="flex items-center justify-center p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-all duration-300">
           <button
             type="button"
             onClick={() => handleSwitchMode('fresh')}
-            className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 ${
+            className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 ${
               inputMode === 'fresh'
-                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-md border border-slate-200 dark:border-slate-700'
+                ? 'bg-[#6366F1] text-white shadow-md border border-indigo-500'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Utensils className={`w-4 h-4 ${inputMode === 'fresh' ? 'text-indigo-600 dark:text-indigo-400' : ''}`} />
+            <Utensils className="w-4 h-4" />
             <span>🥗 Fresh Ingredients</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleSwitchMode('leftovers')}
-            className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 ${
+            className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 ${
               inputMode === 'leftovers'
-                ? 'bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white shadow-md border border-amber-500'
+                ? 'bg-[#E07A5F] text-white shadow-md border border-[#E07A5F]'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Recycle className={`w-4 h-4 ${inputMode === 'leftovers' ? 'text-amber-200 animate-spin-slow' : ''}`} />
-            <span>♻️ Leftover Food (Zero Waste)</span>
+            <Recycle className={`w-4 h-4 ${inputMode === 'leftovers' ? 'animate-spin-slow' : ''}`} />
+            <span>♻️ Leftover Food</span>
           </button>
         </div>
 
@@ -408,11 +435,18 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
 
           {/* AGE CATEGORY FILTER */}
           <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <Users2 className="w-4 h-4 text-indigo-500" />
-              <label className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                Cooking For (Age Group):
-              </label>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users2 className="w-4 h-4 text-indigo-500" />
+                <label className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Cooking For (Age Group):
+                </label>
+              </div>
+              {inputMode === 'leftovers' && (
+                <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
+                  Leftover recipes tailored for {selectedAgeCategoryObj.label}
+                </span>
+              )}
             </div>
             
             <div className="flex flex-wrap gap-2">
@@ -423,7 +457,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
                   onClick={() => setSelectedAge(cat.id)}
                   className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                     selectedAge === cat.id
-                      ? inputMode === 'leftovers' ? 'bg-amber-600 text-white border-amber-600 shadow-md' : 'bg-indigo-600 text-white border-indigo-600 shadow-md'
+                      ? inputMode === 'leftovers' ? 'bg-[#E07A5F] text-white border-[#E07A5F] shadow-md' : 'bg-[#6366F1] text-white border-indigo-600 shadow-md'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -448,16 +482,18 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
             )}
           </AnimatePresence>
 
-          {/* SUBMIT BUTTON WITH COOKED AMBER STYLING */}
+          {/* SUBMIT BUTTON WITH COOKED AMBER / TERRASCOTTA #E07A5F STYLING */}
           <motion.button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || (inputMode === 'leftovers' && leftoversList.length === 0)}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 text-white ${
               inputMode === 'leftovers'
-                ? 'bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:shadow-amber-500/25'
-                : 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:shadow-indigo-500/25'
+                ? leftoversList.length === 0
+                  ? 'bg-amber-300 dark:bg-amber-950 text-amber-700 opacity-60 cursor-not-allowed border border-amber-400'
+                  : 'bg-[#E07A5F] hover:bg-[#d46a4e] shadow-amber-500/25'
+                : 'bg-[#6366F1] hover:bg-indigo-500 shadow-indigo-500/25'
             }`}
           >
             {inputMode === 'leftovers' ? (

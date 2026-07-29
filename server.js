@@ -30,6 +30,9 @@ You MUST respond ONLY with a raw, valid JSON object matching this EXACT schema:
   "cookTimeMinutes": 20,
   "isLeftoverRecipe": false,
   "sustainabilityScore": "95%",
+  "sustainabilityImpact": "Saves 500g food waste",
+  "compatibilityMatch": "98% Match",
+  "usesAllIngredients": true,
   "ingredients": [
     {
       "id": "ing-1",
@@ -69,16 +72,16 @@ RULES:
 
 const LEFTOVER_SYSTEM_PROMPT = `${SYSTEM_PROMPT}
 
-SPECIAL LEFTOVER ZERO-WASTE INSTRUCTION:
-You are a creative chef helping reduce food waste.
-Generate recipes using ONLY these leftover ingredients.
-Recipes must:
-- Use only the provided leftovers (no fresh ingredients)
-- Be quick (15-30 minutes max)
-- Prioritize using all ingredients
-- Be practical and tasty
-- Include wastage reduction tips in the ageNote/description field
-Set "isLeftoverRecipe": true and "sustainabilityScore": "98% Waste Reduction".`;
+PROMPT ENGINEERING FOR LEFTOVER MODE:
+You are a creative, eco-conscious chef specializing in reducing food waste.
+
+Your task:
+1. Generate delicious recipes using ONLY the provided leftover ingredients
+2. Each recipe must use AT LEAST 70% of the provided ingredients
+3. Recipes should be quick (15-30 minutes max)
+4. Prioritize practical, tried-and-tested combinations
+5. Include a "Sustainability Impact" note (e.g., "Saves 500g food waste")
+Set "isLeftoverRecipe": true, "sustainabilityScore": "98% Waste Reduction", "sustainabilityImpact": "Saves 500g food waste", "compatibilityMatch": "98% Match", and "usesAllIngredients": true.`;
 
 /**
  * Generate a dynamic recipe object fallback for offline/development mode
@@ -97,6 +100,9 @@ function generateDynamicMockRecipe(ingredientsText, ageGroup, isLeftoverMode = f
       cookTimeMinutes: 10,
       isLeftoverRecipe: true,
       sustainabilityScore: '98% Waste Reduction',
+      sustainabilityImpact: 'Saves 500g food waste',
+      compatibilityMatch: '98% Match',
+      usesAllIngredients: true,
       ingredients: [
         { id: 'ing-1', name: cleanInput || 'Leftover Cooked Food', amount: 2, unit: 'cups', icon: 'pasta', commonlyAvailable: 'Leftover Box' },
         { id: 'ing-2', name: 'Ghee or Cooking Oil', amount: 1.5, unit: 'spoons', icon: 'oil', commonlyAvailable: 'Pantry' },
@@ -132,6 +138,9 @@ function generateDynamicMockRecipe(ingredientsText, ageGroup, isLeftoverMode = f
     cookTimeMinutes: 12,
     isLeftoverRecipe: false,
     sustainabilityScore: '90%',
+    sustainabilityImpact: 'Zero Waste Friendly',
+    compatibilityMatch: '95% Match',
+    usesAllIngredients: true,
     ingredients: [
       { id: 'ing-1', name: cleanInput || 'Fresh Ingredients', amount: 2, unit: 'cups', icon: 'vegetable', commonlyAvailable: 'Fridge' },
       { id: 'ing-2', name: 'Cooking Oil', amount: 1, unit: 'spoon', icon: 'oil', commonlyAvailable: 'Pantry' },
@@ -166,7 +175,6 @@ app.post('/api/suggest-complementary', (req, res) => {
     suggestions.push({ name: 'Boiled Potatoes', icon: '🥔', qty: '2 items' });
   }
 
-  // Fallback defaults
   if (suggestions.length === 0) {
     suggestions.push({ name: 'Ghee / Butter', icon: '🧈', qty: '1 spoon' });
     suggestions.push({ name: 'Garlic & Spices', icon: '🧄', qty: '1 pinch' });
@@ -181,7 +189,7 @@ app.post('/api/generate', async (req, res) => {
 
   if (!ingredients || typeof ingredients !== 'string' || !ingredients.trim()) {
     if (isLeftoverMode) {
-      return res.status(400).json({ error: 'Please add at least one leftover item.' });
+      return res.status(400).json({ error: 'Add at least 1 leftover item to get recipes' });
     }
     return res.status(400).json({ error: 'Please type or select ingredients first.' });
   }
@@ -190,10 +198,10 @@ app.post('/api/generate', async (req, res) => {
   const itemsList = ingredients.split(',').map((s) => s.trim()).filter(Boolean);
   if (isLeftoverMode) {
     if (itemsList.length === 0) {
-      return res.status(400).json({ error: 'Please add at least one leftover item.' });
+      return res.status(400).json({ error: 'Add at least 1 leftover item to get recipes' });
     }
     if (itemsList.length > 10) {
-      return res.status(400).json({ error: 'Maximum 10 leftover items allowed.' });
+      return res.status(400).json({ error: 'Max 10 items. Remove one to add another' });
     }
   }
 
@@ -238,7 +246,7 @@ app.post('/api/generate', async (req, res) => {
     res.json({ rawText: cleanedText });
   } catch (err) {
     console.error('[Server Error]', err);
-    res.status(500).json({ error: err.message || 'Failed to generate recipe.' });
+    res.status(500).json({ error: err.message || 'Couldn\'t generate recipes with only these leftovers. Try adding 1-2 more items for better recipes.' });
   }
 });
 

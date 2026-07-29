@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ChefHat, Sparkles, Utensils, Clock, Layers, Flame, Heart, Activity, Info, MapPin, Recycle, Leaf, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ChefHat, Sparkles, Utensils, Clock, Layers, Flame, Heart, Activity, Info, MapPin, Recycle, Leaf, ShieldCheck, CheckCircle2, Star } from 'lucide-react';
 import ServingsControl from './ServingsControl.jsx';
 import IngredientImage from './IngredientImage.jsx';
 import OpeningFridgeScene from './animations/OpeningFridgeScene.jsx';
@@ -95,19 +95,32 @@ export default function IngredientsFirstView({
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 relative z-10">
         
-        {/* Title Header */}
-        <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden text-center sm:text-left bg-white dark:bg-slate-900">
+        {/* Title Header Card with Warm Orange Left Border Accent #E07A5F */}
+        <div className={`glass-panel rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden text-center sm:text-left bg-white dark:bg-slate-900 ${
+          recipe.isLeftoverRecipe ? 'border-l-4 border-l-[#E07A5F] border-slate-200 dark:border-slate-800' : 'border border-slate-200 dark:border-slate-800'
+        }`}>
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-3">
             
             {recipe.isLeftoverRecipe ? (
               <>
-                <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
-                  <Recycle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 animate-spin-slow" />
-                  100% Leftover Recipe
+                <span className="text-xs font-extrabold uppercase tracking-wider text-amber-900 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                  <Recycle className="w-4 h-4 text-[#E07A5F] animate-spin-slow" />
+                  ♻️ 100% Leftover Recipe
                 </span>
+
+                <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                  <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+                  ✓ Uses all ingredients
+                </span>
+
                 <span className="text-xs font-extrabold uppercase tracking-wider text-teal-800 dark:text-teal-300 bg-teal-100 dark:bg-teal-950/80 border border-teal-300 dark:border-teal-700 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
-                  <Leaf className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                  🌱 Zero Waste ({recipe.sustainabilityScore || '98% Reduction'})
+                  <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  {recipe.compatibilityMatch || '98% Compatibility Match'}
+                </span>
+
+                <span className="text-xs font-extrabold uppercase tracking-wider text-green-900 dark:text-green-300 bg-green-100 dark:bg-green-950/80 border border-green-300 dark:border-green-700 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                  <Leaf className="w-4 h-4 text-[#10B981]" />
+                  🌱 {recipe.sustainabilityImpact || 'Saves 500g food waste'}
                 </span>
               </>
             ) : (
