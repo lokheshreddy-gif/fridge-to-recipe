@@ -66,7 +66,9 @@ export default function LeftoverSelector({
   }, [leftoversList]);
 
   const validateAndAdd = (name, qty, days = 1) => {
-    const lower = name.toLowerCase();
+    if (!name || !name.trim()) return;
+    const lower = name.toLowerCase().trim();
+    
     if (UNCOOKED_KEYWORDS.some((kw) => lower.includes(kw))) {
       setValidationError('Please select cooked or ready-to-eat leftover items (no raw foods).');
       return;
@@ -79,14 +81,20 @@ export default function LeftoverSelector({
 
     setValidationError('');
     const freshnessTag = days >= 3 ? `${days} Days Old (Use Quickly!)` : days === 2 ? 'Use Soon (1-2 days)' : 'Fresh Today';
-    onAddLeftover(name, qty, freshnessTag);
+    onAddLeftover(name.trim(), qty, freshnessTag);
   };
 
-  const handleAddCustom = (e) => {
-    e.preventDefault();
+  const handleAddCustom = () => {
     if (!customName.trim()) return;
     validateAndAdd(customName.trim(), customQty || '1 portion', customDays);
     setCustomName('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddCustom();
+    }
   };
 
   return (
@@ -120,7 +128,11 @@ export default function LeftoverSelector({
                 type="button"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => !isAdded && validateAndAdd(item.name, item.defaultQty, item.daysOld)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isAdded) validateAndAdd(item.name, item.defaultQty, item.daysOld);
+                }}
                 disabled={isAdded}
                 className={`px-3.5 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-sm ${
                   isAdded
@@ -137,12 +149,13 @@ export default function LeftoverSelector({
         </div>
       </div>
 
-      {/* Custom Leftover Input */}
-      <form onSubmit={handleAddCustom} className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+      {/* Custom Leftover Input (Non-nested container to avoid form bubbling) */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <input
           type="text"
           value={customName}
           onChange={(e) => setCustomName(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type leftover (e.g. Cooked Egg Curry)..."
           className="sm:col-span-2 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700/60 text-slate-900 dark:text-white font-medium text-sm outline-none focus:ring-2 focus:ring-[#E07A5F]"
         />
@@ -159,13 +172,18 @@ export default function LeftoverSelector({
           <option value="500g">500g</option>
         </select>
         <button
-          type="submit"
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAddCustom();
+          }}
           className="py-3.5 px-4 rounded-xl bg-[#E07A5F] hover:bg-[#d46a4e] text-white font-black text-sm flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-98"
         >
           <Plus className="w-4 h-4" />
           <span>+ Add Leftover</span>
         </button>
-      </form>
+      </div>
 
       {/* Validation Error Message */}
       <AnimatePresence>
@@ -200,7 +218,11 @@ export default function LeftoverSelector({
                 <button
                   key={comp.name}
                   type="button"
-                  onClick={() => validateAndAdd(comp.name, comp.qty, 1)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    validateAndAdd(comp.name, comp.qty, 1);
+                  }}
                   className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-orange-300 dark:border-orange-700 text-slate-900 dark:text-white font-bold text-xs flex items-center gap-1.5 hover:bg-orange-100 cursor-pointer transition-all"
                 >
                   <span>{comp.icon}</span>
@@ -222,7 +244,11 @@ export default function LeftoverSelector({
           {leftoversList.length > 0 && (
             <button
               type="button"
-              onClick={onClearAll}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onClearAll();
+              }}
               className="text-xs font-bold text-rose-500 hover:underline cursor-pointer"
             >
               Clear All
@@ -270,7 +296,11 @@ export default function LeftoverSelector({
 
                   <button
                     type="button"
-                    onClick={() => onRemoveLeftover(item.id)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onRemoveLeftover(item.id);
+                    }}
                     className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer transition-all"
                     title="Remove Item"
                   >
