@@ -93,6 +93,44 @@ const HERO_DISH_CARDS = [
   }
 ];
 
+/**
+ * Compress and downscale uploaded photo to max 800px width / 80% JPEG quality
+ * to guarantee Vercel Serverless 4.5MB payload compliance and fast response times
+ */
+const compressImageForScan = (dataUrl, maxWidth = 800, quality = 0.8) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(dataUrl);
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      } catch (err) {
+        console.error('[Canvas Compress Error]', err);
+        resolve(dataUrl);
+      }
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+};
+
 export default function IngredientInput({ onSubmit, isLoading, recentHistory = [], onSelectHistory }) {
   // Main Input Mode: 'fresh' | 'leftovers'
   const [inputMode, setInputMode] = useState('fresh');
@@ -235,26 +273,25 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
   };
 
   // Process Base64 or Blob Photo Data via AI Scanner (/api/scan-image)
-  const processCapturedPhotoData = async (base64Data, filename = 'food_image.jpg', fileObj = null) => {
+  const processCapturedPhotoData = async (rawBase64Data, filename = 'food_image.jpg') => {
     setIsScanningPhoto(true);
-    setScanStatusMessage('AI Scanner analyzing food image features...');
+    setScanStatusMessage('Compressing & scanning food photo...');
 
     try {
-      let colorProfile = { dominantHue: filename.toLowerCase().includes('spinach') ? 'green' : filename.toLowerCase().includes('paneer') ? 'red' : 'yellow' };
+      // 1. Compress image to max 800px width / ~200KB payload
+      const compressedBase64 = await compressImageForScan(rawBase64Data, 800, 0.8);
       
-      if (fileObj) {
-        try {
-          colorProfile = await extractImageFeatures(fileObj);
-        } catch (e) {
-          console.log('[Extract Error]', e);
-        }
-      }
+      // 2. Extract client-side feature color profile
+      const colorProfile = await extractImageFeatures(compressedBase64);
 
+      setScanStatusMessage('AI Scanner analyzing dish features...');
+
+      // 3. Post to API
       const res = await fetch('/api/scan-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          imageBase64: base64Data,
+          imageBase64: compressedBase64,
           filename,
           colorProfile
         })
@@ -270,10 +307,12 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
           }
           setScanStatusMessage(`✨ AI Scan Identified: ${data.detectedDish}`);
         }
+      } else {
+        throw new Error(`Server returned status ${res.status}`);
       }
     } catch (err) {
       console.error('[AI Photo Scan Error]', err);
-      setErrorMsg('Failed to scan food photo. Please try typing your dish.');
+      setErrorMsg('Failed to scan food photo. Please try typing your dish name.');
     } finally {
       setIsScanningPhoto(false);
       setTimeout(() => setScanStatusMessage(''), 4500);
@@ -287,7 +326,7 @@ export default function IngredientInput({ onSubmit, isLoading, recentHistory = [
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      processCapturedPhotoData(reader.result, file.name, file);
+      processCapturedPhotoData(reader.result, file.name);
     };
     reader.readAsDataURL(file);
     e.target.value = ''; // Reset input element so uploading the same file again triggers onChange
