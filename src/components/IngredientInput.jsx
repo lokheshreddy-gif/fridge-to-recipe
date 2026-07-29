@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders, Edit3, Check } from 'lucide-react';
+import { Sparkles, Utensils, AlertCircle, RefreshCw, AlertTriangle, History, Flame, Users2, ArrowRight, Mic, MicOff, Camera, ImagePlus, CheckCircle2, Video, Sliders, Edit3, Check, Recycle, Plus, Trash2, Clock } from 'lucide-react';
 import LiveCameraModal from './LiveCameraModal.jsx';
 import { extractImageFeatures } from '../utils/extractImageFeatures.js';
 
@@ -13,8 +13,7 @@ const AGE_CATEGORIES = [
       { name: '🍲 Moong Dal Khichdi', query: 'Moong Dal Khichdi' },
       { name: '🍎 Apple Ragi Porridge', query: 'Apple Ragi Porridge' },
       { name: '🌾 Suji Upma', query: 'Suji Upma' },
-      { name: '🍚 Mashed Curd Rice', query: 'Mashed Curd Rice' },
-      { name: '🥣 Dal Pani', query: 'Dal Pani' }
+      { name: '🍚 Mashed Curd Rice', query: 'Mashed Curd Rice' }
     ]
   },
   {
@@ -25,8 +24,7 @@ const AGE_CATEGORIES = [
       { name: '⚪ Mini Idlis', query: 'Mini Idlis' },
       { name: '🧀 Cheese Whole Wheat Dosa', query: 'Cheese Whole Wheat Dosa' },
       { name: '🍚 Vegetable Pulao', query: 'Vegetable Pulao' },
-      { name: '🧀 Paneer Bhurji', query: 'Paneer Bhurji' },
-      { name: '🍔 Aloo Tikki Burger', query: 'Aloo Tikki Burger' }
+      { name: '🧀 Paneer Bhurji', query: 'Paneer Bhurji' }
     ]
   },
   {
@@ -36,9 +34,7 @@ const AGE_CATEGORIES = [
     dishes: [
       { name: '🥘 Paneer Butter Masala', query: 'Paneer Butter Masala' },
       { name: '🫓 Aloo Paratha', query: 'Aloo Paratha' },
-      { name: '🍗 Chicken Tikka Masala', query: 'Chicken Tikka Masala' },
-      { name: '🥖 Chole Bhature', query: 'Chole Bhature' },
-      { name: '🧈 Pav Bhaji', query: 'Pav Bhaji' }
+      { name: '🍗 Chicken Tikka Masala', query: 'Chicken Tikka Masala' }
     ]
   },
   {
@@ -48,9 +44,7 @@ const AGE_CATEGORIES = [
     dishes: [
       { name: '🥘 Chana Masala', query: 'Chana Masala' },
       { name: '🥬 Palak Paneer', query: 'Palak Paneer' },
-      { name: '🍚 Vegetable Biryani', query: 'Vegetable Biryani' },
-      { name: '🍆 Baingan Bharta', query: 'Baingan Bharta' },
-      { name: '🐟 Fish Curry', query: 'Fish Curry' }
+      { name: '🍚 Vegetable Biryani', query: 'Vegetable Biryani' }
     ]
   },
   {
@@ -60,11 +54,20 @@ const AGE_CATEGORIES = [
     dishes: [
       { name: '🌾 Oats Upma', query: 'Oats Upma' },
       { name: '🥣 Dalia Khichdi', query: 'Dalia Khichdi' },
-      { name: '🍲 Toor Dal Fry', query: 'Toor Dal Fry' },
-      { name: '🥒 Lauki Sabzi', query: 'Lauki Sabzi' },
-      { name: '🥛 Masala Chaas', query: 'Masala Chaas' }
+      { name: '🍲 Toor Dal Fry', query: 'Toor Dal Fry' }
     ]
   }
+];
+
+const QUICK_LEFTOVER_SUGGESTIONS = [
+  { name: 'Cooked Rice', icon: '🍚', defaultQty: '2 cups', freshness: 'Fresh Today' },
+  { name: 'Leftover Chicken', icon: '🍗', defaultQty: '300g', freshness: 'Use Soon (1-2 days)' },
+  { name: 'Cooked Vegetables', icon: '🥦', defaultQty: '1 bowl', freshness: 'Fresh Today' },
+  { name: 'Leftover Naan/Roti', icon: '🫓', defaultQty: '3 pieces', freshness: 'Use Soon (1-2 days)' },
+  { name: 'Cooked Beans/Dal', icon: '🫘', defaultQty: '1 cup', freshness: 'Fresh Today' },
+  { name: 'Leftover Pasta', icon: '🍝', defaultQty: '1.5 cups', freshness: 'Use Soon (1-2 days)' },
+  { name: 'Boiled Potatoes', icon: '🥔', defaultQty: '4 items', freshness: 'Fresh Today' },
+  { name: 'Leftover Curry', icon: '🍳', defaultQty: '1 bowl', freshness: 'Use Soon (1-2 days)' }
 ];
 
 const HERO_DISH_CARDS = [
@@ -97,572 +100,521 @@ const HERO_DISH_CARDS = [
     photo: '/ingredient-images/salt.png',
     cardBg: 'bg-yellow-50 dark:bg-slate-900 border-yellow-200 dark:border-yellow-500/40',
     badgeBg: 'bg-yellow-600 text-white'
-  },
-  {
-    id: 'palak_paneer',
-    title: 'Palak Paneer',
-    desc: 'Green spinach sauce with soft paneer cubes',
-    badge: 'Healthy',
-    query: 'Palak Paneer',
-    photo: '/ingredient-images/spinach.png',
-    cardBg: 'bg-emerald-50 dark:bg-slate-900 border-emerald-200 dark:border-emerald-500/40',
-    badgeBg: 'bg-emerald-600 text-white'
   }
 ];
 
-export default function IngredientInput({
-  onSubmit,
-  isLoading,
-  recentHistory = [],
-  onSelectHistory
-}) {
-  const [ingredientsText, setIngredientsText] = useState('');
-  const [textReference, setTextReference] = useState('');
-  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(3); // Default: Adults (Ages 26-50)
-  const [touched, setTouched] = useState(false);
-  const [testMode, setTestMode] = useState('normal');
-  const [showHistory, setShowHistory] = useState(false);
+export default function IngredientInput({ onSubmit, isLoading, recentHistory = [], onSelectHistory }) {
+  // Main Input Mode: 'fresh' | 'leftovers'
+  const [inputMode, setInputMode] = useState('fresh');
+
+  // Fresh Ingredients State
+  const [freshText, setFreshText] = useState('');
+
+  // Leftover Food State
+  const [leftoversList, setLeftoversList] = useState([
+    { id: '1', name: 'Cooked Rice', quantity: '2 cups', freshness: 'Fresh Today' },
+    { id: '2', name: 'Leftover Chicken', quantity: '300g', freshness: 'Use Soon (1-2 days)' }
+  ]);
+  const [customLeftoverName, setCustomLeftoverName] = useState('');
+  const [customLeftoverQty, setCustomLeftoverQty] = useState('1 portion');
+
+  const [selectedAge, setSelectedAge] = useState('Adult');
+  const [errorMsg, setErrorMsg] = useState('');
   const [isListening, setIsListening] = useState(false);
-  const [isLiveCameraOpen, setIsLiveCameraOpen] = useState(false);
-  const [showCamOptions, setShowCamOptions] = useState(false);
 
-  // AI Image Scanner state
-  const [isScanningImage, setIsScanningImage] = useState(false);
-  const [scannedImagePreview, setScannedImagePreview] = useState(null);
-  const [scannedResult, setScannedResult] = useState(null);
-  const [isEditingDishName, setIsEditingDishName] = useState(false);
-
-  const recognitionRef = useRef(null);
+  // Live Camera Scanner State
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [scanStatusMessage, setScanStatusMessage] = useState('');
+  const [isScanningPhoto, setIsScanningPhoto] = useState(false);
   const fileInputRef = useRef(null);
-  const activeCategory = AGE_CATEGORIES[selectedCategoryIndex];
-  const isEmpty = !ingredientsText.trim() && !scannedImagePreview;
-  const showError = touched && isEmpty;
 
-  // Voice Input Handler via Web Speech API
-  const handleToggleVoiceInput = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert('Voice input is supported in Google Chrome, Edge, and Safari browsers.');
+  // Toggle input mode without clearing previous inputs
+  const handleSwitchMode = (mode) => {
+    setInputMode(mode);
+    setErrorMsg('');
+  };
+
+  // Add Leftover item
+  const handleAddLeftoverItem = (name, quantity = '1 portion', freshness = 'Fresh Today') => {
+    if (!name.trim()) return;
+    if (leftoversList.length >= 10) {
+      setErrorMsg('Maximum 10 leftover items allowed per recipe session.');
+      return;
+    }
+    const exists = leftoversList.some((item) => item.name.toLowerCase() === name.trim().toLowerCase());
+    if (exists) {
+      setErrorMsg(`"${name}" is already in your leftovers list.`);
+      return;
+    }
+    setLeftoversList((prev) => [
+      ...prev,
+      { id: `leftover-${Date.now()}-${Math.random()}`, name: name.trim(), quantity, freshness }
+    ]);
+    setCustomLeftoverName('');
+    setErrorMsg('');
+  };
+
+  const handleRemoveLeftoverItem = (id) => {
+    setLeftoversList((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // Handle Form Submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (inputMode === 'leftovers') {
+      if (leftoversList.length === 0) {
+        setErrorMsg('Please add at least one leftover food item to generate a zero-waste recipe.');
+        return;
+      }
+      const leftoverPayload = leftoversList.map((item) => `${item.name} (${item.quantity})`).join(', ');
+      onSubmit(leftoverPayload, selectedAge, null, true);
+    } else {
+      if (!freshText.trim()) {
+        setErrorMsg('Please type your available ingredients or select a dish.');
+        return;
+      }
+      onSubmit(freshText.trim(), selectedAge, null, false);
+    }
+  };
+
+  // Voice Input Speech Recognition
+  const handleToggleVoice = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      setErrorMsg('Voice recognition is not supported in your browser. Please type or use photo scan.');
       return;
     }
 
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
     if (isListening) {
-      if (recognitionRef.current) recognitionRef.current.stop();
       setIsListening(false);
-    } else {
-      try {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-
-        recognition.onstart = () => {
-          setIsListening(true);
-        };
-
-        recognition.onresult = (event) => {
-          let transcript = '';
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            transcript += event.results[i][0].transcript;
-          }
-          setIngredientsText(transcript);
-          if (touched) setTouched(false);
-        };
-
-        recognition.onerror = (event) => {
-          console.error('[Speech Recognition Error]', event.error);
-          setIsListening(false);
-        };
-
-        recognition.onend = () => {
-          setIsListening(false);
-        };
-
-        recognitionRef.current = recognition;
-        recognition.start();
-      } catch (err) {
-        console.error('[Speech Exception]', err);
-        setIsListening(false);
-      }
+      return;
     }
-  };
-
-  // High-Accuracy AI Food Image Feature Scanner Handler
-  const processImageDataUrl = async (base64Data, filename = 'camera_photo.jpg') => {
-    setScannedImagePreview(base64Data);
-    setIsScanningImage(true);
-    setScannedResult(null);
 
     try {
-      // Extract color & visual features directly from image canvas
-      const colorProfile = await extractImageFeatures(base64Data);
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
 
-      const response = await fetch('/api/scan-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: base64Data, filename, colorProfile })
-      });
+      recognition.onstart = () => {
+        setIsListening(true);
+        setErrorMsg('');
+      };
 
-      if (!response.ok) throw new Error('Image scan failed');
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (inputMode === 'leftovers') {
+          handleAddLeftoverItem(transcript, '1 portion');
+        } else {
+          setFreshText((prev) => (prev ? `${prev}, ${transcript}` : transcript));
+        }
+        setIsListening(false);
+      };
 
-      const scanData = await response.json();
-      setScannedResult(scanData);
-      setIsScanningImage(false);
+      recognition.onerror = () => {
+        setIsListening(false);
+        setErrorMsg('Could not hear clearly. Please try speaking again or type your ingredients.');
+      };
 
-      const dishToUse = scanData.detectedDish || scanData.detectedIngredients?.join(', ') || 'Moong Dal Khichdi';
-      setIngredientsText(dishToUse);
-      setTouched(false);
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
     } catch (err) {
-      console.error('[Image Scanner Error]', err);
-      setIsScanningImage(false);
+      setIsListening(false);
     }
   };
 
-  const handleImageFileChange = (e) => {
+  // Food Photo Upload & High-Accuracy Color-Correlated Feature Classification
+  const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setShowCamOptions(false);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      processImageDataUrl(reader.result, file.name);
-    };
-    reader.readAsDataURL(file);
-  };
+    setIsScanningPhoto(true);
+    setScanStatusMessage('Scanning food photo features...');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setTouched(true);
-    if (isEmpty || isLoading) return;
+    try {
+      const colorProfile = await extractImageFeatures(file);
+      setScanStatusMessage(`Analyzing ${colorProfile.dominantHue} tone features...`);
 
-    let combinedQuery = ingredientsText.trim();
-    if (scannedResult && !combinedQuery) {
-      combinedQuery = scannedResult.detectedDish;
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Data = reader.result;
+        try {
+          const res = await fetch('/api/scan-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              imageBase64: base64Data,
+              filename: file.name,
+              colorProfile
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.detectedDish) {
+              if (inputMode === 'leftovers') {
+                handleAddLeftoverItem(data.detectedDish, '1 portion');
+              } else {
+                setFreshText(data.detectedDish);
+              }
+              setScanStatusMessage(`✨ AI Scan Identified: ${data.detectedDish}`);
+            }
+          }
+        } catch (err) {
+          console.error('[Scan Error]', err);
+        } finally {
+          setIsScanningPhoto(false);
+          setTimeout(() => setScanStatusMessage(''), 4000);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setIsScanningPhoto(false);
     }
-    if (textReference.trim()) {
-      combinedQuery += ` (Note: ${textReference.trim()})`;
-    }
-
-    onSubmit(combinedQuery, activeCategory.id, testMode === 'normal' ? null : testMode);
-  };
-
-  const handleSelectPreset = (presetText) => {
-    setIngredientsText(presetText);
-    setTouched(false);
-    onSubmit(presetText, activeCategory.id, testMode === 'normal' ? null : testMode);
   };
 
   return (
-    <div className="min-h-dvh w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 radial-glow relative overflow-y-auto bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="w-full max-w-4xl mx-auto px-4 py-8 sm:py-12 select-none">
       
-      {/* Live Camera Modal */}
-      <LiveCameraModal
-        isOpen={isLiveCameraOpen}
-        onClose={() => setIsLiveCameraOpen(false)}
-        onCapturePhoto={(photoDataUrl) => processImageDataUrl(photoDataUrl, 'live_camera_snap.jpg')}
-      />
-
-      <motion.div
-        initial={{ opacity: 0, y: 25, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -25, scale: 0.98 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-3xl glass-panel rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl relative z-10 my-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
-      >
-        {/* Hidden File Input */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          accept="image/*"
-          onChange={handleImageFileChange}
-          className="hidden"
-        />
-
-        {/* Header Badge */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-xs font-bold uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
-            Easy Recipe Generator
-          </div>
-
-          <div className="flex items-center gap-2">
-            {recentHistory.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowHistory(!showHistory)}
-                className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 rounded-lg px-2.5 py-1 hover:text-indigo-600 transition-all cursor-pointer"
-              >
-                <History className="w-3.5 h-3.5 text-indigo-500" />
-                History ({recentHistory.length})
-              </button>
-            )}
-
-            <select
-              value={testMode}
-              onChange={(e) => setTestMode(e.target.value)}
-              className="bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700/80 rounded-lg px-2 py-1 outline-none focus:border-indigo-500"
-            >
-              <option value="normal">Normal Mode</option>
-              <option value="broken_json">Test: Broken JSON</option>
-              <option value="invalid_schema">Test: Invalid Schema</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Title */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+      {/* HEADER TITLE & TAGLINE */}
+      <div className="text-center mb-8 space-y-3">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold uppercase tracking-wider shadow-sm"
+        >
+          <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
+          <span>AI-Powered Recipe Generator</span>
+        </motion.div>
+        
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
           What food do you have?
         </h1>
-        <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base mt-2 mb-6 leading-relaxed font-semibold">
-          Scan a food photo with camera, speak, or type any dish name with custom preferences!
+        <p className="text-sm sm:text-base font-semibold text-slate-600 dark:text-slate-300 max-w-xl mx-auto">
+          Turn your fresh ingredients or leftover food into easy, step-by-step home recipes in seconds.
         </p>
+      </div>
 
-        {/* AI Food Image Scanner Card (If image scanned) */}
-        {scannedImagePreview && (
-          <div className="mb-6 p-4 rounded-3xl bg-slate-900 text-slate-100 border border-indigo-500/40 shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-center gap-4">
-            <div className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-indigo-400 shrink-0 bg-slate-950">
-              <img src={scannedImagePreview} alt="Scanned Food" className="w-full h-full object-cover" />
-              {isScanningImage && (
-                <motion.div
-                  animate={{ y: [0, 110, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                  className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-indigo-400 to-emerald-400 shadow-md shadow-emerald-400"
+      {/* MAIN INPUT CARD */}
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl space-y-6 relative overflow-hidden"
+      >
+        {/* MODE SWITCHER TAB BAR */}
+        <div className="flex items-center justify-center p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+          <button
+            type="button"
+            onClick={() => handleSwitchMode('fresh')}
+            className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 ${
+              inputMode === 'fresh'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-md border border-slate-200 dark:border-slate-700'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Utensils className={`w-4 h-4 ${inputMode === 'fresh' ? 'text-indigo-600 dark:text-indigo-400' : ''}`} />
+            <span>🥗 Fresh Ingredients</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSwitchMode('leftovers')}
+            className={`flex-1 py-3 px-4 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 ${
+              inputMode === 'leftovers'
+                ? 'bg-emerald-600 text-white shadow-md border border-emerald-500'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Recycle className={`w-4 h-4 ${inputMode === 'leftovers' ? 'text-emerald-200 animate-spin-slow' : ''}`} />
+            <span>♻️ Leftover Food (Zero Waste)</span>
+          </button>
+        </div>
+
+        {/* INPUT MODE CONTENTS */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          
+          {/* MODE 1: FRESH INGREDIENTS */}
+          {inputMode === 'fresh' && (
+            <div className="space-y-4">
+              <div className="relative">
+                <textarea
+                  value={freshText}
+                  onChange={(e) => setFreshText(e.target.value)}
+                  placeholder="e.g. Rice, tomatoes, paneer, garlic, butter, chicken..."
+                  rows={3}
+                  className="w-full p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium text-base resize-none outline-none transition-all shadow-inner"
                 />
-              )}
-            </div>
 
-            <div className="min-w-0 flex-1 text-center sm:text-left space-y-1">
-              <div className="flex items-center justify-center sm:justify-start gap-2">
-                <Camera className="w-4 h-4 text-emerald-400 animate-pulse" />
-                <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">
-                  {isScanningImage ? 'Analyzing Image Color & Features...' : 'AI Food Identification Result'}
-                </span>
-              </div>
-
-              {isScanningImage ? (
-                <p className="text-xs text-slate-300 font-bold">
-                  Extracting visual features to match accurate dish name...
-                </p>
-              ) : (
-                scannedResult && (
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-center sm:justify-start gap-2">
-                      {isEditingDishName ? (
-                        <input
-                          type="text"
-                          value={ingredientsText}
-                          onChange={(e) => setIngredientsText(e.target.value)}
-                          placeholder="Type exact dish name..."
-                          className="bg-slate-800 text-white font-black text-sm px-3 py-1 rounded-xl border border-indigo-400 outline-none"
-                          autoFocus
-                        />
-                      ) : (
-                        <h3 className="text-base font-black text-white">
-                          Identified: <span className="text-emerald-300">{ingredientsText || scannedResult.detectedDish}</span>
-                        </h3>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => setIsEditingDishName(!isEditingDishName)}
-                        className="p-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
-                      >
-                        {isEditingDishName ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Edit3 className="w-3.5 h-3.5 text-indigo-400" />}
-                        <span>{isEditingDishName ? 'Done' : 'Refine'}</span>
-                      </button>
-                    </div>
-
-                    <p className="text-xs text-slate-300 font-semibold">
-                      Ingredients found: {scannedResult.detectedIngredients?.join(', ')}
-                    </p>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Recent Search History */}
-        <AnimatePresence>
-          {showHistory && recentHistory.length > 0 && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="mb-5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 p-4 rounded-2xl space-y-2 text-xs"
-            >
-              <div className="flex items-center justify-between font-extrabold text-slate-900 dark:text-slate-200 mb-2">
-                <span className="flex items-center gap-1.5">
-                  <History className="w-3.5 h-3.5 text-indigo-500" />
-                  Recent Searches
-                </span>
-                <span className="text-[10px] text-slate-500 font-semibold">Click to select</span>
-              </div>
-              <div className="space-y-1.5 max-h-36 overflow-y-auto">
-                {recentHistory.map((item, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      setIngredientsText(item.text);
-                      setShowHistory(false);
-                    }}
-                    className="p-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/60 border border-slate-200 dark:border-slate-700/80 cursor-pointer flex items-center justify-between gap-2 text-slate-900 dark:text-slate-200 hover:text-indigo-600 transition-all font-bold"
-                  >
-                    <span className="truncate max-w-md">{item.text}</span>
-                    <span className="text-[10px] text-slate-500 shrink-0">{item.time}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Form with Live Camera, Image Upload & Text Reference */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="relative">
-            <div className={`glass-input rounded-2xl p-1 transition-all bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 relative ${showError ? 'ring-2 ring-rose-500 border-rose-500' : ''}`}>
-              <textarea
-                value={ingredientsText}
-                onChange={(e) => {
-                  setIngredientsText(e.target.value);
-                  if (touched) setTouched(false);
-                }}
-                placeholder="Scan live camera, upload image, speak microphone, or type dish name..."
-                rows={3}
-                className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-500 text-base p-4 pr-28 outline-none resize-none font-bold leading-relaxed"
-                autoFocus
-              />
-
-              {/* Toolbar Controls */}
-              <div className="absolute right-3 top-3 flex items-center gap-1.5 z-20">
-                {/* Camera Options Trigger */}
-                <div className="relative">
+                {/* Micro / Camera / Photo Buttons */}
+                <div className="absolute right-3 bottom-3 flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setShowCamOptions(!showCamOptions)}
-                    title="Camera Scanner Options"
-                    className="p-2.5 rounded-xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-slate-700 border border-emerald-200 dark:border-slate-700 transition-all cursor-pointer flex items-center justify-center"
+                    onClick={handleToggleVoice}
+                    className={`p-2.5 rounded-xl border cursor-pointer transition-all ${
+                      isListening
+                        ? 'bg-rose-500 text-white border-rose-600 animate-pulse'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    }`}
+                    title="Voice Input"
                   >
-                    <Camera className="w-5 h-5" />
+                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                   </button>
 
-                  {/* Camera Options Dropdown Menu */}
-                  <AnimatePresence>
-                    {showCamOptions && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 top-12 w-48 bg-slate-900 border border-slate-700 rounded-2xl p-1.5 shadow-2xl space-y-1 z-30 text-xs"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowCamOptions(false);
-                            setIsLiveCameraOpen(true);
-                          }}
-                          className="w-full p-2.5 rounded-xl hover:bg-indigo-600/30 text-white font-bold flex items-center gap-2 text-left cursor-pointer transition-all"
-                        >
-                          <Video className="w-4 h-4 text-emerald-400" />
-                          Live Camera Scanner
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowCamOptions(false);
-                            fileInputRef.current?.click();
-                          }}
-                          className="w-full p-2.5 rounded-xl hover:bg-indigo-600/30 text-white font-bold flex items-center gap-2 text-left cursor-pointer transition-all"
-                        >
-                          <ImagePlus className="w-4 h-4 text-indigo-400" />
-                          Upload Photo File
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCameraOpen(true)}
+                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-all"
+                    title="Live Camera Scanner"
+                  >
+                    <Video className="w-4 h-4 text-indigo-500" />
+                  </button>
 
-                {/* Voice Microphone Button */}
-                <button
-                  type="button"
-                  onClick={handleToggleVoiceInput}
-                  title={isListening ? "Stop listening" : "Click to speak dish or ingredients"}
-                  className={`p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center ${
-                    isListening
-                      ? 'bg-rose-600 text-white animate-pulse shadow-lg ring-4 ring-rose-500/30'
-                      : 'bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-slate-700 border border-indigo-200 dark:border-slate-700'
-                  }`}
-                >
-                  {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-all"
+                    title="Upload Food Photo"
+                  >
+                    <ImagePlus className="w-4 h-4 text-indigo-500" />
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                </div>
               </div>
             </div>
+          )}
 
-            {/* Listening Status Banner */}
-            {isListening && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-rose-600 text-xs font-black mt-2 px-1"
-              >
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping shrink-0" />
-                <span>Listening... Speak your dish name or ingredients clearly now!</span>
-              </motion.div>
-            )}
+          {/* MODE 2: LEFTOVER FOOD (ZERO WASTE) */}
+          {inputMode === 'leftovers' && (
+            <div className="space-y-6">
+              
+              {/* Quick Add Leftover Suggestions */}
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                  <Recycle className="w-4 h-4" />
+                  <span>Popular Leftover Quick-Add:</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {QUICK_LEFTOVER_SUGGESTIONS.map((item) => (
+                    <motion.button
+                      key={item.name}
+                      type="button"
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => handleAddLeftoverItem(item.name, item.defaultQty, item.freshness)}
+                      className="px-3.5 py-2 rounded-xl border border-emerald-300 dark:border-emerald-500/30 bg-emerald-50/80 dark:bg-emerald-950/40 text-slate-900 dark:text-slate-100 font-bold text-xs flex items-center gap-1.5 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 cursor-pointer transition-all shadow-sm"
+                    >
+                      <span>{item.icon}</span>
+                      <span>{item.name}</span>
+                      <Plus className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
 
-            {showError && !isListening && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-1.5 text-rose-600 text-xs mt-2 font-black px-1"
-              >
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                Please scan photo, speak, or type a food name.
-              </motion.div>
-            )}
-          </div>
+              {/* Custom Leftover Add Input */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input
+                  type="text"
+                  value={customLeftoverName}
+                  onChange={(e) => setCustomLeftoverName(e.target.value)}
+                  placeholder="Type custom leftover item (e.g. Boiled Egg)..."
+                  className="sm:col-span-2 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-medium text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAddLeftoverItem(customLeftoverName, customLeftoverQty)}
+                  className="py-3 px-4 rounded-xl bg-emerald-600 text-white font-black text-sm flex items-center justify-center gap-2 hover:bg-emerald-500 cursor-pointer transition-all shadow-md"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Leftover</span>
+                </button>
+              </div>
 
-          {/* Text Reference & Preferences Input */}
-          <div className="bg-slate-100 dark:bg-slate-900/80 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-1.5">
-            <label className="text-xs font-black text-slate-900 dark:text-slate-300 flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5 text-indigo-500" />
-              Text Reference & Custom Preferences (Optional):
-            </label>
-            <input
-              type="text"
-              value={textReference}
-              onChange={(e) => setTextReference(e.target.value)}
-              placeholder="e.g. Extra spicy, no garlic, low salt, quick 10 min cooking..."
-              className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-500 text-xs p-3 rounded-xl border border-slate-300 dark:border-slate-700 outline-none font-bold"
-            />
-          </div>
+              {/* Selected Leftovers List */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Selected Leftovers ({leftoversList.length}/10):
+                  </span>
+                  {leftoversList.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setLeftoversList([])}
+                      className="text-xs font-bold text-rose-500 hover:underline cursor-pointer"
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
 
-          {/* Age Group Selector */}
-          <div className="space-y-2 bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-black text-slate-900 dark:text-slate-200 flex items-center gap-1.5">
-                <Users2 className="w-4 h-4 text-indigo-500" />
-                Select Age Group:
-              </label>
-              <span className="text-[11px] font-black text-indigo-600 dark:text-indigo-400">
-                {activeCategory.label}
-              </span>
+                {leftoversList.length === 0 ? (
+                  <div className="p-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 text-center text-xs font-semibold text-slate-500">
+                    No leftover items selected yet. Click quick-add buttons above or type leftovers.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {leftoversList.map((item) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-2"
+                      >
+                        <div className="space-y-0.5">
+                          <span className="text-sm font-bold text-slate-900 dark:text-white block">
+                            {item.name}
+                          </span>
+                          <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-500">
+                            <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">{item.quantity}</span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-amber-500" />
+                              {item.freshness}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveLeftoverItem(item.id)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
+          )}
 
-            <div className="flex flex-wrap gap-1.5">
-              {AGE_CATEGORIES.map((cat, idx) => (
+          {/* AGE CATEGORY FILTER */}
+          <div className="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-2">
+              <Users2 className="w-4 h-4 text-indigo-500" />
+              <label className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                Cooking For (Age Group):
+              </label>
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              {AGE_CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
-                  onClick={() => setSelectedCategoryIndex(idx)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                    selectedCategoryIndex === idx
-                      ? 'age-tab-active bg-indigo-600 text-white shadow-md'
-                      : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 hover:text-indigo-600 border border-slate-300 dark:border-slate-700'
+                  onClick={() => setSelectedAge(cat.id)}
+                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                    selectedAge === cat.id
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
                   {cat.shortLabel}
                 </button>
               ))}
             </div>
-
-            {/* Suggested Dishes */}
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-              <span className="text-[11px] font-black text-slate-700 dark:text-slate-400 uppercase tracking-wider block mb-2">
-                Suggested Dishes for {activeCategory.shortLabel}:
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {activeCategory.dishes.map((dish, dIdx) => (
-                  <button
-                    key={dIdx}
-                    type="button"
-                    onClick={() => handleSelectPreset(dish.query)}
-                    className="text-xs bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 px-3 py-1.5 rounded-xl font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-xs"
-                  >
-                    {dish.name}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
-          {/* Action Button */}
+          {/* ERROR MESSAGE DISPLAY */}
+          <AnimatePresence>
+            {errorMsg && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2"
+              >
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                <span>{errorMsg}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* SUBMIT BUTTON */}
           <motion.button
             type="submit"
-            disabled={isEmpty || isLoading}
-            whileHover={!isEmpty && !isLoading ? { scale: 1.015 } : {}}
-            whileTap={!isEmpty && !isLoading ? { scale: 0.98 } : {}}
-            className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-xl flex items-center justify-center gap-2 transition-all duration-200 ${
-              isEmpty
-                ? 'disabled-submit-btn bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400 border border-slate-300 dark:border-slate-700 cursor-not-allowed shadow-none'
-                : 'enabled-submit-btn bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white hover:shadow-indigo-500/25 cursor-pointer'
+            disabled={isLoading}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 text-white ${
+              inputMode === 'leftovers'
+                ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:shadow-emerald-500/25'
+                : 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:shadow-indigo-500/25'
             }`}
           >
-            {isLoading ? (
+            {inputMode === 'leftovers' ? (
               <>
-                <RefreshCw className="w-5 h-5 animate-spin" />
-                Making Recipe...
+                <Recycle className="w-5 h-5 animate-spin-slow" />
+                <span>Generate Leftover Recipes (Zero Waste)</span>
+                <ArrowRight className="w-5 h-5" />
               </>
             ) : (
               <>
                 <Utensils className="w-5 h-5" />
-                Make Recipe ({activeCategory.shortLabel})
+                <span>Generate Recipes</span>
+                <ArrowRight className="w-5 h-5" />
               </>
             )}
           </motion.button>
         </form>
+      </motion.div>
 
-        {/* HERO DISH CARDS */}
-        <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Flame className="w-4 h-4 text-amber-500" />
-              Popular Meals
-            </h3>
-            <span className="text-xs text-slate-600 dark:text-slate-400 font-bold">Click any dish to start cooking</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+      {/* POPULAR DISH CARDS SECTION */}
+      {inputMode === 'fresh' && (
+        <div className="mt-12 space-y-4">
+          <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center">
+            Or Pick Popular Instant Recipes:
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {HERO_DISH_CARDS.map((card) => (
               <motion.div
                 key={card.id}
-                onClick={() => handleSelectPreset(card.query)}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between gap-3 shadow-sm hover:shadow-md ${card.cardBg} group`}
+                whileHover={{ y: -4 }}
+                onClick={() => onSubmit(card.query, selectedAge)}
+                className={`p-5 rounded-3xl border cursor-pointer shadow-lg space-y-3 transition-all ${card.cardBg}`}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-900 shrink-0">
-                    <img src={card.photo} alt={card.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors truncate">
-                        {card.title}
-                      </h4>
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${card.badgeBg} shrink-0 shadow-xs`}>
-                        {card.badge}
-                      </span>
-                    </div>
-                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-0.5 truncate">
-                      {card.desc}
-                    </p>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${card.badgeBg}`}>
+                    {card.badge}
+                  </span>
+                  <img src={card.photo} alt={card.title} className="w-8 h-8 object-contain" />
                 </div>
-
-                <ArrowRight className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all shrink-0" />
+                <div>
+                  <h4 className="text-base font-black text-slate-900 dark:text-white">{card.title}</h4>
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 line-clamp-2 mt-1">{card.desc}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
+      )}
 
-        {testMode !== 'normal' && (
-          <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2 font-black">
-            <AlertTriangle className="w-4 h-4 shrink-0" />
-            <span>Test Mode Active: This submit will simulate a <strong>{testMode}</strong> failure.</span>
-          </div>
-        )}
-      </motion.div>
+      {/* LIVE CAMERA MODAL */}
+      <LiveCameraModal
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onCaptureDish={(dishName) => {
+          if (inputMode === 'leftovers') {
+            handleAddLeftoverItem(dishName, '1 portion');
+          } else {
+            setFreshText(dishName);
+          }
+          setIsCameraOpen(false);
+        }}
+      />
     </div>
   );
 }

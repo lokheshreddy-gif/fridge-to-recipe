@@ -57,7 +57,7 @@ export default function App() {
   };
 
   // Generate Recipe handler
-  const handleGenerateRecipe = async (ingredientsText, ageGroup = 'Adult', testMode = null) => {
+  const handleGenerateRecipe = async (ingredientsText, ageGroup = 'Adult', testMode = null, isLeftoverMode = false) => {
     // Save to Recent Search History
     const newHistoryItem = {
       text: ingredientsText.trim(),
@@ -87,7 +87,7 @@ export default function App() {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredients: ingredientsText, ageGroup, testMode }),
+        body: JSON.stringify({ ingredients: ingredientsText, ageGroup, testMode, isLeftoverMode }),
         signal: controller.signal
       });
 
